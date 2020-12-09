@@ -1,7 +1,7 @@
 Small-Sample Comparative-Effect Estimation Evaluation
 =====================================================
 
-<img src="https://img.shields.io/badge/Study%20Status-Repo%20Created-lightgray.svg" alt="Study Status: Repo Created">
+<img src="https://img.shields.io/badge/Study%20Status-Started-blue.svg" alt="Study Status: Started">
 
  Analytics use case(s): **Population-Level Estimation**
 - Study type: **Methods Research**

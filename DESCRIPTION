@@ -1,0 +1,38 @@
+Package: SmallSampleEstimationEvaluation
+Type: Package
+Title: Package for Evaluation of Estimation Methods
+Version: 0.0.1
+Date: 2020-12-08
+Authors@R: c(
+  person("Martijn", "Schuemie", , "schuemie@ohdsi.org", role = c("aut", "cre"))
+  )
+Maintainer: Martijn Schuemie <schuemie@ohdsi.org>
+Description: Evaluation of the performance of comparative effect estimation methods when sample size (number of subjects in the target and comparator) is small.
+License: Apache License 2.0
+BugReports: https://github.com/ohdsi-studies/SmallSampleEstimationEvaluation/issues
+Depends:
+  R (>= 3.2.0),
+  DatabaseConnector (>= 3.0.0),
+Imports:
+  FeatureExtraction (>= 3.0.0),
+  Cyclops (>= 3.0.0),
+  MethodEvaluation (>= 2.1.0),
+  dplyr,
+  readr,
+  rlang,
+  SqlRender (>= 1.6.5),
+  ggplot2,
+  ParallelLogger (>= 2.0.0),
+  methods,
+  EmpiricalCalibration (>= 2.1.0)
+Suggests:
+  testthat,
+  DT,
+  shiny,
+  knitr
+Remotes:
+  ohdsi/FeatureExtraction,
+  ohdsi/MethodEvaluation@develop,
+  ohdsi/EmpiricalCalibration@develop
+RoxygenNote: 7.1.1
+Encoding: UTF-8
