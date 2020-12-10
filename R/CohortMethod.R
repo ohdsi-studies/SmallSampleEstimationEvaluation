@@ -126,7 +126,7 @@ runCohortMethod <- function(connectionDetails = NULL,
                                                 createStudyPopArgs = createStudyPopArgs,
                                                 fitOutcomeModel = TRUE,
                                                 fitOutcomeModelArgs = fitOutcomeModelArgs)
-  stratifyByPsArgs <- CohortMethod::createStratifyByPsArgs(numberOfStrata = 5)
+  stratifyByPsArgs <- CohortMethod::createStratifyByPsArgs(numberOfStrata = 10)
   fitOutcomeModelArgs2 <- CohortMethod::createFitOutcomeModelArgs(modelType = "cox", stratified = TRUE)
   cmAnalysis3 <- CohortMethod::createCmAnalysis(analysisId = 3,
                                                 description = "Stratification",
@@ -167,7 +167,7 @@ runCohortMethod <- function(connectionDetails = NULL,
                                                   getDbCohortMethodDataArgs = getDbCmDataArgs,
                                                   createStudyPopArgs = createStudyPopArgs,
                                                   createPs = TRUE,
-                                                  createPsArgs = createPsArgs,
+                                                  createPsArgs = dummyCreatePsArgs,
                                                   stratifyByPs = TRUE,
                                                   stratifyByPsArgs = stratifyByPsArgs,
                                                   fitOutcomeModel = TRUE,
@@ -199,6 +199,7 @@ runCohortMethod <- function(connectionDetails = NULL,
                                           trimMatchStratifyThreads = min(10, maxCores),
                                           fitOutcomeModelThreads = min(max(1, floor(maxCores/8)), 3),
                                           outcomeCvThreads = min(10, maxCores))
+  ParallelLogger::logInfo("Summarizing results")
   cmSummary <- CohortMethod::summarizeAnalyses(cmResult, cmFolder)
   saveRDS(cmSummary, file.path(cmFolder, "cmSummary.rds"))
   
@@ -209,7 +210,6 @@ runCohortMethod <- function(connectionDetails = NULL,
     filter(.data$sharedPsFile != "") %>%
     distinct(.data$analysisId) %>%
     pull()
-  
   
   getCmAnalysis <- function(analysisId) {
     for (cmAnalysis in cmAnalysisList) {

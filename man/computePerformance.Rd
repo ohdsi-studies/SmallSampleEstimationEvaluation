@@ -7,8 +7,7 @@
 computePerformance(
   referenceSet = "ohdsiMethodsBenchmark",
   outputFolder,
-  parentFolder = NULL,
-  cmFolders,
+  cmFolder,
   maxCores = 1,
   outputFileName
 )
@@ -20,10 +19,10 @@ Currently supported are "ohdsiMethodsBenchmark", and "ohdsiDevelopment".}
 \item{outputFolder}{Name of local folder to place intermediary results; make sure to use
 forward slashes (/). Do not use a folder on a network drive since}
 
-\item{cmFolders}{Name of local folders where the CohortMethod runs can be found.}
-
 \item{maxCores}{How many parallel cores should be used? If more cores are made available
 this can speed up the analyses.}
+
+\item{cmFolders}{Name of local folders where the CohortMethod runs can be found.}
 }
 \description{
 Compute performance metrics of a run

@@ -27,143 +27,107 @@
 #' @export
 computePerformance <- function(referenceSet = "ohdsiMethodsBenchmark",
                                outputFolder,
-                               parentFolder = NULL, 
-                               cmFolders,
+                               cmFolder, 
                                maxCores = 1,
                                outputFileName) {
   controlSummary <- read.csv(file.path(outputFolder, "allControls.csv"))
   
-  computeMetrics <- function(cmFolder) {
-    estimates <- readRDS(file.path(cmFolder, "cmSummary.rds"))
-    estimates <- controlSummary %>%
-      select(.data$targetId, .data$outcomeId, .data$targetEffectSize, .data$trueEffectSize, .data$trueEffectSizeFirstExposure) %>%
-      left_join(estimates,
-                by = c("targetId", "outcomeId"))
-    results <- lapply(split(estimates, estimates$analysisId), computeMetricsForAnalysis, folder = cmFolder)
-    results <- do.call("rbind", results)
-    results <- results %>%
-      mutate(cmFolder = cmFolder)
-    return(results)
-  }
-  results <- lapply(cmFolders, computeMetrics)
-  results <- do.call("rbind", results)
+  estimates <- readRDS(file.path(cmFolder, "cmSummary.rds"))
+  colnames(estimates)[colnames(estimates) == "ci95lb"] <- "ci95Lb"
+  colnames(estimates)[colnames(estimates) == "ci95ub"] <- "ci95Ub"
   
-  if (length(cmFolders) > 1) {
-    # Also compute overall statistics by pooling strata files
-    omr <- readRDS(file.path(cmFolders[1], "outcomeModelReference.rds"))
-    cmAnalysisList <- CohortMethod::loadCmAnalysisList(file.path(cmFolders[1], "cmAnalysisList.json"))
-    
-    getCmAnalysis <- function(analysisId) {
-      for (cmAnalysis in cmAnalysisList) {
-        if (cmAnalysis$analysisId == analysisId) {
-          return(cmAnalysis)
-        }
-      }
-      return(NULL)
-    }
-    
-    computeOverallEstimates <- function(omrSubset) {
-      ParallelLogger::logInfo("Computing overall estimates for analysis ID: ", omrSubset$analysisId[1])
-      cmAnalysis <- getCmAnalysis(omrSubset$analysisId[1])
-      cluster <- ParallelLogger::makeCluster(min(maxCores, 5))
-      subset <- ParallelLogger::clusterApply(cluster, 
-                                             1:nrow(omrSubset), 
-                                             fitOverallOutcomeModel, 
-                                             omrSubset = omrSubset, 
-                                             cmAnalysis = cmAnalysis, 
-                                             cmFolders = cmFolders)
-      ParallelLogger::stopCluster(cluster)
-      subset <- bind_rows(subset)
-      return(subset)
-    }
-    overallEstimates <- lapply(split(omr, omr$analysisId), computeOverallEstimates)
-    overallEstimates <- bind_rows(overallEstimates)
-    saveRDS(overallEstimates, file.path(parentFolder, "cmSummary.rds"))
-    
-    estimates <- controlSummary %>%
-      select(.data$targetId, .data$outcomeId, .data$targetEffectSize, .data$trueEffectSize, .data$trueEffectSizeFirstExposure) %>%
-      left_join(overallEstimates,
-                by = c("targetId", "outcomeId"))
-    overallResults <- lapply(split(estimates, estimates$analysisId), computeMetricsForAnalysis, folder = parentFolder)
-    overallResults <- bind_rows(overallResults)
-    overallResults$cmFolder <- parentFolder
-    results <- bind_rows(results, overallResults)
+  cmAnalysisList <- CohortMethod::loadCmAnalysisList(file.path(cmFolder, "cmAnalysisList.json"))
+  analysisId <- unlist(ParallelLogger::selectFromList(cmAnalysisList, "analysisId"))
+  description <- unlist(ParallelLogger::selectFromList(cmAnalysisList, "description"))
+  details <- sapply(cmAnalysisList, ParallelLogger::convertSettingsToJson)
+  analysisRef <- tibble(method = "CohortMethod",
+                        analysisId = analysisId,
+                        description = description,
+                        details = details,
+                        comparative = TRUE,
+                        nesting = FALSE,
+                        firstExposureOnly = TRUE)
+  if (max(estimates$analysisId) > 100) {
+    analysisRefRandomFx <- analysisRef %>%
+      mutate(analysisId = .data$analysisId + 100,
+             description = paste0(.data$description, ", RFX"))
+    analysisRef <- bind_rows(analysisRef, analysisRefRandomFx)
   }
-  readr::write_csv(results, outputFileName)
+  if (max(estimates$analysisId) > 200) {
+    analysisTraditional <- analysisRef %>%
+      filter(.data$analysisId < 100) %>%
+      mutate(analysisId = .data$analysisId + 200,
+             description = paste0(.data$description, ", Traditional"))
+    analysisRef <- bind_rows(analysisRef, analysisTraditional)
+  }
+  
+  MethodEvaluation::packageOhdsiBenchmarkResults(estimates = estimates,
+                                                 controlSummary = controlSummary,
+                                                 analysisRef = analysisRef,
+                                                 databaseName = "MDCD",
+                                                 exportFolder = cmFolder,
+                                                 referenceSet = referenceSet)
+  
+  metricsUncalibrated <- MethodEvaluation::computeOhdsiBenchmarkMetrics(exportFolder = cmFolder,
+                                                                        mdrr = "All",
+                                                                        calibrated = FALSE,
+                                                                        comparative = TRUE)
+  metricsUncalibrated$calibrated <- FALSE
+  metricsCalibrated <- MethodEvaluation::computeOhdsiBenchmarkMetrics(exportFolder = cmFolder,
+                                                                      mdrr = "All",
+                                                                      calibrated = TRUE,
+                                                                      comparative = TRUE)
+  metricsCalibrated$calibrated <- TRUE
+  metrics <- bind_rows(metricsUncalibrated, metricsCalibrated)
+  readr::write_csv(metrics, outputFileName)
+  
+  estimates <- controlSummary %>%
+    select(.data$targetId, .data$outcomeId, .data$targetEffectSize, .data$trueEffectSize, .data$trueEffectSizeFirstExposure) %>%
+    left_join(estimates,
+              by = c("targetId", "outcomeId")) %>%
+    inner_join(analysisRef %>% 
+                 select(.data$analysisId, .data$description),
+               by = "analysisId")
+  
+  
+  invisible(lapply(split(estimates, estimates$analysisId), generatePlots, folder = cmFolder))
 }
 
-fitOverallOutcomeModel <- function(rowIdx, omrSubset, cmAnalysis, cmFolders) {
-  if (omrSubset$strataFile[rowIdx] != "") {
-    strataPop <- lapply(cmFolders, function(x) readRDS(file.path(x, omrSubset$strataFile[rowIdx])))
-  } else {
-    strataPop <- lapply(cmFolders, function(x) readRDS(file.path(x, omrSubset$studyPopFile[rowIdx])))
-  }
-  if (cmAnalysis$fitOutcomeModelArgs$stratified) {
-    highestId <- 0
-    for (i in 1:length(strataPop)) {
-      strataPop[[i]]$stratumId <- strataPop[[i]]$stratumId + highestId
-      highestId <- max(strataPop[[i]]$stratumId) + 1
-    } 
-  } else {
-    for (i in 1:length(strataPop)) {
-      strataPop[[i]]$stratumId <- rep(i, nrow(strataPop[[i]]))
-    }
-  }
-  strataPop <- dplyr::bind_rows(strataPop)
-  fitOutcomeModelArgs <- cmAnalysis$fitOutcomeModelArgs
-  fitOutcomeModelArgs$population <- strataPop
-  # Always stratify by 'database':
-  fitOutcomeModelArgs$stratified <- TRUE
-  om <- do.call(CohortMethod::fitOutcomeModel, fitOutcomeModelArgs)
-  if (is.null(coef(om))) {
-    estimate <- dplyr::tibble(analysisId = omrSubset$analysisId[rowIdx],
-                              targetId = omrSubset$targetId[rowIdx],
-                              comparatorId = omrSubset$comparatorId[rowIdx],
-                              outcomeId = omrSubset$outcomeId[rowIdx],
-                              logRr = NA,
-                              seLogRr = NA,
-                              ci95Lb = NA,
-                              ci95Ub = NA,
-                              p = NA)
-  } else { 
-    estimate <- dplyr::tibble(analysisId = omrSubset$analysisId[rowIdx],
-                              targetId = omrSubset$targetId[rowIdx],
-                              comparatorId = omrSubset$comparatorId[rowIdx],
-                              outcomeId = omrSubset$outcomeId[rowIdx],
-                              logRr = om$outcomeModelTreatmentEstimate$logRr,
-                              seLogRr = om$outcomeModelTreatmentEstimate$seLogRr,
-                              ci95Lb = exp(om$outcomeModelTreatmentEstimate$logLb95),
-                              ci95Ub = exp(om$outcomeModelTreatmentEstimate$logUb95),
-                              p = EmpiricalCalibration::computeTraditionalP(om$outcomeModelTreatmentEstimate$logRr, 
-                                                                            om$outcomeModelTreatmentEstimate$seLogRr))
-  }
-  return(estimate)
-}
-
-computeMetricsForAnalysis <- function(subset, folder = NULL) {
-  metrics <- MethodEvaluation::computeMetrics(logRr = subset$logRr,
-                                              seLogRr = subset$seLogRr,
-                                              ci95Lb = subset$ci95Lb,
-                                              ci95Ub = subset$ci95Ub,
-                                              p = subset$p,
-                                              trueLogRr = log(subset$trueEffectSizeFirstExposure))
-  metrics <- as_tibble(t(metrics)) %>%
-    mutate(analysisId = subset$analysisId[1])
+generatePlots <- function(subset, folder = NULL) {
   ncs <- subset[subset$targetEffectSize == 1, ]
   null <- EmpiricalCalibration::fitMcmcNull(logRr = ncs$logRr,
                                             seLogRr = ncs$seLogRr)
-  ese <- EmpiricalCalibration::computeExpectedSystematicError(null)
-  metrics$ese <- ese$expectedSystematicError
-  metrics$eseLb <- ese$lb95ci
-  metrics$eseUb <- ese$ub95ci
+  # ease <- EmpiricalCalibration::computeExpectedAbsoluteSystematicError(null)
+  # metrics$ease <- ease$ease
+  # metrics$easeLb <- ease$ciLb
+  # metrics$easeUb <- ease$ciUb
   
+  # nc <- ncs[ncs$outcomeId == 77965, ]
+  # ncs <- ncs[ncs$outcomeId != 77965, ]
+  # nc <- ncs[ncs$outcomeId == 373478, ]
+  # ncs <- ncs[ncs$outcomeId != 77965, ]
+  # 
+  # ncs1 <- estimates[estimates$analysisId == 3 & estimates$targetEffectSize == 1, ]
+  # ncs2 <- estimates[estimates$analysisId == 5 & estimates$targetEffectSize == 1, ]
+  # 
+  # combi <- inner_join(tibble(outcomeId = ncs1$outcomeId,
+  #                            logRr1 = ncs1$logRr,
+  #                            seLogRr1 = ncs1$seLogRr),
+  #                     tibble(outcomeId = ncs2$outcomeId,
+  #                            logRr2 = ncs2$logRr,
+  #                            seLogRr2 = ncs2$seLogRr))
+  # delta <- combi$logRr1 - combi$logRr2
+  # 
+  # exp(nc$logRr)
   if (!is.null(folder)) {
     ncPlotFileName <- file.path(folder, sprintf("ncs_a%d.png", subset$analysisId[1]))
     EmpiricalCalibration::plotCalibrationEffect(logRrNegatives = ncs$logRr,
                                                 seLogRrNegatives = ncs$seLogRr,
                                                 null = null,
                                                 showCis = TRUE,
+                                                showExpectedAbsoluteSystematicError = TRUE,
+                                                title = subset$description[1],
                                                 fileName = ncPlotFileName)
   }
-  return(metrics)
+  return(NULL)
 }

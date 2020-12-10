@@ -18,8 +18,9 @@
 samplePopulation <- function(sourceCmFolder,
                              sampleFolder,
                              numberOfSamples = NULL,
-                             sampleSize = NULL) {
-  set.seed(123)
+                             sampleSize = NULL,
+                             seed = 123) {
+  set.seed(seed)
   
   subsetCmData <- function(cmData, sampleRowIds, outputFileName) {
     sampleCmData <- Andromeda::andromeda()
@@ -63,7 +64,9 @@ samplePopulation <- function(sourceCmFolder,
       cmData <- CohortMethod::loadCohortMethodData(file.path(sourceCmFolder, cmDataFile))
       rowIds <- cmData$cohorts %>%
         pull(.data$rowId)
+      
       #TODO: need to handle case when original is smaller than requested sample size
+      
       # Create equally-sized non-overlapping random samples without replacement:
       rnd <- runif(length(rowIds))
       breaks <- quantile(rnd, (1:(numberOfSamples - 1))/numberOfSamples)

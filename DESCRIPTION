@@ -20,6 +20,7 @@ Imports:
   dplyr,
   readr,
   rlang,
+  meta,
   SqlRender (>= 1.6.5),
   ggplot2,
   ParallelLogger (>= 2.0.0),
