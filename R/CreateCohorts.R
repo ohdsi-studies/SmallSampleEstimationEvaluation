@@ -28,8 +28,6 @@
 #' @param connectionDetails       An R object of type \code{ConnectionDetails} created using the
 #'                                function \code{createConnectionDetails} in the
 #'                                \code{DatabaseConnector} package.
-#' @param oracleTempSchema        Should be used in Oracle to specify a schema where the user has write
-#'                                privileges for storing temporary tables.
 #' @param cdmDatabaseSchema       A database schema containing health care data in the OMOP Commond
 #'                                Data Model. Note that for SQL Server, botth the database and schema
 #'                                should be specified, e.g. 'cdm_schema.dbo'.
@@ -68,8 +66,7 @@ createCohorts <- function(connectionDetails,
                           nestingTable = "nesting",
                           referenceSet = "ohdsiMethodsBenchmark",
                           outputFolder) {
-  createReferenceSetCohorts(connectionDetails,
-    oracleTempSchema = oracleTempSchema,
+  MethodEvaluation::createReferenceSetCohorts(connectionDetails,
     cdmDatabaseSchema = cdmDatabaseSchema,
     exposureDatabaseSchema = exposureDatabaseSchema,
     exposureTable = exposureTable,
@@ -80,9 +77,7 @@ createCohorts <- function(connectionDetails,
     referenceSet = referenceSet,
     workFolder = outputFolder
   )
-
-  synthesizeReferenceSetPositiveControls(connectionDetails,
-    oracleTempSchema = oracleTempSchema,
+  MethodEvaluation::synthesizeReferenceSetPositiveControls(connectionDetails,
     cdmDatabaseSchema = cdmDatabaseSchema,
     exposureDatabaseSchema = exposureDatabaseSchema,
     exposureTable = exposureTable,

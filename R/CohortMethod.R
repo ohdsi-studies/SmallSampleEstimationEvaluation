@@ -74,23 +74,30 @@ runCohortMethod <- function(connectionDetails = NULL,
   tcosList <- list()
   for (i in 1:nrow(tcs)) {
     outcomeIds <- allControls$outcomeId[allControls$targetId == tcs$targetId[i] &
-      allControls$comparatorId == tcs$comparatorId[i] &
-      !is.na(allControls$mdrrComparator)]
+                                          allControls$comparatorId == tcs$comparatorId[i] &
+                                          !is.na(allControls$mdrrComparator)]
     excludedCovariateConceptIds <- c(
       as.numeric(strsplit(tcs$targetConceptIds[i], ";")[[1]]),
       as.numeric(strsplit(tcs$comparatorConceptIds[i], ";")[[1]])
     )
     if (length(outcomeIds) != 0) {
+      outcomes <- list()
+      for (j in seq_along(outcomeIds)) {
+        outcomes[[j]] <- CohortMethod::createOutcome(
+          outcomeId = outcomeIds[j],
+          outcomeOfInterest = TRUE
+        )
+      }
       tcos <- CohortMethod::createTargetComparatorOutcomes(
         targetId = tcs$targetId[i],
         comparatorId = tcs$comparatorId[i],
-        outcomeIds = outcomeIds,
+        outcomeIds = outcomes,
         excludedCovariateConceptIds = excludedCovariateConceptIds
       )
       tcosList[[length(tcosList) + 1]] <- tcos
     }
   }
-
+  
   # Create analysis settings list -------------------------------------------------
   covariateSettings <- FeatureExtraction::createDefaultCovariateSettings(addDescendantsToExclude = TRUE)
   getDbCmDataArgs <- CohortMethod::createGetDbCohortMethodDataArgs(
@@ -121,6 +128,7 @@ runCohortMethod <- function(connectionDetails = NULL,
     )
   )
   matchOnPsArgs <- CohortMethod::createMatchOnPsArgs(maxRatio = 1)
+  computeSharedCovariateBalanceArgs <- CohortMethod::createComputeCovariateBalanceArgs()
   fitOutcomeModelArgs <- CohortMethod::createFitOutcomeModelArgs(modelType = "cox", stratified = FALSE)
   cmAnalysis1 <- CohortMethod::createCmAnalysis(
     analysisId = 1,
@@ -131,6 +139,7 @@ runCohortMethod <- function(connectionDetails = NULL,
     createPsArgs = createPsArgs,
     matchOnPs = TRUE,
     matchOnPsArgs = matchOnPsArgs,
+    computeSharedCovariateBalanceArgs = computeSharedCovariateBalanceArgs,
     fitOutcomeModel = TRUE,
     fitOutcomeModelArgs = fitOutcomeModelArgs
   )
@@ -153,6 +162,7 @@ runCohortMethod <- function(connectionDetails = NULL,
     createPsArgs = createPsArgs,
     stratifyByPs = TRUE,
     stratifyByPsArgs = stratifyByPsArgs,
+    computeSharedCovariateBalanceArgs = computeSharedCovariateBalanceArgs,
     fitOutcomeModel = TRUE,
     fitOutcomeModelArgs = fitOutcomeModelArgs2
   )
@@ -185,6 +195,7 @@ runCohortMethod <- function(connectionDetails = NULL,
       createPsArgs = dummyCreatePsArgs,
       matchOnPs = TRUE,
       matchOnPsArgs = matchOnPsArgs,
+      computeSharedCovariateBalanceArgs = computeSharedCovariateBalanceArgs,
       fitOutcomeModel = TRUE,
       fitOutcomeModelArgs = fitOutcomeModelArgs
     )
@@ -197,6 +208,7 @@ runCohortMethod <- function(connectionDetails = NULL,
       createPsArgs = dummyCreatePsArgs,
       stratifyByPs = TRUE,
       stratifyByPsArgs = stratifyByPsArgs,
+      computeSharedCovariateBalanceArgs = computeSharedCovariateBalanceArgs,
       fitOutcomeModel = TRUE,
       fitOutcomeModelArgs = fitOutcomeModelArgs2
     )
@@ -205,8 +217,9 @@ runCohortMethod <- function(connectionDetails = NULL,
     cmAnalysisList <- list(cmAnalysis1, cmAnalysis2, cmAnalysis3)
   }
   CohortMethod::saveCmAnalysisList(cmAnalysisList, file.path(cmFolder, "cmAnalysisList.json"))
-
+  
   # Run analyses ----------------------------------------------------------------------
+  multiThreadingSettings <- CohortMethod::createDefaultMultiThreadingSettings(maxCores = maxCores)
   cmResult <- CohortMethod::runCmAnalyses(
     connectionDetails = connectionDetails,
     cdmDatabaseSchema = cdmDatabaseSchema,
@@ -220,79 +233,6 @@ runCohortMethod <- function(connectionDetails = NULL,
     cmAnalysisList = cmAnalysisList,
     targetComparatorOutcomesList = tcosList,
     refitPsForEveryOutcome = FALSE,
-    refitPsForEveryStudyPopulation = FALSE,
-    getDbCohortMethodDataThreads = min(3, maxCores),
-    createStudyPopThreads = min(3, maxCores),
-    createPsThreads = min(3, maxCores),
-    psCvThreads = min(10, floor(maxCores / 3)),
-    trimMatchStratifyThreads = min(10, maxCores),
-    fitOutcomeModelThreads = min(max(1, floor(maxCores / 8)), 3),
-    outcomeCvThreads = min(10, maxCores)
+    multiThreadingSettings = multiThreadingSettings
   )
-  ParallelLogger::logInfo("Summarizing results")
-  cmSummary <- CohortMethod::summarizeAnalyses(cmResult, cmFolder)
-  saveRDS(cmSummary, file.path(cmFolder, "cmSummary.rds"))
-
-  # Compute covariate balance -------------------------------------------------------------
-  ParallelLogger::logInfo("Computing balance")
-  cmResult <- readRDS(file.path(cmFolder, "outcomeModelReference.rds"))
-  analysisIds <- cmResult %>%
-    filter(.data$sharedPsFile != "") %>%
-    distinct(.data$analysisId) %>%
-    pull()
-
-  getCmAnalysis <- function(analysisId) {
-    for (cmAnalysis in cmAnalysisList) {
-      if (cmAnalysis$analysisId == analysisId) {
-        return(cmAnalysis)
-      }
-    }
-    return(NULL)
-  }
-  for (analysisId in analysisIds) {
-    tcs <- cmResult %>%
-      filter(.data$analysisId == !!analysisId) %>%
-      distinct(.data$targetId, .data$comparatorId) %>%
-      collect()
-
-
-    for (i in 1:nrow(tcs)) {
-      tc <- tcs[i, ]
-      balanceFile <- sprintf("bal_t%s_c%s_a%s.rds", tc$targetId, tc$comparatorId, analysisId)
-      if (!file.exists(file.path(cmFolder, balanceFile))) {
-        omrRow <- cmResult[cmResult$targetId == tc$targetId &
-          cmResult$comparatorId == tc$comparatorId &
-          cmResult$analysisId == analysisId, ][1, ]
-        sharedPs <- readRDS(file.path(cmFolder, omrRow$sharedPsFile))
-        cmDataFile <- omrRow$cohortMethodDataFile
-        cmData <- CohortMethod::loadCohortMethodData(file.path(cmFolder, cmDataFile))
-        cmAnalysis <- getCmAnalysis(analysisId)
-        createStudyPopArgs <- cmAnalysis$createStudyPopArgs
-        createStudyPopArgs$cohortMethodData <- cmData
-        studyPop <- do.call(CohortMethod::createStudyPopulation, createStudyPopArgs)
-        studyPop <- studyPop %>%
-          inner_join(sharedPs %>% select(.data$rowId, .data$propensityScore),
-            by = "rowId"
-          )
-        if (cmAnalysis$matchOnPs) {
-          matchOnPsArgs <- cmAnalysis$matchOnPsArgs
-          matchOnPsArgs$population <- studyPop
-          strataPop <- do.call(CohortMethod::matchOnPs, matchOnPsArgs)
-        } else if (cmAnalysis$stratifyByPs) {
-          stratifyByPsArgs <- cmAnalysis$stratifyByPsArgs
-          stratifyByPsArgs$population <- studyPop
-          strataPop <- do.call(CohortMethod::stratifyByPs, stratifyByPsArgs)
-        }
-        balance <- CohortMethod::computeCovariateBalance(strataPop, cmData)
-        saveRDS(balance, file.path(cmFolder, balanceFile))
-        balancePlotFile <- sprintf("balPlot_t%s_c%s_a%s.png", tc$targetId, tc$comparatorId, analysisId)
-        CohortMethod::plotCovariateBalanceScatterPlot(
-          balance = balance,
-          showCovariateCountLabel = TRUE,
-          showMaxLabel = TRUE,
-          fileName = file.path(cmFolder, balancePlotFile)
-        )
-      }
-    }
-  }
 }

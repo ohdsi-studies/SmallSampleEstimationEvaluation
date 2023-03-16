@@ -71,7 +71,7 @@ execute <- function(connectionDetails,
   on.exit(ParallelLogger::unregisterLogger("DEFAULT_FILE_LOGGER", silent = TRUE))
   on.exit(ParallelLogger::unregisterLogger("DEFAULT_ERRORREPORT_LOGGER", silent = TRUE), add = TRUE)
   if (createCohorts) {
-    ParallelLogger::logInfo("Creating cohorts")
+    message("Creating cohorts")
     createCohorts(
       connectionDetails = connectionDetails,
       oracleTempSchema = oracleTempSchema,
@@ -126,7 +126,6 @@ execute <- function(connectionDetails,
     sampleSize = 20000,
     seed = 123
   )
-
   runCohortMethod(
     referenceSet = referenceSet,
     outputFolder = outputFolder,
@@ -134,7 +133,6 @@ execute <- function(connectionDetails,
     maxCores = maxCores,
     externalPsFolder = fullDataFolder
   )
-
   computePerformance(
     referenceSet = referenceSet,
     outputFolder = outputFolder,
@@ -156,7 +154,7 @@ execute <- function(connectionDetails,
   )
   oneKSampleSubFolders <- file.path(oneKSamplesFolder, sprintf("Sample_%d", 1:20))
   for (oneKSampleSubFolder in oneKSampleSubFolders) {
-    ParallelLogger::logInfo("Performing CohortMethod analyses in ", oneKSampleSubFolder)
+    message("Performing CohortMethod analyses in ", oneKSampleSubFolder)
     runCohortMethod(
       referenceSet = referenceSet,
       outputFolder = outputFolder,
@@ -200,7 +198,7 @@ execute <- function(connectionDetails,
   )
   halfKSampleSubFolders <- file.path(halfKSamplesFolder, sprintf("Sample_%d", 1:40))
   for (halfKSampleSubFolder in halfKSampleSubFolders) {
-    ParallelLogger::logInfo("Performing CohortMethod analyses in ", halfKSampleSubFolder)
+    message("Performing CohortMethod analyses in ", halfKSampleSubFolder)
     runCohortMethod(
       referenceSet = referenceSet,
       outputFolder = outputFolder,

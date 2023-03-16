@@ -37,7 +37,7 @@ combineEstimates <- function(parentFolder,
   }
 
   computeOverallEstimates <- function(omrSubset) {
-    ParallelLogger::logInfo("Computing overall estimates for analysis ID: ", omrSubset$analysisId[1])
+    message("Computing overall estimates for analysis ID: ", omrSubset$analysisId[1])
     cmAnalysis <- getCmAnalysis(omrSubset$analysisId[1])
     cluster <- ParallelLogger::makeCluster(min(maxCores, 10))
     subset <- ParallelLogger::clusterApply(cluster,
