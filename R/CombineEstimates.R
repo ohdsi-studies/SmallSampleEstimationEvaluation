@@ -24,7 +24,7 @@
 combineEstimates <- function(parentFolder,
                              cmFolders,
                              maxCores = 1) {
-  omr <- readRDS(file.path(cmFolders[1], "outcomeModelReference.rds"))
+  omr <- CohortMethod::getFileReference(cmFolders[1])
   cmAnalysisList <- CohortMethod::loadCmAnalysisList(file.path(cmFolders[1], "cmAnalysisList.json"))
   CohortMethod::saveCmAnalysisList(cmAnalysisList, file.path(parentFolder, "cmAnalysisList.json"))
   getCmAnalysis <- function(analysisId) {
@@ -35,17 +35,19 @@ combineEstimates <- function(parentFolder,
     }
     return(NULL)
   }
-
+  
+  # omrSubset = split(omr, omr$analysisId)[[1]]
   computeOverallEstimates <- function(omrSubset) {
     message("Computing overall estimates for analysis ID: ", omrSubset$analysisId[1])
     cmAnalysis <- getCmAnalysis(omrSubset$analysisId[1])
     cluster <- ParallelLogger::makeCluster(min(maxCores, 10))
+    ParallelLogger::clusterRequire(cluster, "dplyr")
     subset <- ParallelLogger::clusterApply(cluster,
-      1:nrow(omrSubset),
-      fitOverallOutcomeModel,
-      omrSubset = omrSubset,
-      cmAnalysis = cmAnalysis,
-      cmFolders = cmFolders
+                                           1:nrow(omrSubset),
+                                           fitOverallOutcomeModel,
+                                           omrSubset = omrSubset,
+                                           cmAnalysis = cmAnalysis,
+                                           cmFolders = cmFolders
     )
     ParallelLogger::stopCluster(cluster)
     subset <- bind_rows(subset)
@@ -53,11 +55,11 @@ combineEstimates <- function(parentFolder,
   }
   overallEstimates <- lapply(split(omr, omr$analysisId), computeOverallEstimates)
   overallEstimates <- bind_rows(overallEstimates)
-  saveRDS(overallEstimates, file.path(parentFolder, "cmSummary.rds"))
+  saveRDS(overallEstimates, file.path(parentFolder, "resultsSummary.rds"))
 }
 
 fitOverallOutcomeModel <- function(rowIdx, omrSubset, cmAnalysis, cmFolders) {
-
+  
   # Pooling:
   if (omrSubset$strataFile[rowIdx] != "") {
     strataPop <- lapply(cmFolders, function(x) readRDS(file.path(x, omrSubset$strataFile[rowIdx])))
@@ -75,14 +77,14 @@ fitOverallOutcomeModel <- function(rowIdx, omrSubset, cmAnalysis, cmFolders) {
       strataPop[[i]]$stratumId <- rep(i, nrow(strataPop[[i]]))
     }
   }
-  strataPop <- dplyr::bind_rows(strataPop)
+  strataPop <- bind_rows(strataPop)
   fitOutcomeModelArgs <- cmAnalysis$fitOutcomeModelArgs
   fitOutcomeModelArgs$population <- strataPop
   # Always stratify by 'database':
   fitOutcomeModelArgs$stratified <- TRUE
   om <- do.call(CohortMethod::fitOutcomeModel, fitOutcomeModelArgs)
   if (is.null(coef(om))) {
-    estimate <- dplyr::tibble(
+    estimate <- tibble(
       analysisId = omrSubset$analysisId[rowIdx],
       targetId = omrSubset$targetId[rowIdx],
       comparatorId = omrSubset$comparatorId[rowIdx],
@@ -94,7 +96,7 @@ fitOverallOutcomeModel <- function(rowIdx, omrSubset, cmAnalysis, cmFolders) {
       p = NA
     )
   } else {
-    estimate <- dplyr::tibble(
+    estimate <- tibble(
       analysisId = omrSubset$analysisId[rowIdx],
       targetId = omrSubset$targetId[rowIdx],
       comparatorId = omrSubset$comparatorId[rowIdx],
@@ -109,7 +111,7 @@ fitOverallOutcomeModel <- function(rowIdx, omrSubset, cmAnalysis, cmFolders) {
       )
     )
   }
-
+  
   # Random-effects meta-analysis ------------------------------------------
   outcomeModels <- lapply(cmFolders, function(x) readRDS(file.path(x, omrSubset$outcomeModelFile[rowIdx])))
   # i <- 6
@@ -117,9 +119,10 @@ fitOverallOutcomeModel <- function(rowIdx, omrSubset, cmAnalysis, cmFolders) {
   # EvidenceSynthesis::computeConfidenceInterval(outcomeModels[[i]]$logLikelihoodProfile)
   # plot(x = as.numeric(names(outcomeModels[[i]]$logLikelihoodProfile)), y = outcomeModels[[i]]$logLikelihoodProfile)
   profiles <- lapply(outcomeModels, function(x) x$logLikelihoodProfile)
-  profiles <- do.call("rbind", profiles)
-  if (is.null(profiles)) {
-    randomFxEstimate <- dplyr::tibble(
+  profiles[sapply(profiles, is.null)] <- NULL
+  # profiles <- do.call("rbind", profiles)
+  if (length(profiles) == 0) {
+    randomFxEstimate <- tibble(
       analysisId = omrSubset$analysisId[rowIdx] + 100,
       targetId = omrSubset$targetId[rowIdx],
       comparatorId = omrSubset$comparatorId[rowIdx],
@@ -132,7 +135,7 @@ fitOverallOutcomeModel <- function(rowIdx, omrSubset, cmAnalysis, cmFolders) {
     )
   } else {
     randomFxEstimate <- EvidenceSynthesis::computeBayesianMetaAnalysis(profiles)
-    randomFxEstimate <- dplyr::tibble(
+    randomFxEstimate <- tibble(
       analysisId = omrSubset$analysisId[rowIdx] + 100,
       targetId = omrSubset$targetId[rowIdx],
       comparatorId = omrSubset$comparatorId[rowIdx],
@@ -146,28 +149,28 @@ fitOverallOutcomeModel <- function(rowIdx, omrSubset, cmAnalysis, cmFolders) {
         randomFxEstimate$seLogRr
       )
     )
-
+    
     # fixedFxEstimate <- EvidenceSynthesis::computeFixedEffectMetaAnalysis(profiles)
   }
-  estimate <- dplyr::bind_rows(estimate, randomFxEstimate)
-
+  estimate <- bind_rows(estimate, randomFxEstimate)
+  
   # Traditional meta-analysis ---------------------------------------------------
   outcomeModels <- lapply(cmFolders, function(x) readRDS(file.path(x, omrSubset$outcomeModelFile[rowIdx])))
   getEstimate <- function(outcomeModel) {
     if (is.null(coef(outcomeModel)) || is.na(outcomeModel$outcomeModelTreatmentEstimate$seLogRr)) {
       return(NULL)
     } else {
-      return(dplyr::tibble(
+      return(tibble(
         logRr = outcomeModel$outcomeModelTreatmentEstimate$logRr,
         seLogRr = outcomeModel$outcomeModelTreatmentEstimate$seLogRr
       ))
     }
   }
-
+  
   ests <- lapply(outcomeModels, getEstimate)
-  ests <- dplyr::bind_rows(ests)
+  ests <- bind_rows(ests)
   if (nrow(ests) == 0) {
-    traditionalEstimate <- dplyr::tibble(
+    traditionalEstimate <- tibble(
       analysisId = omrSubset$analysisId[rowIdx] + 200,
       targetId = omrSubset$targetId[rowIdx],
       comparatorId = omrSubset$comparatorId[rowIdx],
@@ -187,7 +190,7 @@ fitOverallOutcomeModel <- function(rowIdx, omrSubset, cmAnalysis, cmFolders) {
       sm = "RR"
     )
     rfx <- summary(meta)$random
-    traditionalEstimate <- dplyr::tibble(
+    traditionalEstimate <- tibble(
       analysisId = omrSubset$analysisId[rowIdx] + 200,
       targetId = omrSubset$targetId[rowIdx],
       comparatorId = omrSubset$comparatorId[rowIdx],
@@ -199,6 +202,6 @@ fitOverallOutcomeModel <- function(rowIdx, omrSubset, cmAnalysis, cmFolders) {
       p = rfx$p
     )
   }
-  estimate <- dplyr::bind_rows(estimate, traditionalEstimate)
+  estimate <- bind_rows(estimate, traditionalEstimate)
   return(estimate)
 }

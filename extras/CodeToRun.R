@@ -2,6 +2,8 @@ library(SmallSampleEstimationEvaluation)
 
 referenceSet <- "ohdsiDevelopment"
 
+options(andromedaTempFolder = "d:/andromedaTemp")
+
 maxCores <- parallel::detectCores()
 
 # RedShift settings
@@ -19,6 +21,6 @@ nestingDatabaseSchema <- exposureDatabaseSchema
 nestingTable <- exposureTable
 cdmVersion <- "5"
 outputFolder <- "d:/SmallSampleEstimationEvaluation"
-
+databaseId <- "MDCD"
 
 

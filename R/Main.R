@@ -19,8 +19,6 @@
 #' @param connectionDetails       An R object of type \code{ConnectionDetails} created using the
 #'                                function \code{createConnectionDetails} in the
 #'                                \code{DatabaseConnector} package.
-#' @param oracleTempSchema        Should be used in Oracle to specify a schema where the user has write
-#'                                privileges for storing temporary tables.
 #' @param cdmDatabaseSchema       A database schema containing health care data in the OMOP Commond
 #'                                Data Model. Note that for SQL Server, botth the database and schema
 #'                                should be specified, e.g. 'cdm_schema.dbo'.
@@ -50,7 +48,6 @@
 #'
 #' @export
 execute <- function(connectionDetails,
-                    oracleTempSchema = NULL,
                     cdmDatabaseSchema,
                     exposureDatabaseSchema = cdmDatabaseSchema,
                     exposureTable = "exposures",
@@ -61,11 +58,12 @@ execute <- function(connectionDetails,
                     maxCores = 1,
                     referenceSet = "ohdsiMethodsBenchmark",
                     outputFolder,
+                    databaseId,
                     createCohorts = TRUE) {
   if (!file.exists(outputFolder)) {
     dir.create(outputFolder, recursive = TRUE)
   }
-
+  
   ParallelLogger::addDefaultFileLogger(file.path(outputFolder, "log.txt"))
   ParallelLogger::addDefaultErrorReportLogger(file.path(outputFolder, "errorReportR.txt"))
   on.exit(ParallelLogger::unregisterLogger("DEFAULT_FILE_LOGGER", silent = TRUE))
@@ -74,7 +72,6 @@ execute <- function(connectionDetails,
     message("Creating cohorts")
     createCohorts(
       connectionDetails = connectionDetails,
-      oracleTempSchema = oracleTempSchema,
       cdmDatabaseSchema = cdmDatabaseSchema,
       exposureDatabaseSchema = exposureDatabaseSchema,
       exposureTable = exposureTable,
@@ -86,16 +83,15 @@ execute <- function(connectionDetails,
       outputFolder = outputFolder
     )
   }
-
+  
   # Run on full data:
   fullDataFolder <- file.path(outputFolder, "fullData")
   if (!file.exists(fullDataFolder)) {
     dir.create(fullDataFolder)
   }
-
+  
   runCohortMethod(
     connectionDetails = connectionDetails,
-    oracleTempSchema = oracleTempSchema,
     cdmDatabaseSchema = cdmDatabaseSchema,
     exposureDatabaseSchema = exposureDatabaseSchema,
     exposureTable = exposureTable,
@@ -106,15 +102,19 @@ execute <- function(connectionDetails,
     maxCores = maxCores,
     cmFolder = fullDataFolder
   )
-
+  
   computePerformance(
     referenceSet = referenceSet,
     outputFolder = outputFolder,
     cmFolder = fullDataFolder,
     maxCores = maxCores,
+    databaseId = databaseId,
     outputFileName = file.path(outputFolder, "Metrics_FullData.csv")
   )
-
+  
+  sampleSizes <- c(2000, 1000, 500, 250, 100)
+  largeSampleSize <- 20000
+  
   # Create large sample:
   largeSampleFolder <- file.path(outputFolder, "largeSample")
   if (!file.exists(largeSampleFolder)) {
@@ -123,7 +123,7 @@ execute <- function(connectionDetails,
   samplePopulation(
     sourceCmFolder = fullDataFolder,
     sampleFolder = largeSampleFolder,
-    sampleSize = 20000,
+    sampleSize = largeSampleSize,
     seed = 123
   )
   runCohortMethod(
@@ -140,92 +140,51 @@ execute <- function(connectionDetails,
     maxCores = maxCores,
     outputFileName = file.path(outputFolder, "Metrics_LargeSample.csv")
   )
-
-  # Split large sample in 1k samples:
-  oneKSamplesFolder <- file.path(outputFolder, "oneKSamples")
-  if (!file.exists(oneKSamplesFolder)) {
-    dir.create(oneKSamplesFolder)
-  }
-  samplePopulation(
-    sourceCmFolder = largeSampleFolder,
-    sampleFolder = oneKSamplesFolder,
-    numberOfSamples = 20,
-    seed = 123
-  )
-  oneKSampleSubFolders <- file.path(oneKSamplesFolder, sprintf("Sample_%d", 1:20))
-  for (oneKSampleSubFolder in oneKSampleSubFolders) {
-    message("Performing CohortMethod analyses in ", oneKSampleSubFolder)
-    runCohortMethod(
+  
+  for (sampleSize in sampleSizes) {
+    numberOfSamples <- largeSampleSize / sampleSize
+    # Split large sample in smaller samples:
+    smallSamplesFolder <- file.path(outputFolder, sprintf("smallSample%d", sampleSize))
+    if (!file.exists(smallSamplesFolder)) {
+      dir.create(smallSamplesFolder)
+    }
+    samplePopulation(
+      sourceCmFolder = largeSampleFolder,
+      sampleFolder = smallSamplesFolder,
+      numberOfSamples = numberOfSamples,
+      seed = 123
+    )
+    smallSampleSubFolders <- file.path(smallSamplesFolder, sprintf("Sample_%d", seq_len(numberOfSamples)))
+    for (smallSampleSubFolder in smallSampleSubFolders) {
+      message("Performing CohortMethod analyses in ", smallSampleSubFolder)
+      runCohortMethod(
+        referenceSet = referenceSet,
+        outputFolder = outputFolder,
+        cmFolder = smallSampleSubFolder,
+        maxCores = maxCores,
+        externalPsFolder = fullDataFolder
+      )
+    }
+    computePerformance(
       referenceSet = referenceSet,
       outputFolder = outputFolder,
-      cmFolder = oneKSampleSubFolder,
+      cmFolder = smallSampleSubFolders[1],
       maxCores = maxCores,
-      externalPsFolder = fullDataFolder
+      outputFileName = file.path(outputFolder, sprintf("Metrics_sample_%d_1.csv", sampleSize))
     )
-  }
-  computePerformance(
-    referenceSet = referenceSet,
-    outputFolder = outputFolder,
-    cmFolder = oneKSampleSubFolders[1],
-    maxCores = maxCores,
-    outputFileName = file.path(outputFolder, "Metrics_OneKSample_1.csv")
-  )
-
-  combineEstimates(
-    parentFolder = oneKSamplesFolder,
-    cmFolders = oneKSampleSubFolders,
-    maxCores = maxCores
-  )
-
-  computePerformance(
-    referenceSet = referenceSet,
-    outputFolder = outputFolder,
-    cmFolder = oneKSamplesFolder,
-    maxCores = maxCores,
-    outputFileName = file.path(outputFolder, "Metrics_OneKSample.csv")
-  )
-
-  # Split large sample in 0.5k samples:
-  halfKSamplesFolder <- file.path(outputFolder, "halfKSamples")
-  if (!file.exists(halfKSamplesFolder)) {
-    dir.create(halfKSamplesFolder)
-  }
-  samplePopulation(
-    sourceCmFolder = largeSampleFolder,
-    sampleFolder = halfKSamplesFolder,
-    numberOfSamples = 40,
-    seed = 123
-  )
-  halfKSampleSubFolders <- file.path(halfKSamplesFolder, sprintf("Sample_%d", 1:40))
-  for (halfKSampleSubFolder in halfKSampleSubFolders) {
-    message("Performing CohortMethod analyses in ", halfKSampleSubFolder)
-    runCohortMethod(
+    
+    combineEstimates(
+      parentFolder = smallSamplesFolder,
+      cmFolders = smallSampleSubFolders,
+      maxCores = maxCores
+    )
+    
+    computePerformance(
       referenceSet = referenceSet,
       outputFolder = outputFolder,
-      cmFolder = halfKSampleSubFolder,
+      cmFolder = smallSamplesFolder,
       maxCores = maxCores,
-      externalPsFolder = fullDataFolder
+      outputFileName = file.path(outputFolder, sprintf("Metrics_sample_%d.csv", sampleSize))
     )
   }
-  computePerformance(
-    referenceSet = referenceSet,
-    outputFolder = outputFolder,
-    cmFolder = halfKSampleSubFolders[1],
-    maxCores = maxCores,
-    outputFileName = file.path(outputFolder, "Metrics_halfKSample_1.csv")
-  )
-
-  combineEstimates(
-    parentFolder = halfKSamplesFolder,
-    cmFolders = halfKSampleSubFolders,
-    maxCores = maxCores
-  )
-
-  computePerformance(
-    referenceSet = referenceSet,
-    outputFolder = outputFolder,
-    cmFolder = halfKSamplesFolder,
-    maxCores = maxCores,
-    outputFileName = file.path(outputFolder, "Metrics_halfKSample.csv")
-  )
 }

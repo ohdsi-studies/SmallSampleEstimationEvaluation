@@ -31,11 +31,7 @@ computePerformance <- function(referenceSet = "ohdsiMethodsBenchmark",
                                maxCores = 1,
                                outputFileName) {
   controlSummary <- read.csv(file.path(outputFolder, "allControls.csv"))
-
-  estimates <- readRDS(file.path(cmFolder, "cmSummary.rds"))
-  colnames(estimates)[colnames(estimates) == "ci95lb"] <- "ci95Lb"
-  colnames(estimates)[colnames(estimates) == "ci95ub"] <- "ci95Ub"
-
+  estimates <- CohortMethod::getResultsSummary(cmFolder)
   cmAnalysisList <- CohortMethod::loadCmAnalysisList(file.path(cmFolder, "cmAnalysisList.json"))
   analysisId <- unlist(ParallelLogger::selectFromList(cmAnalysisList, "analysisId"))
   description <- unlist(ParallelLogger::selectFromList(cmAnalysisList, "description"))
@@ -71,7 +67,7 @@ computePerformance <- function(referenceSet = "ohdsiMethodsBenchmark",
     estimates = estimates,
     controlSummary = controlSummary,
     analysisRef = analysisRef,
-    databaseName = "MDCD",
+    databaseName = databaseId,
     exportFolder = cmFolder,
     referenceSet = referenceSet
   )
@@ -91,50 +87,37 @@ computePerformance <- function(referenceSet = "ohdsiMethodsBenchmark",
   )
   metricsCalibrated$calibrated <- TRUE
   metrics <- bind_rows(metricsUncalibrated, metricsCalibrated)
-  readr::write_csv(metrics, outputFileName)
-
+  
   estimates <- controlSummary %>%
-    select(.data$targetId, .data$outcomeId, .data$targetEffectSize, .data$trueEffectSize, .data$trueEffectSizeFirstExposure) %>%
+    select("targetId", "outcomeId", "targetEffectSize", "trueEffectSize", "trueEffectSizeFirstExposure") %>%
     left_join(estimates,
-      by = c("targetId", "outcomeId")
+      by = c("targetId", "outcomeId"),
+      multiple = "all",
     ) %>%
     inner_join(analysisRef %>%
-      select(.data$analysisId, .data$description),
+      select("analysisId", "description"),
     by = "analysisId"
     )
 
 
-  invisible(lapply(split(estimates, estimates$analysisId), generatePlots, folder = cmFolder))
+  ease <- lapply(split(estimates, estimates$analysisId), generatePlotsAndComputeEase, folder = cmFolder)
+  ease <- bind_rows(ease) %>%
+    select(-"targetId", -"comparatorId") %>%
+    mutate(calibrated = FALSE)
+  # TODO: handle case when we have multiple targets and comparators
+  metrics <- metrics %>%
+    left_join(ease, by = join_by("analysisId", "calibrated"))
+  
+  readr::write_csv(metrics, outputFileName)
 }
 
-generatePlots <- function(subset, folder = NULL) {
+# subset = split(estimates, estimates$analysisId)[[1]]
+generatePlotsAndComputeEase <- function(subset, folder = NULL) {
   ncs <- subset[subset$targetEffectSize == 1, ]
   null <- EmpiricalCalibration::fitMcmcNull(
     logRr = ncs$logRr,
     seLogRr = ncs$seLogRr
   )
-  # ease <- EmpiricalCalibration::computeExpectedAbsoluteSystematicError(null)
-  # metrics$ease <- ease$ease
-  # metrics$easeLb <- ease$ciLb
-  # metrics$easeUb <- ease$ciUb
-
-  # nc <- ncs[ncs$outcomeId == 77965, ]
-  # ncs <- ncs[ncs$outcomeId != 77965, ]
-  # nc <- ncs[ncs$outcomeId == 373478, ]
-  # ncs <- ncs[ncs$outcomeId != 77965, ]
-  #
-  # ncs1 <- estimates[estimates$analysisId == 3 & estimates$targetEffectSize == 1, ]
-  # ncs2 <- estimates[estimates$analysisId == 5 & estimates$targetEffectSize == 1, ]
-  #
-  # combi <- inner_join(tibble(outcomeId = ncs1$outcomeId,
-  #                            logRr1 = ncs1$logRr,
-  #                            seLogRr1 = ncs1$seLogRr),
-  #                     tibble(outcomeId = ncs2$outcomeId,
-  #                            logRr2 = ncs2$logRr,
-  #                            seLogRr2 = ncs2$seLogRr))
-  # delta <- combi$logRr1 - combi$logRr2
-  #
-  # exp(nc$logRr)
   if (!is.null(folder)) {
     ncPlotFileName <- file.path(folder, sprintf("ncs_a%d.png", subset$analysisId[1]))
     EmpiricalCalibration::plotCalibrationEffect(
@@ -147,5 +130,16 @@ generatePlots <- function(subset, folder = NULL) {
       fileName = ncPlotFileName
     )
   }
-  return(NULL)
+  easeResult <- EmpiricalCalibration::computeExpectedAbsoluteSystematicError(null)
+  easeResult <- subset %>%
+    head(1) %>%
+    select("targetId", "comparatorId", "analysisId") %>%
+    mutate(
+      ease = easeResult$ease,
+      easeCi95Lb = easeResult$ciLb,
+      easeCi95Ub = easeResult$ciUb,
+      nullMean = null[1],
+      nullSd = 1/sqrt(null[2])
+    )
+  return(easeResult)
 }

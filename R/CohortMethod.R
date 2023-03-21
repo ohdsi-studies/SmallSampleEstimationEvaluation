@@ -28,8 +28,6 @@
 #' @param connectionDetails       An R object of type \code{ConnectionDetails} created using the
 #'                                function \code{createConnectionDetails} in the
 #'                                \code{DatabaseConnector} package.
-#' @param oracleTempSchema        Should be used in Oracle to specify a schema where the user has write
-#'                                privileges for storing temporary tables.
 #' @param cdmDatabaseSchema       A database schema containing health care data in the OMOP Commond
 #'                                Data Model. Note that for SQL Server, botth the database and schema
 #'                                should be specified, e.g. 'cdm_schema.dbo'.
@@ -57,7 +55,6 @@
 #'
 #' @export
 runCohortMethod <- function(connectionDetails = NULL,
-                            oracleTempSchema = NULL,
                             cdmDatabaseSchema = "",
                             exposureDatabaseSchema = "",
                             exposureTable = "",
@@ -72,7 +69,7 @@ runCohortMethod <- function(connectionDetails = NULL,
   allControls <- read.csv(file.path(outputFolder, "allControls.csv"))
   tcs <- unique(allControls[, c("targetId", "comparatorId", "targetConceptIds", "comparatorConceptIds")])
   tcosList <- list()
-  for (i in 1:nrow(tcs)) {
+  for (i in seq_len(nrow(tcs))) {
     outcomeIds <- allControls$outcomeId[allControls$targetId == tcs$targetId[i] &
                                           allControls$comparatorId == tcs$comparatorId[i] &
                                           !is.na(allControls$mdrrComparator)]
@@ -91,7 +88,7 @@ runCohortMethod <- function(connectionDetails = NULL,
       tcos <- CohortMethod::createTargetComparatorOutcomes(
         targetId = tcs$targetId[i],
         comparatorId = tcs$comparatorId[i],
-        outcomeIds = outcomes,
+        outcomes = outcomes,
         excludedCovariateConceptIds = excludedCovariateConceptIds
       )
       tcosList[[length(tcosList) + 1]] <- tcos
@@ -135,12 +132,9 @@ runCohortMethod <- function(connectionDetails = NULL,
     description = "1-on-1 matching",
     getDbCohortMethodDataArgs = getDbCmDataArgs,
     createStudyPopArgs = createStudyPopArgs,
-    createPs = TRUE,
     createPsArgs = createPsArgs,
-    matchOnPs = TRUE,
     matchOnPsArgs = matchOnPsArgs,
     computeSharedCovariateBalanceArgs = computeSharedCovariateBalanceArgs,
-    fitOutcomeModel = TRUE,
     fitOutcomeModelArgs = fitOutcomeModelArgs
   )
   cmAnalysis2 <- CohortMethod::createCmAnalysis(
@@ -148,7 +142,6 @@ runCohortMethod <- function(connectionDetails = NULL,
     description = "Crude",
     getDbCohortMethodDataArgs = getDbCmDataArgs,
     createStudyPopArgs = createStudyPopArgs,
-    fitOutcomeModel = TRUE,
     fitOutcomeModelArgs = fitOutcomeModelArgs
   )
   stratifyByPsArgs <- CohortMethod::createStratifyByPsArgs(numberOfStrata = 10)
@@ -158,16 +151,13 @@ runCohortMethod <- function(connectionDetails = NULL,
     description = "Stratification",
     getDbCohortMethodDataArgs = getDbCmDataArgs,
     createStudyPopArgs = createStudyPopArgs,
-    createPs = TRUE,
     createPsArgs = createPsArgs,
-    stratifyByPs = TRUE,
     stratifyByPsArgs = stratifyByPsArgs,
     computeSharedCovariateBalanceArgs = computeSharedCovariateBalanceArgs,
-    fitOutcomeModel = TRUE,
     fitOutcomeModelArgs = fitOutcomeModelArgs2
   )
   if (!is.null(externalPsFolder)) {
-    externalPsFileNames <- list.files(externalPsFolder, "Ps_l1_p1_t[0-9]+_c[0-9]+.rds")
+    externalPsFileNames <- list.files(externalPsFolder, "Ps_l1_s1_p1_t[0-9]+_c[0-9]+.rds")
     for (externalPsFileName in externalPsFileNames) {
       file.copy(
         file.path(externalPsFolder, externalPsFileName),
@@ -191,12 +181,9 @@ runCohortMethod <- function(connectionDetails = NULL,
       description = "1-on-1 matching on external PS",
       getDbCohortMethodDataArgs = getDbCmDataArgs,
       createStudyPopArgs = createStudyPopArgs,
-      createPs = TRUE,
       createPsArgs = dummyCreatePsArgs,
-      matchOnPs = TRUE,
       matchOnPsArgs = matchOnPsArgs,
       computeSharedCovariateBalanceArgs = computeSharedCovariateBalanceArgs,
-      fitOutcomeModel = TRUE,
       fitOutcomeModelArgs = fitOutcomeModelArgs
     )
     cmAnalysis5 <- CohortMethod::createCmAnalysis(
@@ -204,12 +191,9 @@ runCohortMethod <- function(connectionDetails = NULL,
       description = "Stratification by external PS",
       getDbCohortMethodDataArgs = getDbCmDataArgs,
       createStudyPopArgs = createStudyPopArgs,
-      createPs = TRUE,
       createPsArgs = dummyCreatePsArgs,
-      stratifyByPs = TRUE,
       stratifyByPsArgs = stratifyByPsArgs,
       computeSharedCovariateBalanceArgs = computeSharedCovariateBalanceArgs,
-      fitOutcomeModel = TRUE,
       fitOutcomeModelArgs = fitOutcomeModelArgs2
     )
     cmAnalysisList <- list(cmAnalysis1, cmAnalysis2, cmAnalysis3, cmAnalysis4, cmAnalysis5)
@@ -220,10 +204,12 @@ runCohortMethod <- function(connectionDetails = NULL,
   
   # Run analyses ----------------------------------------------------------------------
   multiThreadingSettings <- CohortMethod::createDefaultMultiThreadingSettings(maxCores = maxCores)
+  if (is.null(connectionDetails)) {
+    connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "postgresql")
+  }
   cmResult <- CohortMethod::runCmAnalyses(
     connectionDetails = connectionDetails,
     cdmDatabaseSchema = cdmDatabaseSchema,
-    oracleTempSchema = oracleTempSchema,
     exposureDatabaseSchema = exposureDatabaseSchema,
     exposureTable = exposureTable,
     outcomeDatabaseSchema = outcomeDatabaseSchema,
