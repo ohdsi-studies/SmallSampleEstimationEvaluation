@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# library(dplyr)
 
 #' Compute performance metrics of a run
 #'
@@ -142,4 +143,56 @@ generatePlotsAndComputeEase <- function(subset, folder = NULL) {
       nullSd = 1/sqrt(null[2])
     )
   return(easeResult)
+}
+
+computeSingleSampleMetrics <- function(sampleFolder, ref) {
+  if (ref$sharedBalanceFile[1] == "") {
+    maxSdm <- NA
+  } else {
+    balance <- readRDS(file.path(sampleFolder, ref$sharedBalanceFile[1]))
+    maxSdm <- max(abs(balance$afterMatchingStdDiff), na.rm = TRUE)
+  }
+  if (ref$sharedPsFile[1] == "") {
+    covCount <- NA
+    nonZeroCoefCount <- NA
+    auc <- NA
+  } else {
+    ps <- readRDS(file.path(sampleFolder, ref$sharedPsFile[1]))
+    metaData <- attr(ps, "metaData")
+    covCount <- length(metaData$psModelCoef)
+    nonZeroCoefCount <- sum(metaData$psModelCoef != 0)
+    auc <- CohortMethod::computePsAuc(ps)
+  }
+  tibble(
+    maxSdm = maxSdm,
+    covCount = covCount,
+    nonZeroCoefCount = nonZeroCoefCount,
+    auc = auc
+  ) %>% return()
+}
+
+computePsMetricsForAnalysisId <- function(analysisId, folder) {
+  sampleFolders <- list.dirs(folder, full.names = TRUE, recursive = FALSE)
+  ref <- CohortMethod::getFileReference(sampleFolders[1]) %>%
+    filter(analysisId == !!analysisId) %>%
+    head(1)
+  stats <- lapply(sampleFolders, computeSingleSampleMetrics, ref = ref)
+  stats <- bind_rows(stats)
+  row <- c()
+  for (column in colnames(stats)) {
+    temp <- quantile(stats[[column]], c(0, 0.25, 0.5, 0.75, 1))  
+    names(temp) <- paste0(column, c("Min", "P25", "Median", "P75", "Max"))
+    row <- c(row, temp)
+  }
+  row <- as_tibble(t(row)) %>% 
+    mutate(analysisId = !!analysisId)
+  return(row)
+}
+
+computePsMetrics <- function(folder, outputFileName) {
+  sampleFolders <- list.dirs(folder, full.names = TRUE, recursive = FALSE)
+  analysisIds <- c(1, 3)
+  results <- lapply(analysisIds, computePsMetricsForAnalysisId, folder = folder)
+  results <- bind_rows(results)
+  readr::write_csv(results, outputFileName)
 }

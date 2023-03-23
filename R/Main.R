@@ -140,7 +140,7 @@ execute <- function(connectionDetails,
     maxCores = maxCores,
     outputFileName = file.path(outputFolder, "Metrics_LargeSample.csv")
   )
-  
+
   for (sampleSize in sampleSizes) {
     numberOfSamples <- largeSampleSize / sampleSize
     # Split large sample in smaller samples:
@@ -172,19 +172,23 @@ execute <- function(connectionDetails,
       maxCores = maxCores,
       outputFileName = file.path(outputFolder, sprintf("Metrics_sample_%d_1.csv", sampleSize))
     )
-    
+
     combineEstimates(
       parentFolder = smallSamplesFolder,
       cmFolders = smallSampleSubFolders,
       maxCores = maxCores
     )
-    
+
     computePerformance(
       referenceSet = referenceSet,
       outputFolder = outputFolder,
       cmFolder = smallSamplesFolder,
       maxCores = maxCores,
       outputFileName = file.path(outputFolder, sprintf("Metrics_sample_%d.csv", sampleSize))
+    )
+    computePsMetrics(
+      folder = smallSamplesFolder,
+      outputFileName = file.path(outputFolder, sprintf("PsMetrics_sample_%d.csv", sampleSize))
     )
   }
 }
