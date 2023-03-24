@@ -83,13 +83,11 @@ execute <- function(connectionDetails,
       outputFolder = outputFolder
     )
   }
-  
-  # Run on full data:
+  # Run on full data -----------------------------------------------
   fullDataFolder <- file.path(outputFolder, "fullData")
   if (!file.exists(fullDataFolder)) {
     dir.create(fullDataFolder)
   }
-  
   runCohortMethod(
     connectionDetails = connectionDetails,
     cdmDatabaseSchema = cdmDatabaseSchema,
@@ -102,7 +100,6 @@ execute <- function(connectionDetails,
     maxCores = maxCores,
     cmFolder = fullDataFolder
   )
-  
   computePerformance(
     referenceSet = referenceSet,
     outputFolder = outputFolder,
@@ -112,10 +109,8 @@ execute <- function(connectionDetails,
     outputFileName = file.path(outputFolder, "Metrics_FullData.csv")
   )
   
-  sampleSizes <- c(2000, 1000, 500, 250, 100)
+  # Create large sample ------------------------------------------------------
   largeSampleSize <- 20000
-  
-  # Create large sample:
   largeSampleFolder <- file.path(outputFolder, "largeSample")
   if (!file.exists(largeSampleFolder)) {
     dir.create(largeSampleFolder)
@@ -141,9 +136,10 @@ execute <- function(connectionDetails,
     outputFileName = file.path(outputFolder, "Metrics_LargeSample.csv")
   )
 
+  # Take smaller sample sizes ------------------------------------------------------
+  sampleSizes <- c(4000, 2000, 1000, 500, 250, 125)
   for (sampleSize in sampleSizes) {
     numberOfSamples <- largeSampleSize / sampleSize
-    # Split large sample in smaller samples:
     smallSamplesFolder <- file.path(outputFolder, sprintf("smallSample%d", sampleSize))
     if (!file.exists(smallSamplesFolder)) {
       dir.create(smallSamplesFolder)
@@ -172,13 +168,11 @@ execute <- function(connectionDetails,
       maxCores = maxCores,
       outputFileName = file.path(outputFolder, sprintf("Metrics_sample_%d_1.csv", sampleSize))
     )
-
     combineEstimates(
       parentFolder = smallSamplesFolder,
       cmFolders = smallSampleSubFolders,
       maxCores = maxCores
     )
-
     computePerformance(
       referenceSet = referenceSet,
       outputFolder = outputFolder,

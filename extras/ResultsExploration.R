@@ -13,3 +13,5 @@ max(abs(balance$afterMatchingStdDiff), na.rm = TRUE)
 
 balance <- readRDS(file.path(folder, ref$sharedBalanceFile[ref$analysisId == 3][1]))
 max(abs(balance$afterMatchingStdDiff), na.rm = TRUE)
+
+

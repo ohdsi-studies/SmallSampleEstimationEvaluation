@@ -14,16 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Create cohorts used for the evaluation.
-#'
-#' @details
-#' This function will create the outcomes of interest and nesting cohorts referenced in the various
-#' reference sets. The outcomes of interest are derives using information like diagnoses, procedures,
-#' and drug prescriptions. The outcomes are stored in a table on the database server.
-#'
-#' For the 'ohdsiMethodsBenchmark' reference set, the exposures are taken from the drug_era table, and
-#' are therefore not generated as separate cohorts, and an exposure cohort table therefore needn't be supplied.
-#' For the 'ohdsiDevelopment' reference set, exposure cohorts will be generated.
+#' Run CohortMethod
 #'
 #' @param connectionDetails       An R object of type \code{ConnectionDetails} created using the
 #'                                function \code{createConnectionDetails} in the
@@ -121,7 +112,8 @@ runCohortMethod <- function(connectionDetails = NULL,
       startingVariance = 0.01,
       noiseLevel = "quiet",
       tolerance = 2e-07,
-      cvRepetitions = 1
+      cvRepetitions = 10,
+      minCVData = 10
     )
   )
   matchOnPsArgs <- CohortMethod::createMatchOnPsArgs(maxRatio = 1)

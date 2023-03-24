@@ -72,7 +72,6 @@ computePerformance <- function(referenceSet = "ohdsiMethodsBenchmark",
     exportFolder = cmFolder,
     referenceSet = referenceSet
   )
-
   metricsUncalibrated <- MethodEvaluation::computeOhdsiBenchmarkMetrics(
     exportFolder = cmFolder,
     mdrr = "All",
@@ -99,8 +98,6 @@ computePerformance <- function(referenceSet = "ohdsiMethodsBenchmark",
       select("analysisId", "description"),
     by = "analysisId"
     )
-
-
   ease <- lapply(split(estimates, estimates$analysisId), generatePlotsAndComputeEase, folder = cmFolder)
   ease <- bind_rows(ease) %>%
     select(-"targetId", -"comparatorId") %>%
