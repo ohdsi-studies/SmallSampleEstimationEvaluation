@@ -15,3 +15,9 @@ balance <- readRDS(file.path(folder, ref$sharedBalanceFile[ref$analysisId == 3][
 max(abs(balance$afterMatchingStdDiff), na.rm = TRUE)
 
 
+
+folder <- file.path(outputFolder, "fullData")
+results <- CohortMethod::getResultsSummary(folder)
+ref <- CohortMethod::getFileReference(folder)
+model <- readRDS(file.path(folder, ref$outcomeModelFile[1]))
+CohortMethod::getAttritionTable(model)

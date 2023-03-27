@@ -187,7 +187,8 @@ fitOverallOutcomeModel <- function(rowIdx, omrSubset, cmAnalysis, cmFolders) {
       seTE = ests$seLogRr,
       studlab = rep("", nrow(ests)),
       byvar = NULL,
-      sm = "RR"
+      sm = "RR",
+      control = list(maxiter=1000)
     )
     rfx <- summary(meta)$random
     traditionalEstimate <- tibble(

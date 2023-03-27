@@ -133,6 +133,7 @@ execute <- function(connectionDetails,
     outputFolder = outputFolder,
     cmFolder = largeSampleFolder,
     maxCores = maxCores,
+    databaseId = databaseId,
     outputFileName = file.path(outputFolder, "Metrics_LargeSample.csv")
   )
 
@@ -166,6 +167,7 @@ execute <- function(connectionDetails,
       outputFolder = outputFolder,
       cmFolder = smallSampleSubFolders[1],
       maxCores = maxCores,
+      databaseId = databaseId,
       outputFileName = file.path(outputFolder, sprintf("Metrics_sample_%d_1.csv", sampleSize))
     )
     combineEstimates(
@@ -178,6 +180,7 @@ execute <- function(connectionDetails,
       outputFolder = outputFolder,
       cmFolder = smallSamplesFolder,
       maxCores = maxCores,
+      databaseId = databaseId,
       outputFileName = file.path(outputFolder, sprintf("Metrics_sample_%d.csv", sampleSize))
     )
     computePsMetrics(

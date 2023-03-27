@@ -23,4 +23,16 @@ cdmVersion <- "5"
 outputFolder <- "d:/SmallSampleEstimationEvaluation"
 databaseId <- "MDCD"
 
-
+execute(connectionDetails,
+        cdmDatabaseSchema = cdmDatabaseSchema,
+        exposureDatabaseSchema = exposureDatabaseSchema,
+        exposureTable = exposureTable,
+        outcomeDatabaseSchema = outcomeDatabaseSchema,
+        outcomeTable = outcomeTable,
+        nestingDatabaseSchema = nestingDatabaseSchema,
+        nestingTable = nestingTable,
+        maxCores = maxCores,
+        referenceSet = referenceSet,
+        outputFolder = outputFolder,
+        databaseId = databaseId,
+        createCohorts = FALSE) 

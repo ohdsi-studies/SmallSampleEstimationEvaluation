@@ -7,7 +7,7 @@ plotsAndTablesFolder <- file.path(outputFolder, "plotsAndTables")
 
 # dir.create(plotsAndTablesFolder)
 
-sampleSizes <- c(4000, 2000, 1000, 500, 250, 100)
+sampleSizes <- c(4000, 2000, 1000, 500, 250, 125)
 
 metrics <- tibble()
 psMetrics <- tibble()
@@ -38,6 +38,20 @@ x <- tibble(
   sampleSize = c(20000, sampleSizes),
   x = seq_len(length(sampleSizes) + 1)
 )
+largeSampleFolder <- file.path(outputFolder, "largeSample")
+ref <- CohortMethod::getFileReference(largeSampleFolder) %>%
+  distinct(analysisId, sharedBalanceFile) %>%
+  filter(sharedBalanceFile != "")
+getMaxSdm <- function(row) {
+  balance <- readRDS(file.path(largeSampleFolder, row$sharedBalanceFile))
+  maxSdm <- max(abs(balance$afterMatchingStdDiff), na.rm = TRUE)
+  tibble(analysisId = row$analysisId,
+         maxSdm = maxSdm) %>%
+  return()
+}
+balLargeSamle <- lapply(split(ref, seq_len(nrow(ref))), getMaxSdm) %>%
+  bind_rows() %>%
+  mutate(sampleSize = 20000)
 
 # Plot EASE using local or global propensity model, data pooling -----------------------------------------------------
 vizData <- metrics %>%
@@ -62,7 +76,7 @@ vizData <- metrics %>%
   mutate(psMethod = ifelse(analysisId %in% c(1, 4), "PS 1-on-1 matching", "PS stratification")) %>%
   mutate(psModel = ifelse(analysisId %in% c(1, 3), "Local", "Global")) %>%
   inner_join(x, by = join_by(sampleSize)) %>%
-  mutate(x = ifelse(psModel == "Local", x + 0.1, x - 0.1)) %>%
+  # mutate(x = ifelse(psModel == "Local", x + 0.1, x - 0.1)) %>%
   select(x, meanP, psModel, psMethod, calibrated)
 ggplot(vizData, aes(x = x, y = meanP, group = psModel, color = psModel)) +
   geom_point() +
@@ -73,10 +87,17 @@ ggplot(vizData, aes(x = x, y = meanP, group = psModel, color = psModel)) +
 ggsave(file.path(plotsAndTablesFolder, "Precision_pooled.png"), width = 6, height = 4, dpi = 300)
 
 # Plot balance -------------------------------------------------------------------------------------------------------
-vizData <- psMetrics %>%
+ vizData <- psMetrics %>%
+  bind_rows(
+    balLargeSamle %>%
+      filter(analysisId %in% c(1,3)) %>%
+      mutate(maxSdmMedian = maxSdm)
+  ) %>%
   mutate(psMethod = ifelse(analysisId == 1, "PS 1-on-1 matching", "PS stratification")) %>%
-  inner_join(x, by = join_by(sampleSize)) 
+  inner_join(x, by = join_by(sampleSize)) %>%
+  select(x, sampleSize, psMethod, maxSdmMin,  maxSdmP25,  maxSdmMedian,  maxSdmP75,  maxSdmMax)
 ggplot(vizData, aes(x = x, y = maxSdmMedian, group = sampleSize)) +
+  geom_hline(yintercept = 0.1, linetype = "dashed") +
   geom_boxplot(
     aes(ymin = maxSdmMin, lower = maxSdmP25, middle = maxSdmMedian, upper = maxSdmP75, ymax = maxSdmMax),
     stat = "identity"
@@ -143,12 +164,4 @@ ggplot(vizData, aes(x = x, y = ease, ymin = easeCi95Lb, ymax = easeCi95Ub, group
   labs(color = "Synthesis") +
   facet_grid(~psMethod)
 ggsave(file.path(plotsAndTablesFolder, "EASE_synthesis_methods.png"), width = 6, height = 4, dpi = 300)
-
-
-# Show per-estimate shift for:
-# Different types of synthesis vs overall. 
-# Dimensions: 
-# PS matching vs stratifcation
-# Sample size
-# Synthesis method
 

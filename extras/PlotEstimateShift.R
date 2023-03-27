@@ -8,7 +8,7 @@ plotsAndTablesFolder <- file.path(outputFolder, "plotsAndTables")
 estimates <- readRDS(file.path(outputFolder, "largeSample", "resultsSummary.rds")) %>%
   select(analysisId, targetId, comparatorId, outcomeId, logRr, seLogRr) %>%
   mutate(sampleSize = 20000)
-sampleSizes <- c(4000, 2000, 1000, 500, 250, 100)
+sampleSizes <- c(4000, 2000, 1000, 500, 250, 125)
 for (sampleSize in sampleSizes) {
   temp <- readRDS(file.path(outputFolder, sprintf("smallSample%d", sampleSize), "resultsSummary.rds")) %>%
     select(analysisId, targetId, comparatorId, outcomeId, logRr, seLogRr) %>%
@@ -22,23 +22,6 @@ estimates <- estimates  %>%
       select(targetId, comparatorId, outcomeId, targetEffectSize), 
     by = join_by(targetId, comparatorId, outcomeId)
   )
-# 
-# 
-# originEstimates %>%
-#   bind_rows(
-#     originEstimates %>%
-#       mutate(analysisId = analysisId + 100)
-#   ) %>%
-#   bind_rows(
-#     originEstimates %>%
-#       mutate(analysisId = analysisId + 200)
-#   ) %>%
-#   select(analysisId, targetId, comparatorId, outcomeId, startLogRr = logRr, startSeLogRr = seLogRr)  %>%
-#   inner_join(estimates, by = join_by(analysisId, targetId, comparatorId, outcomeId), multiple = "all") %>%
-#   inner_join(
-#     allControls %>%
-#       select(targetId, comparatorId, outcomeId, targetEffectSize), 
-#     by = join_by(targetId, comparatorId, outcomeId))
 
 plotShift <- function(fromAnalysisIds, 
                       toAnalysisIds = NULL, 
@@ -129,4 +112,87 @@ plotShift(
   fileName = "ShiftLocalVsGlobalPooling.png"
 )
 
-
+plotEstimates <- function(analysisId, title, fileName) {
+  vizData <- estimates %>%
+    filter(sampleSize != 20000 & analysisId == !!analysisId)
+  
+  d <- tibble(
+    logRr = vizData$logRr,
+    seLogRr = vizData$seLogRr,
+    trueLogRr = log(vizData$targetEffectSize),
+    trueRr = vizData$targetEffectSize,
+    logCi95lb = logRr + qnorm(0.025) * seLogRr,
+    logCi95ub = logRr + qnorm(0.975) * seLogRr,
+    sampleSize = vizData$sampleSize
+  )
+  d <- d[!is.na(d$logRr), ]
+  d <- d[!is.na(d$seLogRr), ]
+  if (nrow(d) == 0) {
+    return(NULL)
+  }
+  d$Significant <- d$logCi95lb > d$trueLogRr | d$logCi95ub < d$trueLogRr
+  
+  temp1 <- aggregate(Significant ~ trueRr + sampleSize, data = d, length)
+  temp2 <- aggregate(Significant ~ trueRr + sampleSize, data = d, mean)
+  temp1$nLabel <- paste0(formatC(temp1$Significant, big.mark = ","), " estimates")
+  temp1$Significant <- NULL
+  temp2$meanLabel <- paste0(
+    formatC(100 * (1 - temp2$Significant), digits = 1, format = "f"),
+    "% of CIs includes ",
+    temp2$trueRr
+  )
+  temp2$Significant <- NULL
+  dd <- merge(temp1, temp2)
+  
+  breaks <- c(0.1, 0.25, 0.5, 1, 2, 4, 6, 8, 10)
+  theme <- ggplot2::element_text(colour = "#000000", size = 10)
+  themeRA <- ggplot2::element_text(colour = "#000000", size = 10, hjust = 1)
+  
+  d$Group <- paste("True hazard ratio =", d$trueRr)
+  dd$Group <- paste("True hazard ratio =", dd$trueRr)
+  d$yGroup <- d$sampleSize
+  dd$yGroup <- dd$sampleSize
+  
+  plot <- ggplot2::ggplot(d, ggplot2::aes(x = .data$logRr, y = .data$seLogRr)) +
+    ggplot2::geom_vline(xintercept = log(breaks), colour = "#AAAAAA", lty = 1, size = 0.5) +
+    ggplot2::geom_abline(ggplot2::aes(intercept = (-log(.data$trueRr)) / qnorm(0.025), slope = 1 / qnorm(0.025)), colour = rgb(0, 0, 0), linetype = "dashed", size = 1, alpha = 0.5, data = dd) +
+    ggplot2::geom_abline(ggplot2::aes(intercept = (-log(.data$trueRr)) / qnorm(0.975), slope = 1 / qnorm(0.975)), colour = rgb(0, 0, 0), linetype = "dashed", size = 1, alpha = 0.5, data = dd) +
+    ggplot2::geom_point(
+      shape = 16,
+      size = 2,
+      alpha = 0.5,
+      color = rgb(0, 0, 0.8)
+    ) +
+    ggplot2::geom_hline(yintercept = 0) +
+    ggplot2::geom_label(x = log(0.15), y = 0.95, alpha = 1, hjust = "left", ggplot2::aes(label = .data$nLabel), size = 3.5, data = dd) +
+    ggplot2::geom_label(x = log(0.15), y = 0.8, alpha = 1, hjust = "left", ggplot2::aes(label = .data$meanLabel), size = 3.5, data = dd) +
+    ggplot2::scale_x_continuous("Hazard Ratio", limits = log(c(0.1, 10)), breaks = log(breaks), labels = breaks) +
+    ggplot2::scale_y_continuous("Standard Error") +
+    ggplot2::coord_cartesian(ylim = c(0, 1)) +
+    ggplot2::facet_grid(yGroup ~ Group) +
+    ggplot2::ggtitle(title) +
+    ggplot2::theme(
+      panel.grid.minor = ggplot2::element_blank(),
+      panel.background = ggplot2::element_blank(),
+      panel.grid.major = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_blank(),
+      axis.text.y = themeRA,
+      axis.text.x = theme,
+      axis.title = theme,
+      legend.key = ggplot2::element_blank(),
+      plot.title = ggplot2::element_text(hjust = 0.5),
+      strip.text.x = theme,
+      strip.text.y = theme,
+      strip.background = ggplot2::element_blank(),
+      legend.position = "none"
+    )
+  # plot
+  ggsave(file.path(plotsAndTablesFolder, fileName), plot = plot, width = 9, height = 10, dpi = 300)
+}
+  
+plotEstimates(1, "PS matching, pooling", "AllEstimatesPsMatchPooling.png")  
+plotEstimates(3, "PS stratification, pooling", "AllEstimatesPsStratificationPooling.png")  
+plotEstimates(101, "PS matching, non-normal synthesis", "AllEstimatesPsMatchNonNormal.png")  
+plotEstimates(103, "PS stratification, non-normal synthesis", "AllEstimatesPsStratificationNonNormal.png")  
+plotEstimates(201, "PS matching, normal synthesis", "AllEstimatesPsMatchNormal.png")  
+plotEstimates(203, "PS stratification, normal synthesis", "AllEstimatesPsStratificationNormal.png")  

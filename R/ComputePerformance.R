@@ -30,7 +30,8 @@ computePerformance <- function(referenceSet = "ohdsiMethodsBenchmark",
                                outputFolder,
                                cmFolder,
                                maxCores = 1,
-                               outputFileName) {
+                               outputFileName,
+                               databaseId) {
   controlSummary <- read.csv(file.path(outputFolder, "allControls.csv"))
   estimates <- CohortMethod::getResultsSummary(cmFolder)
   cmAnalysisList <- CohortMethod::loadCmAnalysisList(file.path(cmFolder, "cmAnalysisList.json"))
