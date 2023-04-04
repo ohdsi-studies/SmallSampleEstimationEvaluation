@@ -1,7 +1,5 @@
 library(SmallSampleEstimationEvaluation)
 
-referenceSet <- "ohdsiDevelopment"
-
 options(andromedaTempFolder = "d:/andromedaTemp")
 
 maxCores <- parallel::detectCores()
@@ -13,13 +11,8 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "redshift
                                                                 password = keyring::key_get("redShiftPassword"))
 oracleTempSchema <- NULL
 cdmDatabaseSchema <- "cdm_truven_mdcd_v2359"
-exposureDatabaseSchema <- "scratch_mschuemi"
-exposureTable <- "cohort_small_sample_eval"
-outcomeDatabaseSchema <- exposureDatabaseSchema
-outcomeTable <- exposureTable
-nestingDatabaseSchema <- exposureDatabaseSchema
-nestingTable <- exposureTable
-cdmVersion <- "5"
+cohortDatabaseSchema <- "scratch_mschuemi"
+cohortTable <- "cohort_small_sample_eval"
 outputFolder <- "d:/SmallSampleEstimationEvaluation"
 databaseId <- "MDCD"
 

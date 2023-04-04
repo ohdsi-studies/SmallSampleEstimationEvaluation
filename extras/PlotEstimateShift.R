@@ -26,6 +26,7 @@ estimates <- estimates  %>%
 plotShift <- function(fromAnalysisIds, 
                       toAnalysisIds = NULL, 
                       from20K = TRUE, 
+                      targetId,
                       labels = c("PS 1-on-1 matching", "PS stratification"),
                       title,
                       fileName) {
@@ -36,7 +37,7 @@ plotShift <- function(fromAnalysisIds,
   )
   if (from20K) {
     vizData <- estimates %>%
-      filter(sampleSize == 20000 & targetEffectSize == 1 & analysisId %in% fromAnalysisIds) %>%
+      filter(sampleSize == 20000 & targetEffectSize == 1 & analysisId %in% fromAnalysisIds & targetId == !!targetId) %>%
       select(analysisId, targetId, comparatorId, outcomeId, startLogRr = logRr, startSeLogRr = seLogRr) %>%
       inner_join(
         estimates %>%
@@ -50,9 +51,8 @@ plotShift <- function(fromAnalysisIds,
         multiple = "all"
       ) 
   } else {
-
     vizData <- estimates %>%
-      filter(sampleSize != 20000 & targetEffectSize == 1 & analysisId %in% fromAnalysisIds) %>%
+      filter(sampleSize != 20000 & targetEffectSize == 1 & analysisId %in% fromAnalysisIds & targetId == !!targetId) %>%
       select(analysisId, targetId, comparatorId, outcomeId, sampleSize, startLogRr = logRr, startSeLogRr = seLogRr) %>%
       inner_join(
         estimates %>%
@@ -86,9 +86,18 @@ plotShift <- function(fromAnalysisIds,
 plotShift(
   fromAnalysisIds = c(1, 3),
   toAnalysisIds = c(1, 3),
+  targetId = 1,
   from20K = TRUE,
-  title = "From single large study to pooled across smaller sites",
-  fileName = "ShiftVsPooled.png"
+  title = "ACE inhibitors vs thiazides\nFrom single large study to pooled across smaller sites",
+  fileName = "ShiftVsPooled_t1.png"
+)
+plotShift(
+  fromAnalysisIds = c(1, 3),
+  toAnalysisIds = c(1, 3),
+  targetId = 3,
+  from20K = TRUE,
+  title = "Sitaglipton vs liraglutide\nFrom single large study to pooled across smaller sites",
+  fileName = "ShiftVsPooled_t3.png"
 )
 plotShift(
   fromAnalysisIds = c(1, 3),
@@ -112,9 +121,9 @@ plotShift(
   fileName = "ShiftLocalVsGlobalPooling.png"
 )
 
-plotEstimates <- function(analysisId, title, fileName) {
+plotEstimates <- function(analysisId, targetId, title, fileName) {
   vizData <- estimates %>%
-    filter(sampleSize != 20000 & analysisId == !!analysisId)
+    filter(sampleSize != 20000 & analysisId == !!analysisId & targetId == !!targetId)
   
   d <- tibble(
     logRr = vizData$logRr,
@@ -190,9 +199,18 @@ plotEstimates <- function(analysisId, title, fileName) {
   ggsave(file.path(plotsAndTablesFolder, fileName), plot = plot, width = 9, height = 10, dpi = 300)
 }
   
-plotEstimates(1, "PS matching, pooling", "AllEstimatesPsMatchPooling.png")  
-plotEstimates(3, "PS stratification, pooling", "AllEstimatesPsStratificationPooling.png")  
-plotEstimates(101, "PS matching, non-normal synthesis", "AllEstimatesPsMatchNonNormal.png")  
-plotEstimates(103, "PS stratification, non-normal synthesis", "AllEstimatesPsStratificationNonNormal.png")  
-plotEstimates(201, "PS matching, normal synthesis", "AllEstimatesPsMatchNormal.png")  
-plotEstimates(203, "PS stratification, normal synthesis", "AllEstimatesPsStratificationNormal.png")  
+plotEstimates(1, 1, "ACE inhibitors vs thiazides, PS matching, pooling", "AllEstimatesPsMatchPooling_t1.png")  
+plotEstimates(1, 3, "Sitaglipton vs liraglutide, PS matching, pooling", "AllEstimatesPsMatchPooling_t3.png")  
+plotEstimates(3, 1, "ACE inhibitors vs thiazides, PS stratification, pooling", "AllEstimatesPsstratificationPooling_t1.png")  
+plotEstimates(3, 3, "Sitaglipton vs liraglutide, PS stratification, pooling", "AllEstimatesPsstratificationPooling_t3.png")  
+
+plotEstimates(101, 1, "ACE inhibitors vs thiazides, PS matching, non-normal synthesis", "AllEstimatesPsMatchNonNormal_t1.png")  
+plotEstimates(101, 3, "Sitaglipton vs liraglutide, PS matching, non-normal synthesis", "AllEstimatesPsMatchNonNormal_t3.png")  
+plotEstimates(103, 1, "ACE inhibitors vs thiazides, PS stratification, non-normal synthesis", "AllEstimatesPsstratificationNonNormal_t1.png")  
+plotEstimates(103, 3, "Sitaglipton vs liraglutide, PS stratification, non-normal synthesis", "AllEstimatesPsstratificationNonNormal_t3.png")  
+
+plotEstimates(201, 1, "ACE inhibitors vs thiazides, PS matching, normal synthesis", "AllEstimatesPsMatchNormal_t1.png")  
+plotEstimates(201, 3, "Sitaglipton vs liraglutide, PS matching, normal synthesis", "AllEstimatesPsMatchNormal_t3.png")  
+plotEstimates(203, 1, "ACE inhibitors vs thiazides, PS stratification, normal synthesis", "AllEstimatesPsstratificationNormal_t1.png")  
+plotEstimates(203, 3, "Sitaglipton vs liraglutide, PS stratification, normal synthesis", "AllEstimatesPsstratificationNormal_t3.png")  
+

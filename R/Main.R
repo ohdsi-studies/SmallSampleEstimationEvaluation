@@ -49,14 +49,9 @@
 #' @export
 execute <- function(connectionDetails,
                     cdmDatabaseSchema,
-                    exposureDatabaseSchema = cdmDatabaseSchema,
-                    exposureTable = "exposures",
-                    outcomeDatabaseSchema = cdmDatabaseSchema,
-                    outcomeTable = "outcomes",
-                    nestingDatabaseSchema = cdmDatabaseSchema,
-                    nestingTable = "nesting",
+                    cohortDatabaseSchema = cohortDatabaseSchema,
+                    cohortTable = cohortTable,
                     maxCores = 1,
-                    referenceSet = "ohdsiMethodsBenchmark",
                     outputFolder,
                     databaseId,
                     createCohorts = TRUE) {
@@ -73,14 +68,10 @@ execute <- function(connectionDetails,
     createCohorts(
       connectionDetails = connectionDetails,
       cdmDatabaseSchema = cdmDatabaseSchema,
-      exposureDatabaseSchema = exposureDatabaseSchema,
-      exposureTable = exposureTable,
-      outcomeDatabaseSchema = outcomeDatabaseSchema,
-      outcomeTable = outcomeTable,
-      nestingDatabaseSchema = nestingDatabaseSchema,
-      nestingTable = nestingTable,
-      referenceSet = referenceSet,
-      outputFolder = outputFolder
+      cohortDatabaseSchema = cohortDatabaseSchema,
+      cohortTable = cohortTable,
+      outputFolder = outputFolder,
+      maxCores = maxCores
     )
   }
   # Run on full data -----------------------------------------------
@@ -91,17 +82,13 @@ execute <- function(connectionDetails,
   runCohortMethod(
     connectionDetails = connectionDetails,
     cdmDatabaseSchema = cdmDatabaseSchema,
-    exposureDatabaseSchema = exposureDatabaseSchema,
-    exposureTable = exposureTable,
-    outcomeDatabaseSchema = outcomeDatabaseSchema,
-    outcomeTable = outcomeTable,
-    referenceSet = referenceSet,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortTable = cohortTable,
     outputFolder = outputFolder,
     maxCores = maxCores,
     cmFolder = fullDataFolder
   )
   computePerformance(
-    referenceSet = referenceSet,
     outputFolder = outputFolder,
     cmFolder = fullDataFolder,
     maxCores = maxCores,
@@ -122,14 +109,12 @@ execute <- function(connectionDetails,
     seed = 123
   )
   runCohortMethod(
-    referenceSet = referenceSet,
     outputFolder = outputFolder,
     cmFolder = largeSampleFolder,
     maxCores = maxCores,
     externalPsFolder = fullDataFolder
   )
   computePerformance(
-    referenceSet = referenceSet,
     outputFolder = outputFolder,
     cmFolder = largeSampleFolder,
     maxCores = maxCores,
@@ -155,28 +140,25 @@ execute <- function(connectionDetails,
     for (smallSampleSubFolder in smallSampleSubFolders) {
       message("Performing CohortMethod analyses in ", smallSampleSubFolder)
       runCohortMethod(
-        referenceSet = referenceSet,
         outputFolder = outputFolder,
         cmFolder = smallSampleSubFolder,
         maxCores = maxCores,
         externalPsFolder = fullDataFolder
       )
     }
-    computePerformance(
-      referenceSet = referenceSet,
-      outputFolder = outputFolder,
-      cmFolder = smallSampleSubFolders[1],
-      maxCores = maxCores,
-      databaseId = databaseId,
-      outputFileName = file.path(outputFolder, sprintf("Metrics_sample_%d_1.csv", sampleSize))
-    )
+    # computePerformance(
+    #   outputFolder = outputFolder,
+    #   cmFolder = smallSampleSubFolders[1],
+    #   maxCores = maxCores,
+    #   databaseId = databaseId,
+    #   outputFileName = file.path(outputFolder, sprintf("Metrics_sample_%d_1.csv", sampleSize))
+    # )
     combineEstimates(
       parentFolder = smallSamplesFolder,
       cmFolders = smallSampleSubFolders,
       maxCores = maxCores
     )
     computePerformance(
-      referenceSet = referenceSet,
       outputFolder = outputFolder,
       cmFolder = smallSamplesFolder,
       maxCores = maxCores,
@@ -184,7 +166,7 @@ execute <- function(connectionDetails,
       outputFileName = file.path(outputFolder, sprintf("Metrics_sample_%d.csv", sampleSize))
     )
     computePsMetrics(
-      folder = smallSamplesFolder,
+      sampleFolders = smallSampleSubFolders,
       outputFileName = file.path(outputFolder, sprintf("PsMetrics_sample_%d.csv", sampleSize))
     )
   }

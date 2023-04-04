@@ -36,7 +36,7 @@ combineEstimates <- function(parentFolder,
     return(NULL)
   }
   
-  # omrSubset = split(omr, omr$analysisId)[[1]]
+  # omrSubset = split(omr, omr$analysisId)[[2]]
   computeOverallEstimates <- function(omrSubset) {
     message("Computing overall estimates for analysis ID: ", omrSubset$analysisId[1])
     cmAnalysis <- getCmAnalysis(omrSubset$analysisId[1])
@@ -188,7 +188,7 @@ fitOverallOutcomeModel <- function(rowIdx, omrSubset, cmAnalysis, cmFolders) {
       studlab = rep("", nrow(ests)),
       byvar = NULL,
       sm = "RR",
-      control = list(maxiter=1000)
+      control = list(stepadj=0.5, maxiter=10000)
     )
     rfx <- summary(meta)$random
     traditionalEstimate <- tibble(

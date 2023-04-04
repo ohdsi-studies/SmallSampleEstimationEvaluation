@@ -26,13 +26,19 @@
 #'                                this can speed up the analyses.
 #'
 #' @export
-computePerformance <- function(referenceSet = "ohdsiMethodsBenchmark",
-                               outputFolder,
+computePerformance <- function(outputFolder,
                                cmFolder,
                                maxCores = 1,
                                outputFileName,
                                databaseId) {
-  controlSummary <- read.csv(file.path(outputFolder, "allControls.csv"))
+  if (file.exists(outputFileName)) {
+    return()
+  }
+  csvFileName <- system.file("NegativeControls.csv", package = "SmallSampleEstimationEvaluation")
+  negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE)  %>%
+    select("targetId", outcomeId = "outcomeConceptId") %>%
+    mutate(type = "Outcome control")
+  synthesisSummary <- readRDS(file.path(outputFolder, "SignalInjection", "injectionSummary.rds"))
   estimates <- CohortMethod::getResultsSummary(cmFolder)
   cmAnalysisList <- CohortMethod::loadCmAnalysisList(file.path(cmFolder, "cmAnalysisList.json"))
   analysisId <- unlist(ParallelLogger::selectFromList(cmAnalysisList, "analysisId"))
@@ -64,73 +70,75 @@ computePerformance <- function(referenceSet = "ohdsiMethodsBenchmark",
       )
     analysisRef <- bind_rows(analysisRef, analysisTraditional)
   }
-
-  MethodEvaluation::packageOhdsiBenchmarkResults(
+  MethodEvaluation::packageCustomBenchmarkResults(
     estimates = estimates,
-    controlSummary = controlSummary,
+    negativeControls = negativeControls,
+    synthesisSummary = synthesisSummary,
     analysisRef = analysisRef,
     databaseName = databaseId,
-    exportFolder = cmFolder,
-    referenceSet = referenceSet
+    exportFolder = cmFolder
   )
-  metricsUncalibrated <- MethodEvaluation::computeOhdsiBenchmarkMetrics(
-    exportFolder = cmFolder,
-    mdrr = "All",
-    calibrated = FALSE,
-    comparative = TRUE
-  )
-  metricsUncalibrated$calibrated <- FALSE
-  metricsCalibrated <- MethodEvaluation::computeOhdsiBenchmarkMetrics(
-    exportFolder = cmFolder,
-    mdrr = "All",
-    calibrated = TRUE,
-    comparative = TRUE
-  )
-  metricsCalibrated$calibrated <- TRUE
-  metrics <- bind_rows(metricsUncalibrated, metricsCalibrated)
-  
-  estimates <- controlSummary %>%
-    select("targetId", "outcomeId", "targetEffectSize", "trueEffectSize", "trueEffectSizeFirstExposure") %>%
-    left_join(estimates,
-      by = c("targetId", "outcomeId"),
-      multiple = "all",
-    ) %>%
-    inner_join(analysisRef %>%
-      select("analysisId", "description"),
-    by = "analysisId"
+  metrics <- tibble()
+  targetIds <- unique(synthesisSummary$exposureId)
+  for (targetId in targetIds) {
+    metricsUncalibrated <- MethodEvaluation::computeOhdsiBenchmarkMetrics(
+      exportFolder = cmFolder,
+      mdrr = "All",
+      calibrated = FALSE,
+      comparative = TRUE,
+      stratum = targetId
     )
-  ease <- lapply(split(estimates, estimates$analysisId), generatePlotsAndComputeEase, folder = cmFolder)
-  ease <- bind_rows(ease) %>%
-    select(-"targetId", -"comparatorId") %>%
+    metricsUncalibrated$calibrated <- FALSE
+    metricsUncalibrated$targetId <- targetId
+    metrics <- bind_rows(metrics, metricsUncalibrated)
+    metricsCalibrated <- MethodEvaluation::computeOhdsiBenchmarkMetrics(
+      exportFolder = cmFolder,
+      mdrr = "All",
+      calibrated = TRUE,
+      comparative = TRUE,
+      stratum = targetId
+    )
+    metricsCalibrated$calibrated <- TRUE
+    metricsCalibrated$targetId <- targetId
+    metrics <- bind_rows(metrics, metricsCalibrated)
+  }
+  subsets <- estimates %>%
+    inner_join(negativeControls, by = join_by("targetId", "outcomeId")) %>%
+    inner_join(analysisRef %>%
+                 select("analysisId", "description"),
+               by = "analysisId"
+    )%>%
+    group_by(.data$analysisId, .data$targetId) %>%
+    group_split()
+  ease <- lapply(subsets, generatePlotsAndComputeEase, folder = cmFolder) %>%
+    bind_rows() %>%
+    select(-"comparatorId") %>%
     mutate(calibrated = FALSE)
-  # TODO: handle case when we have multiple targets and comparators
   metrics <- metrics %>%
-    left_join(ease, by = join_by("analysisId", "calibrated"))
-  
+    left_join(ease, by = join_by("analysisId", "targetId", "calibrated"))
   readr::write_csv(metrics, outputFileName)
 }
 
-# subset = split(estimates, estimates$analysisId)[[1]]
-generatePlotsAndComputeEase <- function(subset, folder = NULL) {
-  ncs <- subset[subset$targetEffectSize == 1, ]
+# ncs = subsets[[1]]
+generatePlotsAndComputeEase <- function(ncs, folder = NULL) {
   null <- EmpiricalCalibration::fitMcmcNull(
     logRr = ncs$logRr,
     seLogRr = ncs$seLogRr
   )
   if (!is.null(folder)) {
-    ncPlotFileName <- file.path(folder, sprintf("ncs_a%d.png", subset$analysisId[1]))
+    ncPlotFileName <- file.path(folder, sprintf("ncs_t%d_a%d.png", ncs$targetId[1], ncs$analysisId[1]))
     EmpiricalCalibration::plotCalibrationEffect(
       logRrNegatives = ncs$logRr,
       seLogRrNegatives = ncs$seLogRr,
       null = null,
       showCis = TRUE,
       showExpectedAbsoluteSystematicError = TRUE,
-      title = subset$description[1],
+      title = ncs$description[1],
       fileName = ncPlotFileName
     )
   }
   easeResult <- EmpiricalCalibration::computeExpectedAbsoluteSystematicError(null)
-  easeResult <- subset %>%
+  easeResult <- ncs %>%
     head(1) %>%
     select("targetId", "comparatorId", "analysisId") %>%
     mutate(
@@ -169,28 +177,35 @@ computeSingleSampleMetrics <- function(sampleFolder, ref) {
   ) %>% return()
 }
 
-computePsMetricsForAnalysisId <- function(analysisId, folder) {
-  sampleFolders <- list.dirs(folder, full.names = TRUE, recursive = FALSE)
+# row = combis[[1]]
+computePsMetricsForAnalysisId <- function(row, sampleFolders) {
   ref <- CohortMethod::getFileReference(sampleFolders[1]) %>%
-    filter(analysisId == !!analysisId) %>%
+    filter(analysisId == row$analysisId, targetId == row$targetId) %>%
     head(1)
   stats <- lapply(sampleFolders, computeSingleSampleMetrics, ref = ref)
   stats <- bind_rows(stats)
-  row <- c()
+  result <- c()
   for (column in colnames(stats)) {
     temp <- quantile(stats[[column]], c(0, 0.25, 0.5, 0.75, 1))  
     names(temp) <- paste0(column, c("Min", "P25", "Median", "P75", "Max"))
-    row <- c(row, temp)
+    result <- c(result, temp)
   }
-  row <- as_tibble(t(row)) %>% 
-    mutate(analysisId = !!analysisId)
-  return(row)
+  result <- as_tibble(t(result)) %>% 
+    mutate(analysisId = row$analysisId,
+           targetId = row$targetId)
+  return(result)
 }
 
-computePsMetrics <- function(folder, outputFileName) {
-  sampleFolders <- list.dirs(folder, full.names = TRUE, recursive = FALSE)
-  analysisIds <- c(1, 3)
-  results <- lapply(analysisIds, computePsMetricsForAnalysisId, folder = folder)
+computePsMetrics <- function(sampleFolders, outputFileName) {
+  if (file.exists(outputFileName)) {
+    return()
+  }
+  combis <- expand.grid(
+    analysisIds = c(1, 3),
+    targetIds = c(1, 3)
+  )
+  combis <- split(combis, seq_len(nrow(combis)))
+  results <- lapply(combis, computePsMetricsForAnalysisId, sampleFolders = sampleFolders)
   results <- bind_rows(results)
   readr::write_csv(results, outputFileName)
 }

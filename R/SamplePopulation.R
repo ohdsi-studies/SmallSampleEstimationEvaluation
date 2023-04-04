@@ -20,6 +20,9 @@ samplePopulation <- function(sourceCmFolder,
                              numberOfSamples = NULL,
                              sampleSize = NULL,
                              seed = 123) {
+  # if (dir.exists(sampleFolder)) {
+  #   return()
+  # }
   set.seed(seed)
 
   subsetCmData <- function(cmData, sampleRowIds, outputFileName) {

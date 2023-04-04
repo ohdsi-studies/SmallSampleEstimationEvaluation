@@ -2,18 +2,16 @@
 % Please edit documentation in R/CohortMethod.R
 \name{runCohortMethod}
 \alias{runCohortMethod}
-\title{Create cohorts used for the evaluation.}
+\title{Run CohortMethod}
 \usage{
 runCohortMethod(
   connectionDetails = NULL,
-  oracleTempSchema = NULL,
   cdmDatabaseSchema = "",
   exposureDatabaseSchema = "",
   exposureTable = "",
   outcomeDatabaseSchema = "",
   outcomeTable = "",
   maxCores = 1,
-  referenceSet = "ohdsiMethodsBenchmark",
   outputFolder,
   cmFolder,
   externalPsFolder = NULL
@@ -24,19 +22,16 @@ runCohortMethod(
 function \code{createConnectionDetails} in the
 \code{DatabaseConnector} package.}
 
-\item{oracleTempSchema}{Should be used in Oracle to specify a schema where the user has write
-privileges for storing temporary tables.}
-
 \item{cdmDatabaseSchema}{A database schema containing health care data in the OMOP Commond
 Data Model. Note that for SQL Server, botth the database and schema
 should be specified, e.g. 'cdm_schema.dbo'.}
 
-\item{exposureDatabaseSchema}{The name of the database schema where the exposure cohorts will be 
+\item{exposureDatabaseSchema}{The name of the database schema where the exposure cohorts will be
 created. Only needed if \code{referenceSet = 'ohdsiDevelopment'}. Note
-that for SQL Server, both the database and schema should be specified, 
+that for SQL Server, both the database and schema should be specified,
 e.g. 'cdm_schema.dbo'.}
 
-\item{exposureTable}{The name of the table that will be created to store the exposure 
+\item{exposureTable}{The name of the table that will be created to store the exposure
 cohorts. Only needed if \code{referenceSet = 'ohdsiDevelopment'}.}
 
 \item{outcomeDatabaseSchema}{The database schema where the target outcome table is located. Note
@@ -48,9 +43,6 @@ specified, e.g. 'cdm_schema.dbo'}
 \item{maxCores}{How many parallel cores should be used? If more cores are made available
 this can speed up the analyses.}
 
-\item{referenceSet}{The name of the reference set for which outcomes need to be created.
-Currently supported are "ohdsiMethodsBenchmark", and "ohdsiDevelopment".}
-
 \item{outputFolder}{Name of local folder to place intermediary results; make sure to use
 forward slashes (/). Do not use a folder on a network drive since
 this greatly impacts performance.}
@@ -60,16 +52,10 @@ forward slashes (/). Do not use a folder on a network drive since
 this greatly impacts performance.}
 
 \item{externalPsFolder}{Name of folder containing propensity score files of a superset of the population.}
+
+\item{referenceSet}{The name of the reference set for which outcomes need to be created.
+Currently supported are "ohdsiMethodsBenchmark", and "ohdsiDevelopment".}
 }
 \description{
-Create cohorts used for the evaluation.
-}
-\details{
-This function will create the outcomes of interest and nesting cohorts referenced in the various
-reference sets. The outcomes of interest are derives using information like diagnoses, procedures,
-and drug prescriptions. The outcomes are stored in a table on the database server.
-
-For the 'ohdsiMethodsBenchmark' reference set, the exposures are taken from the drug_era table, and
-are therefore not generated as separate cohorts, and an exposure cohort table therefore needn't be supplied. 
-For the 'ohdsiDevelopment' reference set, exposure cohorts will be generated.
+Run CohortMethod
 }

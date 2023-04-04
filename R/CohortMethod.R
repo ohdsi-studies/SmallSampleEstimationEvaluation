@@ -52,38 +52,34 @@ runCohortMethod <- function(connectionDetails = NULL,
                             outcomeDatabaseSchema = "",
                             outcomeTable = "",
                             maxCores = 1,
-                            referenceSet = "ohdsiMethodsBenchmark",
                             outputFolder,
                             cmFolder,
                             externalPsFolder = NULL) {
   # Create list of target-comparator-outcomes ---------------------------------
-  allControls <- read.csv(file.path(outputFolder, "allControls.csv"))
-  tcs <- unique(allControls[, c("targetId", "comparatorId", "targetConceptIds", "comparatorConceptIds")])
+  allControls <- read.csv(file.path(outputFolder, "allControls.csv")) 
+  allControls <- split(allControls, paste(allControls$targetId, allControls$comparatorId))
+  
   tcosList <- list()
-  for (i in seq_len(nrow(tcs))) {
-    outcomeIds <- allControls$outcomeId[allControls$targetId == tcs$targetId[i] &
-                                          allControls$comparatorId == tcs$comparatorId[i] &
-                                          !is.na(allControls$mdrrComparator)]
+  for (i in seq_along(allControls)) {
+    controls <- allControls[[i]]
     excludedCovariateConceptIds <- c(
-      as.numeric(strsplit(tcs$targetConceptIds[i], ";")[[1]]),
-      as.numeric(strsplit(tcs$comparatorConceptIds[i], ";")[[1]])
+      as.numeric(strsplit(controls$targetConceptIds[1], ";")[[1]]),
+      as.numeric(strsplit(controls$comparatorConceptIds[1], ";")[[1]])
     )
-    if (length(outcomeIds) != 0) {
-      outcomes <- list()
-      for (j in seq_along(outcomeIds)) {
-        outcomes[[j]] <- CohortMethod::createOutcome(
-          outcomeId = outcomeIds[j],
-          outcomeOfInterest = TRUE
-        )
-      }
-      tcos <- CohortMethod::createTargetComparatorOutcomes(
-        targetId = tcs$targetId[i],
-        comparatorId = tcs$comparatorId[i],
-        outcomes = outcomes,
-        excludedCovariateConceptIds = excludedCovariateConceptIds
+    outcomes <- list()
+    for (j in seq_along(controls$outcomeId)) {
+      outcomes[[j]] <- CohortMethod::createOutcome(
+        outcomeId = controls$outcomeId[j],
+        outcomeOfInterest = TRUE
       )
-      tcosList[[length(tcosList) + 1]] <- tcos
     }
+    tcos <- CohortMethod::createTargetComparatorOutcomes(
+      targetId = controls$targetId[1],
+      comparatorId = controls$comparatorId[1],
+      outcomes = outcomes,
+      excludedCovariateConceptIds = excludedCovariateConceptIds
+    )
+    tcosList[[i]] <- tcos
   }
   
   # Create analysis settings list -------------------------------------------------
@@ -202,12 +198,11 @@ runCohortMethod <- function(connectionDetails = NULL,
   cmResult <- CohortMethod::runCmAnalyses(
     connectionDetails = connectionDetails,
     cdmDatabaseSchema = cdmDatabaseSchema,
-    exposureDatabaseSchema = exposureDatabaseSchema,
-    exposureTable = exposureTable,
-    outcomeDatabaseSchema = outcomeDatabaseSchema,
-    outcomeTable = outcomeTable,
+    exposureDatabaseSchema = cohortDatabaseSchema,
+    exposureTable = cohortTable,
+    outcomeDatabaseSchema = cohortDatabaseSchema,
+    outcomeTable = cohortTable,
     outputFolder = cmFolder,
-    cdmVersion = cdmVersion,
     cmAnalysisList = cmAnalysisList,
     targetComparatorOutcomesList = tcosList,
     refitPsForEveryOutcome = FALSE,

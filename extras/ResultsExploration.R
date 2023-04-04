@@ -19,5 +19,9 @@ max(abs(balance$afterMatchingStdDiff), na.rm = TRUE)
 folder <- file.path(outputFolder, "fullData")
 results <- CohortMethod::getResultsSummary(folder)
 ref <- CohortMethod::getFileReference(folder)
-model <- readRDS(file.path(folder, ref$outcomeModelFile[1]))
+row <- ref[ref$targetId == 1, ][1, ]
+model <- readRDS(file.path(folder, row$outcomeModelFile))
+CohortMethod::getAttritionTable(model)
+row <- ref[ref$targetId == 3, ][1, ]
+model <- readRDS(file.path(folder, row$outcomeModelFile))
 CohortMethod::getAttritionTable(model)

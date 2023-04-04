@@ -13,78 +13,130 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# library(dplyr)
 
-#' Create cohorts used for the evaluation.
-#'
-#' @details
-#' This function will create the outcomes of interest and nesting cohorts referenced in the various
-#' reference sets. The outcomes of interest are derives using information like diagnoses, procedures,
-#' and drug prescriptions. The outcomes are stored in a table on the database server.
-#'
-#' For the 'ohdsiMethodsBenchmark' reference set, the exposures are taken from the drug_era table, and
-#' are therefore not generated as separate cohorts, and an exposure cohort table therefore needn't be supplied.
-#' For the 'ohdsiDevelopment' reference set, exposure cohorts will be generated.
-#'
-#' @param connectionDetails       An R object of type \code{ConnectionDetails} created using the
-#'                                function \code{createConnectionDetails} in the
-#'                                \code{DatabaseConnector} package.
-#' @param cdmDatabaseSchema       A database schema containing health care data in the OMOP Commond
-#'                                Data Model. Note that for SQL Server, botth the database and schema
-#'                                should be specified, e.g. 'cdm_schema.dbo'.
-#' @param exposureDatabaseSchema  The name of the database schema where the exposure cohorts will be
-#'                                created. Only needed if \code{referenceSet = 'ohdsiDevelopment'}. Note
-#'                                that for SQL Server, both the database and schema should be specified,
-#'                                e.g. 'cdm_schema.dbo'.
-#' @param exposureTable           The name of the table that will be created to store the exposure
-#'                                cohorts. Only needed if \code{referenceSet = 'ohdsiDevelopment'}.
-#' @param outcomeDatabaseSchema   The database schema where the target outcome table is located. Note
-#'                                that for SQL Server, both the database and schema should be
-#'                                specified, e.g. 'cdm_schema.dbo'
-#' @param outcomeTable            The name of the table where the outcomes will be stored.
-#' @param nestingDatabaseSchema   (For the OHDSI Methods Benchmark and OHDSI Development Set only) The
-#'                                database schema where the nesting outcome table is located. Note that
-#'                                for SQL Server, both the database and schema should be specified, e.g.
-#'                                 'cdm_schema.dbo'.
-#' @param nestingTable            (For the OHDSI Methods Benchmark and OHDSI Development Set only) The
-#'                                name of the table where the nesting cohorts will be stored.
-#' @param referenceSet            The name of the reference set for which outcomes need to be created.
-#'                                Currently supported are "ohdsiMethodsBenchmark", and "ohdsiDevelopment".
-#' @param outputFolder            Name of local folder to place intermediary results; make sure to use
-#'                                forward slashes (/). Do not use a folder on a network drive since
-#'                                this greatly impacts performance.
-
-#'
 #' @export
 createCohorts <- function(connectionDetails,
-                          oracleTempSchema = NULL,
                           cdmDatabaseSchema,
-                          exposureDatabaseSchema = cdmDatabaseSchema,
-                          exposureTable = "exposures",
-                          outcomeDatabaseSchema = cdmDatabaseSchema,
-                          outcomeTable = "outcomes",
-                          nestingDatabaseSchema = cdmDatabaseSchema,
-                          nestingTable = "nesting",
-                          referenceSet = "ohdsiMethodsBenchmark",
-                          outputFolder) {
-  MethodEvaluation::createReferenceSetCohorts(connectionDetails,
-    cdmDatabaseSchema = cdmDatabaseSchema,
-    exposureDatabaseSchema = exposureDatabaseSchema,
-    exposureTable = exposureTable,
-    outcomeDatabaseSchema = outcomeDatabaseSchema,
-    outcomeTable = outcomeTable,
-    nestingDatabaseSchema = nestingDatabaseSchema,
-    nestingTable = nestingTable,
-    referenceSet = referenceSet,
-    workFolder = outputFolder
+                          cohortDatabaseSchema,
+                          cohortTable,
+                          outputFolder,
+                          maxCores) {
+  connection <- connect(connectionDetails)
+  on.exit(disconnect(connection))
+  
+  cohortTableNames <- CohortGenerator::getCohortTableNames(cohortTable)
+  CohortGenerator::createCohortTables(
+    connection = connection, 
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortTableNames = cohortTableNames
   )
-  MethodEvaluation::synthesizeReferenceSetPositiveControls(connectionDetails,
+  # Generate exposure cohorts -------------------------------------------------
+  rdsFileName <- system.file("CohortDefinitionSet.rds", package = "SmallSampleEstimationEvaluation")
+  cohortDefinitionSet <- readRDS(rdsFileName)
+  CohortGenerator::generateCohortSet(
+    connection = connection, 
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortTableNames = cohortTableNames,
     cdmDatabaseSchema = cdmDatabaseSchema,
-    exposureDatabaseSchema = exposureDatabaseSchema,
-    exposureTable = exposureTable,
-    outcomeDatabaseSchema = outcomeDatabaseSchema,
-    outcomeTable = outcomeTable,
-    referenceSet = referenceSet,
-    maxCores = maxCores,
-    workFolder = outputFolder
+    cohortDefinitionSet = cohortDefinitionSet
   )
+  # Generate negative control outcome cohorts ---------------------------------
+  csvFileName <- system.file("NegativeControls.csv", package = "SmallSampleEstimationEvaluation")
+  negativeControlOutcomeCohortSet <- readr::read_csv(csvFileName, show_col_types = FALSE) %>%
+    mutate(cohortId = .data$outcomeConceptId) %>%
+    select("cohortId", cohortName = "outcomeName", "outcomeConceptId")
+  CohortGenerator::generateNegativeControlOutcomeCohorts(
+    connection = connection, 
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortTable = cohortTable,
+    cdmDatabaseSchema = cdmDatabaseSchema,
+    negativeControlOutcomeCohortSet = negativeControlOutcomeCohortSet,
+    occurrenceType = "first",
+    detectOnDescendants = TRUE
+  )
+  
+  # Generate synthetic positive controls --------------------------------------  
+  csvFileName <- system.file("NegativeControls.csv", package = "SmallSampleEstimationEvaluation")
+  exposureOutcomePairs <- readr::read_csv(csvFileName, show_col_types = FALSE) %>%
+    select(exposureId = "targetId", outcomeId = "outcomeConceptId") %>%
+    distinct()
+  prior <- Cyclops::createPrior("laplace", exclude = 0, useCrossValidation = TRUE)
+  control <- Cyclops::createControl(
+    cvType = "auto",
+    startingVariance = 0.01,
+    noiseLevel = "quiet",
+    cvRepetitions = 1,
+    threads = min(c(10, maxCores))
+  )
+  covariateSettings <- FeatureExtraction::createCovariateSettings(
+    useDemographicsAgeGroup = TRUE,
+    useDemographicsGender = TRUE,
+    useDemographicsIndexYear = TRUE,
+    useDemographicsIndexMonth = TRUE,
+    useConditionGroupEraLongTerm = TRUE,
+    useDrugGroupEraLongTerm = TRUE,
+    useProcedureOccurrenceLongTerm = TRUE,
+    useMeasurementLongTerm = TRUE,
+    useObservationLongTerm = TRUE,
+    useCharlsonIndex = TRUE,
+    useDcsi = TRUE,
+    useChads2Vasc = TRUE,
+    longTermStartDays = 365,
+    endDays = 0
+  )
+  injectionFolder <- file.path(outputFolder, "SignalInjection")
+  if (!file.exists(injectionFolder)) {
+    dir.create(injectionFolder)
+  }
+  result <- MethodEvaluation::synthesizePositiveControls(
+    connectionDetails = connectionDetails,
+    cdmDatabaseSchema = cdmDatabaseSchema,
+    exposureDatabaseSchema = cohortDatabaseSchema,
+    exposureTable = cohortTable,
+    outcomeDatabaseSchema = cohortDatabaseSchema,
+    outcomeTable = cohortTable,
+    outputDatabaseSchema = cohortDatabaseSchema,
+    outputTable = cohortTable,
+    createOutputTable = FALSE,
+    outputIdOffset = 10000,
+    exposureOutcomePairs = exposureOutcomePairs,
+    firstExposureOnly = TRUE,
+    firstOutcomeOnly = TRUE,
+    removePeopleWithPriorOutcomes = TRUE,
+    modelType = "survival",
+    washoutPeriod = 365,
+    riskWindowStart = 0,
+    riskWindowEnd = 0,
+    endAnchor = "cohort end",
+    effectSizes = c(1.5, 2, 4),
+    precision = 0.01,
+    prior = prior,
+    control = control,
+    maxSubjectsForModel = 250000,
+    minOutcomeCountForModel = 100,
+    minOutcomeCountForInjection = 25,
+    workFolder = injectionFolder,
+    modelThreads = max(1, round(maxCores/8)),
+    generationThreads = min(6, maxCores),
+    covariateSettings = covariateSettings)
+  injectionSummaryFile <- file.path(injectionFolder, "injectionSummary.rds")
+  saveRDS(result, injectionSummaryFile)
+  
+  negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE) %>%
+    rename(outcomeId = "outcomeConceptId")
+  injectedSignals <- readRDS(injectionSummaryFile) %>%
+    rename(targetId = "exposureId") %>%
+    inner_join(negativeControls, by = join_by("targetId", "outcomeId")) %>%
+    filter(.data$trueEffectSize != 0) %>%
+    mutate(outcomeName = sprintf("%s, RR=%0.1f", .data$outcomeName, .data$targetEffectSize)) %>%
+    rename(oldOutcomeId = "outcomeId") %>%
+    rename(outcomeId = "newOutcomeId")
+  negativeControls$targetEffectSize <- 1
+  negativeControls$trueEffectSize <- 1
+  negativeControls$trueEffectSizeFirstExposure <- 1
+  negativeControls$oldOutcomeId <- negativeControls$outcomeId
+  allControls <- bind_rows(negativeControls, injectedSignals[, names(negativeControls)])
+  allControlsFileName <- file.path(outputFolder, "allControls.csv")
+  readr::write_csv(allControls, allControlsFileName)
 }

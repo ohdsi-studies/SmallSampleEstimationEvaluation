@@ -6,17 +6,12 @@
 \usage{
 execute(
   connectionDetails,
-  oracleTempSchema = NULL,
   cdmDatabaseSchema,
-  exposureDatabaseSchema = cdmDatabaseSchema,
-  exposureTable = "exposures",
-  outcomeDatabaseSchema = cdmDatabaseSchema,
-  outcomeTable = "outcomes",
-  nestingDatabaseSchema = cdmDatabaseSchema,
-  nestingTable = "nesting",
+  cohortDatabaseSchema = cohortDatabaseSchema,
+  cohortTable = cohortTable,
   maxCores = 1,
-  referenceSet = "ohdsiMethodsBenchmark",
   outputFolder,
+  databaseId,
   createCohorts = TRUE
 )
 }
@@ -25,19 +20,23 @@ execute(
 function \code{createConnectionDetails} in the
 \code{DatabaseConnector} package.}
 
-\item{oracleTempSchema}{Should be used in Oracle to specify a schema where the user has write
-privileges for storing temporary tables.}
-
 \item{cdmDatabaseSchema}{A database schema containing health care data in the OMOP Commond
 Data Model. Note that for SQL Server, botth the database and schema
 should be specified, e.g. 'cdm_schema.dbo'.}
 
-\item{exposureDatabaseSchema}{The name of the database schema where the exposure cohorts will be 
+\item{maxCores}{How many parallel cores should be used? If more cores are made available
+this can speed up the analyses.}
+
+\item{outputFolder}{Name of local folder to place intermediary results; make sure to use
+forward slashes (/). Do not use a folder on a network drive since
+this greatly impacts performance.}
+
+\item{exposureDatabaseSchema}{The name of the database schema where the exposure cohorts will be
 created. Only needed if \code{referenceSet = 'ohdsiDevelopment'}. Note
-that for SQL Server, both the database and schema should be specified, 
+that for SQL Server, both the database and schema should be specified,
 e.g. 'cdm_schema.dbo'.}
 
-\item{exposureTable}{The name of the table that will be created to store the exposure 
+\item{exposureTable}{The name of the table that will be created to store the exposure
 cohorts. Only needed if \code{referenceSet = 'ohdsiDevelopment'}.}
 
 \item{outcomeDatabaseSchema}{The database schema where the target outcome table is located. Note
@@ -47,22 +46,15 @@ specified, e.g. 'cdm_schema.dbo'}
 \item{outcomeTable}{The name of the table where the outcomes will be stored.}
 
 \item{nestingDatabaseSchema}{(For the OHDSI Methods Benchmark and OHDSI Development Set only) The
-database schema where the nesting outcome table is located. Note that 
+database schema where the nesting outcome table is located. Note that
 for SQL Server, both the database and schema should be specified, e.g.
  'cdm_schema.dbo'.}
 
-\item{nestingTable}{(For the OHDSI Methods Benchmark and OHDSI Development Set only) The 
+\item{nestingTable}{(For the OHDSI Methods Benchmark and OHDSI Development Set only) The
 name of the table where the nesting cohorts will be stored.}
-
-\item{maxCores}{How many parallel cores should be used? If more cores are made available
-this can speed up the analyses.}
 
 \item{referenceSet}{The name of the reference set for which outcomes need to be created.
 Currently supported are "ohdsiMethodsBenchmark", and "ohdsiDevelopment".}
-
-\item{outputFolder}{Name of local folder to place intermediary results; make sure to use
-forward slashes (/). Do not use a folder on a network drive since
-this greatly impacts performance.}
 }
 \description{
 Run the main analysis

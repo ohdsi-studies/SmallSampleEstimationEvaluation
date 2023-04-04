@@ -24,7 +24,8 @@ Imports:
   ggplot2,
   ParallelLogger,
   methods,
-  EmpiricalCalibration
+  EmpiricalCalibration,
+  CohortGenerator
 Suggests:
   testthat,
   DT,
@@ -34,5 +35,5 @@ Remotes:
   ohdsi/FeatureExtraction,
   ohdsi/MethodEvaluation,
   ohdsi/EmpiricalCalibration
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Encoding: UTF-8
