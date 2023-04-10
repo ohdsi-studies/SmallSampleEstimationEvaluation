@@ -22,35 +22,24 @@
 #' @param cdmDatabaseSchema       A database schema containing health care data in the OMOP Commond
 #'                                Data Model. Note that for SQL Server, botth the database and schema
 #'                                should be specified, e.g. 'cdm_schema.dbo'.
-#' @param exposureDatabaseSchema  The name of the database schema where the exposure cohorts will be
-#'                                created. Only needed if \code{referenceSet = 'ohdsiDevelopment'}. Note
-#'                                that for SQL Server, both the database and schema should be specified,
-#'                                e.g. 'cdm_schema.dbo'.
-#' @param exposureTable           The name of the table that will be created to store the exposure
-#'                                cohorts. Only needed if \code{referenceSet = 'ohdsiDevelopment'}.
-#' @param outcomeDatabaseSchema   The database schema where the target outcome table is located. Note
-#'                                that for SQL Server, both the database and schema should be
-#'                                specified, e.g. 'cdm_schema.dbo'
-#' @param outcomeTable            The name of the table where the outcomes will be stored.
-#' @param nestingDatabaseSchema   (For the OHDSI Methods Benchmark and OHDSI Development Set only) The
-#'                                database schema where the nesting outcome table is located. Note that
-#'                                for SQL Server, both the database and schema should be specified, e.g.
-#'                                 'cdm_schema.dbo'.
-#' @param nestingTable            (For the OHDSI Methods Benchmark and OHDSI Development Set only) The
-#'                                name of the table where the nesting cohorts will be stored.
+#' @param cohortDatabaseSchema    The name of the database schema where the exposure and outcome cohorts will be
+#'                                created. 
+#' @param cohortTable             The name of the table that will be created to store the exposure
+#'                                and outcome cohorts. 
 #' @param maxCores                How many parallel cores should be used? If more cores are made available
 #'                                this can speed up the analyses.
-#' @param referenceSet            The name of the reference set for which outcomes need to be created.
-#'                                Currently supported are "ohdsiMethodsBenchmark", and "ohdsiDevelopment".
 #' @param outputFolder            Name of local folder to place intermediary results; make sure to use
 #'                                forward slashes (/). Do not use a folder on a network drive since
 #'                                this greatly impacts performance.
+#' @param databaseId              A string used to identify the database in the results.
+#' @param createCohorts           Should the cohorts be created? If `FALSE`, the cohorts are assumed to already
+#'                                exist.
 #'
 #' @export
 execute <- function(connectionDetails,
                     cdmDatabaseSchema,
-                    cohortDatabaseSchema = cohortDatabaseSchema,
-                    cohortTable = cohortTable,
+                    cohortDatabaseSchema,
+                    cohortTable,
                     maxCores = 1,
                     outputFolder,
                     databaseId,
@@ -99,9 +88,9 @@ execute <- function(connectionDetails,
   # Create large sample ------------------------------------------------------
   largeSampleSize <- 20000
   largeSampleFolder <- file.path(outputFolder, "largeSample")
-  if (!file.exists(largeSampleFolder)) {
-    dir.create(largeSampleFolder)
-  }
+  # if (!file.exists(largeSampleFolder)) {
+  #   dir.create(largeSampleFolder)
+  # }
   samplePopulation(
     sourceCmFolder = fullDataFolder,
     sampleFolder = largeSampleFolder,
@@ -127,9 +116,9 @@ execute <- function(connectionDetails,
   for (sampleSize in sampleSizes) {
     numberOfSamples <- largeSampleSize / sampleSize
     smallSamplesFolder <- file.path(outputFolder, sprintf("smallSample%d", sampleSize))
-    if (!file.exists(smallSamplesFolder)) {
-      dir.create(smallSamplesFolder)
-    }
+    # if (!file.exists(smallSamplesFolder)) {
+    #   dir.create(smallSamplesFolder)
+    # }
     samplePopulation(
       sourceCmFolder = largeSampleFolder,
       sampleFolder = smallSamplesFolder,

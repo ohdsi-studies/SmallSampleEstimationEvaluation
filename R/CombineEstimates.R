@@ -14,12 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Combine estimates
-#'
-#' @param cmFolders               Name of local folders where the CohortMethod runs can be found.
-#' @param maxCores                How many parallel cores should be used? If more cores are made available
-#'                                this can speed up the analyses.
-#'
 #' @export
 combineEstimates <- function(parentFolder,
                              cmFolders,

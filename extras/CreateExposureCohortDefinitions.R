@@ -29,8 +29,7 @@ thiazides <- cs(
 thiazides <- getConceptSetDetails(thiazides, connection, cdmDatabaseSchema)
 aceInhibitorsNewUsers <- cohort(
   entry = entry(
-    drug(aceInhibitors),
-    primaryCriteriaLimit = "First",
+    drug(aceInhibitors, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
@@ -42,8 +41,7 @@ aceInhibitorsNewUsers <- cohort(
 )
 thiazidesNewUsers <- cohort(
   entry = entry(
-    drug(thiazides),
-    primaryCriteriaLimit = "First",
+    drug(thiazides, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
@@ -73,8 +71,7 @@ liraglutide <- cs(
 liraglutide <- getConceptSetDetails(liraglutide, connection, cdmDatabaseSchema)
 sitagliptinNewUsers <- cohort(
   entry = entry(
-    drug(sitagliptin),
-    primaryCriteriaLimit = "First",
+    drug(sitagliptin, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
@@ -86,8 +83,7 @@ sitagliptinNewUsers <- cohort(
 )
 liraglutideNewUsers <- cohort(
   entry = entry(
-    drug(liraglutide),
-    primaryCriteriaLimit = "First",
+    drug(liraglutide, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
@@ -132,10 +128,10 @@ writeLines(cohortPrintFriendly(as.json(sitagliptinNewUsers)))
 writeLines(cohortPrintFriendly(as.json(liraglutideNewUsers)))
 writeLines(cohortPrintFriendly(as.json(aceInhibitorsNewUsers)))
 writeLines(cohortPrintFriendly(as.json(thiazidesNewUsers)))
-str(sitagliptin)
-str(liraglutide)
-str(t2dm)
-str(hypertensiveDisorder)
+sitagliptin
+liraglutide
+t2dm
+hypertensiveDisorder
 
 # ncs <- readRDS(system.file("ohdsiDevelopmentNegativeControls.rds", package = "MethodEvaluation"))
 # readr::write_csv(ncs, "inst/NegativeControls.csv")

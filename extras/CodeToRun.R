@@ -18,14 +18,9 @@ databaseId <- "MDCD"
 
 execute(connectionDetails,
         cdmDatabaseSchema = cdmDatabaseSchema,
-        exposureDatabaseSchema = exposureDatabaseSchema,
-        exposureTable = exposureTable,
-        outcomeDatabaseSchema = outcomeDatabaseSchema,
-        outcomeTable = outcomeTable,
-        nestingDatabaseSchema = nestingDatabaseSchema,
-        nestingTable = nestingTable,
+        cohortDatabaseSchema = cohortDatabaseSchema,
+        cohortTable = cohortTable,
         maxCores = maxCores,
-        referenceSet = referenceSet,
         outputFolder = outputFolder,
         databaseId = databaseId,
-        createCohorts = FALSE) 
+        createCohorts = F) 

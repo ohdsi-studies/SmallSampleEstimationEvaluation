@@ -25,3 +25,16 @@ CohortMethod::getAttritionTable(model)
 row <- ref[ref$targetId == 3, ][1, ]
 model <- readRDS(file.path(folder, row$outcomeModelFile))
 CohortMethod::getAttritionTable(model)
+
+
+
+connection <- connect(connectionDetails)
+x <- renderTranslateQuerySql(
+  connection = connection, 
+  sql = "SELECT cohort_definition_id, COUNT(*) AS person_count FROM @schema.@table GROUP BY cohort_definition_id",
+  schema = cohortDatabaseSchema,
+  table = cohortTable
+)
+x
+disconnect(connection)
+           

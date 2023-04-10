@@ -7,8 +7,8 @@
 execute(
   connectionDetails,
   cdmDatabaseSchema,
-  cohortDatabaseSchema = cohortDatabaseSchema,
-  cohortTable = cohortTable,
+  cohortDatabaseSchema,
+  cohortTable,
   maxCores = 1,
   outputFolder,
   databaseId,
@@ -24,6 +24,12 @@ function \code{createConnectionDetails} in the
 Data Model. Note that for SQL Server, botth the database and schema
 should be specified, e.g. 'cdm_schema.dbo'.}
 
+\item{cohortDatabaseSchema}{The name of the database schema where the exposure and outcome cohorts will be
+created.}
+
+\item{cohortTable}{The name of the table that will be created to store the exposure
+and outcome cohorts.}
+
 \item{maxCores}{How many parallel cores should be used? If more cores are made available
 this can speed up the analyses.}
 
@@ -31,30 +37,10 @@ this can speed up the analyses.}
 forward slashes (/). Do not use a folder on a network drive since
 this greatly impacts performance.}
 
-\item{exposureDatabaseSchema}{The name of the database schema where the exposure cohorts will be
-created. Only needed if \code{referenceSet = 'ohdsiDevelopment'}. Note
-that for SQL Server, both the database and schema should be specified,
-e.g. 'cdm_schema.dbo'.}
+\item{databaseId}{A string used to identify the database in the results.}
 
-\item{exposureTable}{The name of the table that will be created to store the exposure
-cohorts. Only needed if \code{referenceSet = 'ohdsiDevelopment'}.}
-
-\item{outcomeDatabaseSchema}{The database schema where the target outcome table is located. Note
-that for SQL Server, both the database and schema should be
-specified, e.g. 'cdm_schema.dbo'}
-
-\item{outcomeTable}{The name of the table where the outcomes will be stored.}
-
-\item{nestingDatabaseSchema}{(For the OHDSI Methods Benchmark and OHDSI Development Set only) The
-database schema where the nesting outcome table is located. Note that
-for SQL Server, both the database and schema should be specified, e.g.
- 'cdm_schema.dbo'.}
-
-\item{nestingTable}{(For the OHDSI Methods Benchmark and OHDSI Development Set only) The
-name of the table where the nesting cohorts will be stored.}
-
-\item{referenceSet}{The name of the reference set for which outcomes need to be created.
-Currently supported are "ohdsiMethodsBenchmark", and "ohdsiDevelopment".}
+\item{createCohorts}{Should the cohorts be created? If \code{FALSE}, the cohorts are assumed to already
+exist.}
 }
 \description{
 Run the main analysis

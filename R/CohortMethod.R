@@ -14,43 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Run CohortMethod
-#'
-#' @param connectionDetails       An R object of type \code{ConnectionDetails} created using the
-#'                                function \code{createConnectionDetails} in the
-#'                                \code{DatabaseConnector} package.
-#' @param cdmDatabaseSchema       A database schema containing health care data in the OMOP Commond
-#'                                Data Model. Note that for SQL Server, botth the database and schema
-#'                                should be specified, e.g. 'cdm_schema.dbo'.
-#' @param exposureDatabaseSchema  The name of the database schema where the exposure cohorts will be
-#'                                created. Only needed if \code{referenceSet = 'ohdsiDevelopment'}. Note
-#'                                that for SQL Server, both the database and schema should be specified,
-#'                                e.g. 'cdm_schema.dbo'.
-#' @param exposureTable           The name of the table that will be created to store the exposure
-#'                                cohorts. Only needed if \code{referenceSet = 'ohdsiDevelopment'}.
-#' @param outcomeDatabaseSchema   The database schema where the target outcome table is located. Note
-#'                                that for SQL Server, both the database and schema should be
-#'                                specified, e.g. 'cdm_schema.dbo'
-#' @param outcomeTable            The name of the table where the outcomes will be stored.
-#' @param maxCores                How many parallel cores should be used? If more cores are made available
-#'                                this can speed up the analyses.
-#' @param referenceSet            The name of the reference set for which outcomes need to be created.
-#'                                Currently supported are "ohdsiMethodsBenchmark", and "ohdsiDevelopment".
-#' @param outputFolder            Name of local folder to place intermediary results; make sure to use
-#'                                forward slashes (/). Do not use a folder on a network drive since
-#'                                this greatly impacts performance.
-#' @param cmFolder                Name of local folder to place intermediary results; make sure to use
-#'                                forward slashes (/). Do not use a folder on a network drive since
-#'                                this greatly impacts performance.
-#' @param externalPsFolder        Name of folder containing propensity score files of a superset of the population.
-#'
 #' @export
 runCohortMethod <- function(connectionDetails = NULL,
                             cdmDatabaseSchema = "",
-                            exposureDatabaseSchema = "",
-                            exposureTable = "",
-                            outcomeDatabaseSchema = "",
-                            outcomeTable = "",
+                            cohortDatabaseSchema = "",
+                            cohortTable = "",
                             maxCores = 1,
                             outputFolder,
                             cmFolder,
@@ -85,8 +53,8 @@ runCohortMethod <- function(connectionDetails = NULL,
   # Create analysis settings list -------------------------------------------------
   covariateSettings <- FeatureExtraction::createDefaultCovariateSettings(addDescendantsToExclude = TRUE)
   getDbCmDataArgs <- CohortMethod::createGetDbCohortMethodDataArgs(
-    washoutPeriod = 365,
-    firstExposureOnly = TRUE,
+    # washoutPeriod = 365,
+    # firstExposureOnly = TRUE,
     removeDuplicateSubjects = "remove all",
     maxCohortSize = 1e6,
     covariateSettings = covariateSettings

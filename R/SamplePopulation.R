@@ -20,10 +20,11 @@ samplePopulation <- function(sourceCmFolder,
                              numberOfSamples = NULL,
                              sampleSize = NULL,
                              seed = 123) {
-  # if (dir.exists(sampleFolder)) {
-  #   return()
-  # }
+  if (dir.exists(sampleFolder)) {
+    return()
+  }
   set.seed(seed)
+  dir.create(sampleFolder)
 
   subsetCmData <- function(cmData, sampleRowIds, outputFileName) {
     sampleCmData <- Andromeda::andromeda()

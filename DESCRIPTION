@@ -36,4 +36,5 @@ Remotes:
   ohdsi/MethodEvaluation,
   ohdsi/EmpiricalCalibration
 RoxygenNote: 7.2.3
+Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
