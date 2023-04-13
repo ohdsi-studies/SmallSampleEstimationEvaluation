@@ -31,8 +31,8 @@ runCohortMethod <- function(connectionDetails = NULL,
   for (i in seq_along(allControls)) {
     controls <- allControls[[i]]
     excludedCovariateConceptIds <- c(
-      as.numeric(strsplit(controls$targetConceptIds[1], ";")[[1]]),
-      as.numeric(strsplit(controls$comparatorConceptIds[1], ";")[[1]])
+      as.numeric(strsplit(as.character(controls$targetConceptIds[1]), ";")[[1]]),
+      as.numeric(strsplit(as.character(controls$comparatorConceptIds[1]), ";")[[1]])
     )
     outcomes <- list()
     for (j in seq_along(controls$outcomeId)) {
@@ -159,7 +159,20 @@ runCohortMethod <- function(connectionDetails = NULL,
   CohortMethod::saveCmAnalysisList(cmAnalysisList, file.path(cmFolder, "cmAnalysisList.json"))
   
   # Run analyses ----------------------------------------------------------------------
-  multiThreadingSettings <- CohortMethod::createDefaultMultiThreadingSettings(maxCores = maxCores)
+  # multiThreadingSettings <- CohortMethod::createDefaultMultiThreadingSettings(maxCores = maxCores)
+  multiThreadingSettings <- CohortMethod::createMultiThreadingSettings(
+    getDbCohortMethodDataThreads = min(2, maxCores),
+    createPsThreads = max(1, floor(maxCores / 8)),
+    psCvThreads = min(8, maxCores),
+    createStudyPopThreads = min(3, maxCores),
+    trimMatchStratifyThreads = min(5, maxCores),
+    computeSharedBalanceThreads = min(3, maxCores),
+    computeBalanceThreads = min(5, maxCores),
+    prefilterCovariatesThreads = min(3, maxCores),
+    fitOutcomeModelThreads = max(1, floor(maxCores / 4)),
+    outcomeCvThreads = min(4, maxCores),
+    calibrationThreads = min(4, maxCores)
+    )
   if (is.null(connectionDetails)) {
     connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "postgresql")
   }

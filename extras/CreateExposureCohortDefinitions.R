@@ -11,25 +11,34 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(
 cdmDatabaseSchema <- "cdm_truven_mdcd_v2359"
 connection <- connect(connectionDetails)
 
-# ACE inhibitors vs thiazides and thiazide-like diuretics -----------------------
+# Lisinopril, hydrochlorothiazide, metoprolol -----------------------
+
+# Concept sets
 hypertensiveDisorder <- cs(
   descendants(316866),
   name = "Hypertensive disorder"
 )
 hypertensiveDisorder <- getConceptSetDetails(hypertensiveDisorder, connection, cdmDatabaseSchema)
-aceInhibitors <- cs(
-  descendants(1308216,1310756,1331235,1334456,1335471,1340128,1341927,1342439,1363749,1373225),
-  name = "ACE inhibitors"
+lisinopril <- cs(
+  descendants(1308216),
+  name = "Lisinopril"
 )
-aceInhibitors <- getConceptSetDetails(aceInhibitors, connection, cdmDatabaseSchema)
-thiazides <- cs(
-  descendants(907013,974166,978555,1395058),
-  name = "Thiazide or thiazide-like diuretic"
+lisinopril <- getConceptSetDetails(lisinopril, connection, cdmDatabaseSchema)
+hydrochlorothiazide <- cs(
+  descendants(974166),
+  name = "Hydrochlorothiazide"
 )
-thiazides <- getConceptSetDetails(thiazides, connection, cdmDatabaseSchema)
-aceInhibitorsNewUsers <- cohort(
+hydrochlorothiazide <- getConceptSetDetails(hydrochlorothiazide, connection, cdmDatabaseSchema)
+metoprolol <- cs(
+  descendants(1307046),
+  name = "Metoprolol"
+)
+metoprolol <- getConceptSetDetails(metoprolol, connection, cdmDatabaseSchema)
+
+# Cohorts
+lisinoprilNewUsers <- cohort(
   entry = entry(
-    drug(aceInhibitors, firstOccurrence()),
+    drug(lisinopril, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
@@ -37,11 +46,11 @@ aceInhibitorsNewUsers <- cohort(
       atLeast(1, condition(hypertensiveDisorder), duringInterval(eventStarts(-Inf, 0)))
     )
   ),
-  exit = exit(endStrategy = drugExit(aceInhibitors, persistenceWindow = 30, surveillanceWindow = 0))
+  exit = exit(endStrategy = drugExit(lisinopril, persistenceWindow = 30, surveillanceWindow = 0))
 )
-thiazidesNewUsers <- cohort(
+hydrochlorothiazideNewUsers <- cohort(
   entry = entry(
-    drug(thiazides, firstOccurrence()),
+    drug(hydrochlorothiazide, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
@@ -49,10 +58,24 @@ thiazidesNewUsers <- cohort(
       atLeast(1, condition(hypertensiveDisorder), duringInterval(eventStarts(-Inf, 0)))
     )
   ),
-  exit = exit(endStrategy = drugExit(thiazides, persistenceWindow = 30, surveillanceWindow = 0))
+  exit = exit(endStrategy = drugExit(hydrochlorothiazide, persistenceWindow = 30, surveillanceWindow = 0))
+)
+metoprololNewUsers <- cohort(
+  entry = entry(
+    drug(metoprolol, firstOccurrence()),
+    observationWindow = continuousObservation(priorDays = 365)
+  ),
+  attrition = attrition(
+    "prior hypertensive disorder" = withAll(
+      atLeast(1, condition(hypertensiveDisorder), duringInterval(eventStarts(-Inf, 0)))
+    )
+  ),
+  exit = exit(endStrategy = drugExit(metoprolol, persistenceWindow = 30, surveillanceWindow = 0))
 )
 
-# Sitagliptin vs liraglutide --------------------------------------------------------------
+# Sitagliptin, liraglutide, glimepiride --------------------------------------------------------------
+
+# Concept sets
 t2dm <- cs(
   descendants(443238, 201820, 442793), 
   descendants(exclude(195771, 201254, 435216, 761051, 4058243, 40484648)),
@@ -69,6 +92,13 @@ liraglutide <- cs(
   name = "Liraglutide"
 )
 liraglutide <- getConceptSetDetails(liraglutide, connection, cdmDatabaseSchema)
+glimepiride <- cs(
+  descendants(1597756),
+  name = "Glimepiride"
+)
+glimepiride <- getConceptSetDetails(glimepiride, connection, cdmDatabaseSchema)
+
+# Cohorts
 sitagliptinNewUsers <- cohort(
   entry = entry(
     drug(sitagliptin, firstOccurrence()),
@@ -93,45 +123,73 @@ liraglutideNewUsers <- cohort(
   ),
   exit = exit(endStrategy = drugExit(liraglutide, persistenceWindow = 30, surveillanceWindow = 0))
 )
+glimepirideNewUsers <- cohort(
+  entry = entry(
+    drug(glimepiride, firstOccurrence()),
+    observationWindow = continuousObservation(priorDays = 365)
+  ),
+  attrition = attrition(
+    "prior T2DM" = withAll(
+      atLeast(1, condition(t2dm), duringInterval(eventStarts(-Inf, 0)))
+    )
+  ),
+  exit = exit(endStrategy = drugExit(glimepiride, persistenceWindow = 30, surveillanceWindow = 0))
+)
 
 # Write to file ----------------------------------------------------------
 cohortDefinitionSet <- tibble(
   cohortId = c(
     1, 
-    2, 
-    3, 
-    4),
+    2,
+    3,
+    4, 
+    5,
+    6
+  ),
   cohortName = c(
-    "ACE inhibitors",
-    "Thiazide or thiazide-like diuretic",
+    "Lisinopril",
+    "Hydrochlorothiazide",
+    "Metoprolol",
     "Sitagplitin",
-    "Liraglutide"
+    "Liraglutide",
+    "Glimepiride"
   ),
   json = c(
-    as.json(aceInhibitorsNewUsers),
-    as.json(thiazidesNewUsers),
+    as.json(lisinoprilNewUsers),
+    as.json(hydrochlorothiazideNewUsers),
+    as.json(metoprololNewUsers),
     as.json(sitagliptinNewUsers),
-    as.json(liraglutideNewUsers)
+    as.json(liraglutideNewUsers),
+    as.json(glimepirideNewUsers)
   ),
   sql = c(
-    buildCohortQuery(as.json(aceInhibitorsNewUsers), createGenerateOptions(generateStats = FALSE)),
-    buildCohortQuery(as.json(thiazidesNewUsers), createGenerateOptions(generateStats = FALSE)),
+    buildCohortQuery(as.json(lisinoprilNewUsers), createGenerateOptions(generateStats = FALSE)),
+    buildCohortQuery(as.json(hydrochlorothiazideNewUsers), createGenerateOptions(generateStats = FALSE)),
+    buildCohortQuery(as.json(metoprololNewUsers), createGenerateOptions(generateStats = FALSE)),
     buildCohortQuery(as.json(sitagliptinNewUsers), createGenerateOptions(generateStats = FALSE)),
-    buildCohortQuery(as.json(liraglutideNewUsers), createGenerateOptions(generateStats = FALSE))
+    buildCohortQuery(as.json(liraglutideNewUsers), createGenerateOptions(generateStats = FALSE)),
+    buildCohortQuery(as.json(glimepirideNewUsers), createGenerateOptions(generateStats = FALSE))
   )
 )
 disconnect(connection)
 saveRDS(cohortDefinitionSet, "inst/CohortDefinitionSet.rds")
 
 # Review --------------------------------------------------------------
+writeLines(cohortPrintFriendly(as.json(lisinoprilNewUsers)))
+writeLines(cohortPrintFriendly(as.json(hydrochlorothiazideNewUsers)))
+writeLines(cohortPrintFriendly(as.json(metoprololNewUsers)))
 writeLines(cohortPrintFriendly(as.json(sitagliptinNewUsers)))
 writeLines(cohortPrintFriendly(as.json(liraglutideNewUsers)))
-writeLines(cohortPrintFriendly(as.json(aceInhibitorsNewUsers)))
-writeLines(cohortPrintFriendly(as.json(thiazidesNewUsers)))
+writeLines(cohortPrintFriendly(as.json(glimepirideNewUsers)))
+lisinopril
+hydrochlorothiazide
+metoprolol
+hypertensiveDisorder
 sitagliptin
 liraglutide
+glimepiride
 t2dm
-hypertensiveDisorder
+
 
 # ncs <- readRDS(system.file("ohdsiDevelopmentNegativeControls.rds", package = "MethodEvaluation"))
 # readr::write_csv(ncs, "inst/NegativeControls.csv")
