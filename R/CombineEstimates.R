@@ -18,6 +18,10 @@
 combineEstimates <- function(parentFolder,
                              cmFolders,
                              maxCores = 1) {
+  fileName <- file.path(parentFolder, "resultsSummary.rds")
+  if (file.exists(fileName)) {
+    return()
+  }
   omr <- CohortMethod::getFileReference(cmFolders[1])
   cmAnalysisList <- CohortMethod::loadCmAnalysisList(file.path(cmFolders[1], "cmAnalysisList.json"))
   CohortMethod::saveCmAnalysisList(cmAnalysisList, file.path(parentFolder, "cmAnalysisList.json"))
@@ -49,7 +53,7 @@ combineEstimates <- function(parentFolder,
   }
   overallEstimates <- lapply(split(omr, omr$analysisId), computeOverallEstimates)
   overallEstimates <- bind_rows(overallEstimates)
-  saveRDS(overallEstimates, file.path(parentFolder, "resultsSummary.rds"))
+  saveRDS(overallEstimates, fileName)
 }
 
 fitOverallOutcomeModel <- function(rowIdx, omrSubset, cmAnalysis, cmFolders) {

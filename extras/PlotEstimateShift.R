@@ -5,10 +5,13 @@ outputFolder <- "d:/SmallSampleEstimationEvaluation"
 
 plotsAndTablesFolder <- file.path(outputFolder, "plotsAndTables")
 
+tcs <- read.csv(file.path(outputFolder, "allControls.csv")) %>%
+  distinct(targetId, targetName, comparatorId, comparatorName) %>%
+  mutate(comparison = sprintf("%s vs %s", targetName, comparatorName))
 estimates <- readRDS(file.path(outputFolder, "largeSample", "resultsSummary.rds")) %>%
   select(analysisId, targetId, comparatorId, outcomeId, logRr, seLogRr) %>%
   mutate(sampleSize = 20000)
-sampleSizes <- c(4000, 2000, 1000, 500, 250, 125)
+sampleSizes <- c(4000, 2000, 1000, 500, 250)
 for (sampleSize in sampleSizes) {
   temp <- readRDS(file.path(outputFolder, sprintf("smallSample%d", sampleSize), "resultsSummary.rds")) %>%
     select(analysisId, targetId, comparatorId, outcomeId, logRr, seLogRr) %>%
@@ -27,6 +30,7 @@ plotShift <- function(fromAnalysisIds,
                       toAnalysisIds = NULL, 
                       from20K = TRUE, 
                       targetId,
+                      comparatorId,
                       labels = c("PS 1-on-1 matching", "PS stratification"),
                       title,
                       fileName) {
@@ -37,7 +41,7 @@ plotShift <- function(fromAnalysisIds,
   )
   if (from20K) {
     vizData <- estimates %>%
-      filter(sampleSize == 20000 & targetEffectSize == 1 & analysisId %in% fromAnalysisIds & targetId == !!targetId) %>%
+      filter(sampleSize == 20000 & targetEffectSize == 1 & analysisId %in% fromAnalysisIds & targetId == !!targetId & comparatorId == !!comparatorId) %>%
       select(analysisId, targetId, comparatorId, outcomeId, startLogRr = logRr, startSeLogRr = seLogRr) %>%
       inner_join(
         estimates %>%
@@ -52,7 +56,7 @@ plotShift <- function(fromAnalysisIds,
       ) 
   } else {
     vizData <- estimates %>%
-      filter(sampleSize != 20000 & targetEffectSize == 1 & analysisId %in% fromAnalysisIds & targetId == !!targetId) %>%
+      filter(sampleSize != 20000 & targetEffectSize == 1 & analysisId %in% fromAnalysisIds & targetId == !!targetId & comparatorId == !!comparatorId) %>%
       select(analysisId, targetId, comparatorId, outcomeId, sampleSize, startLogRr = logRr, startSeLogRr = seLogRr) %>%
       inner_join(
         estimates %>%
@@ -121,9 +125,9 @@ plotShift(
   fileName = "ShiftLocalVsGlobalPooling.png"
 )
 
-plotEstimates <- function(analysisId, targetId, title, fileName) {
+plotEstimates <- function(analysisId, targetId, comparatorId, title, fileName) {
   vizData <- estimates %>%
-    filter(sampleSize != 20000 & analysisId == !!analysisId & targetId == !!targetId)
+    filter(sampleSize != 20000 & analysisId == !!analysisId & targetId == !!targetId & comparatorId == !!comparatorId)
   
   d <- tibble(
     logRr = vizData$logRr,
@@ -199,18 +203,37 @@ plotEstimates <- function(analysisId, targetId, title, fileName) {
   ggsave(file.path(plotsAndTablesFolder, fileName), plot = plot, width = 9, height = 10, dpi = 300)
 }
   
-plotEstimates(1, 1, "ACE inhibitors vs thiazides, PS matching, pooling", "AllEstimatesPsMatchPooling_t1.png")  
-plotEstimates(1, 3, "Sitaglipton vs liraglutide, PS matching, pooling", "AllEstimatesPsMatchPooling_t3.png")  
-plotEstimates(3, 1, "ACE inhibitors vs thiazides, PS stratification, pooling", "AllEstimatesPsstratificationPooling_t1.png")  
-plotEstimates(3, 3, "Sitaglipton vs liraglutide, PS stratification, pooling", "AllEstimatesPsstratificationPooling_t3.png")  
-
-plotEstimates(101, 1, "ACE inhibitors vs thiazides, PS matching, non-normal synthesis", "AllEstimatesPsMatchNonNormal_t1.png")  
-plotEstimates(101, 3, "Sitaglipton vs liraglutide, PS matching, non-normal synthesis", "AllEstimatesPsMatchNonNormal_t3.png")  
-plotEstimates(103, 1, "ACE inhibitors vs thiazides, PS stratification, non-normal synthesis", "AllEstimatesPsstratificationNonNormal_t1.png")  
-plotEstimates(103, 3, "Sitaglipton vs liraglutide, PS stratification, non-normal synthesis", "AllEstimatesPsstratificationNonNormal_t3.png")  
-
-plotEstimates(201, 1, "ACE inhibitors vs thiazides, PS matching, normal synthesis", "AllEstimatesPsMatchNormal_t1.png")  
-plotEstimates(201, 3, "Sitaglipton vs liraglutide, PS matching, normal synthesis", "AllEstimatesPsMatchNormal_t3.png")  
-plotEstimates(203, 1, "ACE inhibitors vs thiazides, PS stratification, normal synthesis", "AllEstimatesPsstratificationNormal_t1.png")  
-plotEstimates(203, 3, "Sitaglipton vs liraglutide, PS stratification, normal synthesis", "AllEstimatesPsstratificationNormal_t3.png")  
-
+# for (i in seq_len(nrow(tcs))) {
+for (i in 3:4) {
+  row <- tcs[i, ]
+  plotEstimates(analysisId = 1,
+                targetId = row$targetId, 
+                comparatorId = row$comparatorId, 
+                title = sprintf("%s, PS matching, pooling", row$comparison),
+                fileName = sprintf("AllEstimatesPsMatchPooling_t%d_c_%d.png", row$targetId, row$comparatorId))
+  plotEstimates(analysisId = 3,
+                targetId = row$targetId, 
+                comparatorId = row$comparatorId, 
+                title = sprintf("%s, PS stratification, pooling", row$comparison),
+                fileName = sprintf("AllEstimatesPsstratificationPooling_t%d_c_%d.png", row$targetId, row$comparatorId))
+  plotEstimates(analysisId = 101,
+                targetId = row$targetId, 
+                comparatorId = row$comparatorId, 
+                title = sprintf("%s, PS matching, non-normal synthesis", row$comparison),
+                fileName = sprintf("AllEstimatesPsMatchNonNormal_t%d_c_%d.png", row$targetId, row$comparatorId))
+  plotEstimates(analysisId = 103,
+                targetId = row$targetId, 
+                comparatorId = row$comparatorId, 
+                title = sprintf("%s, PS stratification, non-normal synthesis", row$comparison),
+                fileName = sprintf("AllEstimatesPsstratificationNonNormal_t%d_c_%d.png", row$targetId, row$comparatorId))
+  plotEstimates(analysisId = 201,
+                targetId = row$targetId, 
+                comparatorId = row$comparatorId, 
+                title = sprintf("%s, PS matching, normal synthesis", row$comparison),
+                fileName = sprintf("AllEstimatesPsMatchNormal_t%d_c_%d.png", row$targetId, row$comparatorId))
+  plotEstimates(analysisId = 203,
+                targetId = row$targetId, 
+                comparatorId = row$comparatorId, 
+                title = sprintf("%s, PS stratification, normal synthesis", row$comparison),
+                fileName = sprintf("AllEstimatesPsstratificationNormal_t%d_c_%d.png", row$targetId, row$comparatorId))
+}

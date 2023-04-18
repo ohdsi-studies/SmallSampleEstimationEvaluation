@@ -26,7 +26,7 @@ computePerformance <- function(outputFolder,
   }
   csvFileName <- system.file("NegativeControls.csv", package = "SmallSampleEstimationEvaluation")
   negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE)  %>%
-    select("targetId", outcomeId = "outcomeConceptId") %>%
+    select("targetId", "comparatorId", outcomeId = "outcomeConceptId") %>%
     mutate(type = "Outcome control")
   synthesisSummary <- readRDS(file.path(outputFolder, "SignalInjection", "injectionSummary.rds"))
   estimates <- CohortMethod::getResultsSummary(cmFolder)
@@ -61,51 +61,56 @@ computePerformance <- function(outputFolder,
     analysisRef <- bind_rows(analysisRef, analysisTraditional)
   }
   MethodEvaluation::packageCustomBenchmarkResults(
-    estimates = estimates,
-    negativeControls = negativeControls,
+    estimates = estimates %>% 
+      mutate(targetId = targetId + 100* comparatorId),
+    negativeControls = negativeControls %>% 
+      mutate(targetId = targetId + 100* comparatorId),
     synthesisSummary = synthesisSummary,
     analysisRef = analysisRef,
     databaseName = databaseId,
     exportFolder = cmFolder
   )
   metrics <- tibble()
-  targetIds <- unique(synthesisSummary$exposureId)
-  for (targetId in targetIds) {
+  tcs <- negativeControls %>%
+    distinct(.data$targetId, .data$comparatorId)
+  for (i in seq_len(nrow(tcs))) {
+    tc <- tcs[i, ]
     metricsUncalibrated <- MethodEvaluation::computeOhdsiBenchmarkMetrics(
       exportFolder = cmFolder,
       mdrr = "All",
       calibrated = FALSE,
       comparative = TRUE,
-      stratum = targetId
+      stratum = tc$targetId + 100 * tc$comparatorId
     )
     metricsUncalibrated$calibrated <- FALSE
-    metricsUncalibrated$targetId <- targetId
+    metricsUncalibrated$targetId <- tc$targetId
+    metricsUncalibrated$comparatorId <- tc$comparatorId
     metrics <- bind_rows(metrics, metricsUncalibrated)
     metricsCalibrated <- MethodEvaluation::computeOhdsiBenchmarkMetrics(
       exportFolder = cmFolder,
       mdrr = "All",
       calibrated = TRUE,
       comparative = TRUE,
-      stratum = targetId
+      stratum = tc$targetId + 100 * tc$comparatorId
     )
     metricsCalibrated$calibrated <- TRUE
-    metricsCalibrated$targetId <- targetId
+    metricsCalibrated$targetId <- tc$targetId
+    metricsCalibrated$comparatorId <- tc$comparatorId
     metrics <- bind_rows(metrics, metricsCalibrated)
   }
   subsets <- estimates %>%
-    inner_join(negativeControls, by = join_by("targetId", "outcomeId")) %>%
+    inner_join(negativeControls, by = join_by("targetId", "comparatorId", "outcomeId")) %>%
     inner_join(analysisRef %>%
                  select("analysisId", "description"),
                by = "analysisId"
     )%>%
-    group_by(.data$analysisId, .data$targetId) %>%
+    group_by(.data$analysisId, .data$targetId, .data$comparatorId) %>%
     group_split()
   ease <- lapply(subsets, generatePlotsAndComputeEase, folder = cmFolder) %>%
     bind_rows() %>%
-    select(-"comparatorId") %>%
     mutate(calibrated = FALSE)
   metrics <- metrics %>%
-    left_join(ease, by = join_by("analysisId", "targetId", "calibrated"))
+    left_join(ease, by = join_by("analysisId", "targetId", "comparatorId", "calibrated"))
   readr::write_csv(metrics, outputFileName)
 }
 
@@ -116,7 +121,7 @@ generatePlotsAndComputeEase <- function(ncs, folder = NULL) {
     seLogRr = ncs$seLogRr
   )
   if (!is.null(folder)) {
-    ncPlotFileName <- file.path(folder, sprintf("ncs_t%d_a%d.png", ncs$targetId[1], ncs$analysisId[1]))
+    ncPlotFileName <- file.path(folder, sprintf("ncs_t%d_c%d_a%d.png", ncs$targetId[1], ncs$comparatorId[1], ncs$analysisId[1]))
     EmpiricalCalibration::plotCalibrationEffect(
       logRrNegatives = ncs$logRr,
       seLogRrNegatives = ncs$seLogRr,
@@ -182,7 +187,8 @@ computePsMetricsForAnalysisId <- function(row, sampleFolders) {
   }
   result <- as_tibble(t(result)) %>% 
     mutate(analysisId = row$analysisId,
-           targetId = row$targetId)
+           targetId = row$targetId,
+           comparatorId = row$comparatorId)
   return(result)
 }
 
@@ -190,10 +196,10 @@ computePsMetrics <- function(sampleFolders, outputFileName) {
   if (file.exists(outputFileName)) {
     return()
   }
-  combis <- expand.grid(
-    analysisIds = c(1, 3),
-    targetIds = c(1, 3)
-  )
+  csvFileName <- system.file("NegativeControls.csv", package = "SmallSampleEstimationEvaluation")
+  combis <- negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE)  %>%
+    distinct(targetId, comparatorId) %>%
+    cross_join(tibble(analysisId = c(1, 3)))
   combis <- split(combis, seq_len(nrow(combis)))
   results <- lapply(combis, computePsMetricsForAnalysisId, sampleFolders = sampleFolders)
   results <- bind_rows(results)
