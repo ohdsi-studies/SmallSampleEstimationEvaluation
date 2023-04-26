@@ -2,6 +2,7 @@ library(ggplot2)
 library(dplyr)
 
 outputFolder <- "d:/SmallSampleEstimationEvaluation"
+outputFolder <- "d:/SmallSampleEstimationEvaluation_mdcr"
 
 plotsAndTablesFolder <- file.path(outputFolder, "plotsAndTables")
 
@@ -57,6 +58,7 @@ getMaxSdm <- function(row) {
 balLargeSample <- lapply(split(ref, seq_len(nrow(ref))), getMaxSdm) %>%
   bind_rows() %>%
   mutate(sampleSize = 20000)
+easeP <- readr::read_csv(file.path(outputFolder, "easeP.csv"), show_col_types = FALSE)
 
 # Plot EASE using local or global propensity model, data pooling -----------------------------------------------------
 vizData <- metrics %>%
@@ -66,13 +68,17 @@ vizData <- metrics %>%
   inner_join(tcs, by = join_by("targetId", "comparatorId")) %>%
   inner_join(x, by = join_by(sampleSize)) %>%
   mutate(x = ifelse(psModel == "Local", x + 0.1, x - 0.1)) %>%
-  select(comparison, x, ease, easeCi95Lb, easeCi95Ub, psModel, psMethod)
+  left_join(easeP, by = join_by(analysisId, targetId, comparatorId, sampleSize)) %>%
+  mutate(significant = ifelse(!is.na(p) & p < 0.05, "Significant", "Non-sign.")) %>%
+  select(comparison, x, ease, easeCi95Lb, easeCi95Ub, significant, psModel, psMethod)
 ggplot(vizData, aes(x = x, y = ease, ymin = easeCi95Lb, ymax = easeCi95Ub, group = psModel, color = psModel)) +
-  geom_point() +
   geom_errorbar() +
+  geom_point(aes(shape = significant, size = significant), fill = rgb(1, 1, 1)) +
+  scale_shape_manual(values = c(19, 24)) +
+  scale_size_manual(values = c(2,3)) +
   scale_x_continuous("Sample size per site", breaks = x$x, labels = x$sampleSize, minor_breaks = NULL) +
   scale_y_continuous("EASE (95% CI)") +
-  labs(color = "PS model") +
+  labs(color = "PS model", size = "Significant", shape = "Significant") +
   facet_grid(comparison~psMethod)
 ggsave(file.path(plotsAndTablesFolder, "EASE_pooled.png"), width = 6, height = 8.5, dpi = 300)
 
@@ -84,10 +90,14 @@ vizData <- metrics %>%
   inner_join(tcs, by = join_by("targetId", "comparatorId")) %>%
   inner_join(x, by = join_by(sampleSize)) %>%
   mutate(x = ifelse(psModel == "Local", x + 0.1, x - 0.1)) %>%
-  select(comparison, x, ease, easeCi95Lb, easeCi95Ub, psModel, psMethod)
+  left_join(easeP, by = join_by(analysisId, targetId, comparatorId, sampleSize)) %>%
+  mutate(significant = ifelse(!is.na(p) & p < 0.05, "Significant", "Non-sign.")) %>%
+  select(comparison, x, ease, easeCi95Lb, easeCi95Ub, significant, psModel, psMethod)
 ggplot(vizData, aes(x = x, y = ease, ymin = easeCi95Lb, ymax = easeCi95Ub, group = psModel, color = psModel)) +
-  geom_point() +
   geom_errorbar() +
+  geom_point(aes(shape = significant, size = significant), fill = rgb(1, 1, 1)) +
+  scale_shape_manual(values = c(19, 24)) +
+  scale_size_manual(values = c(2,3)) +
   scale_x_continuous("Sample size per site", breaks = x$x, labels = x$sampleSize, minor_breaks = NULL) +
   scale_y_continuous("EASE (95% CI)") +
   labs(color = "PS model") +
@@ -199,3 +209,26 @@ ggplot(vizData, aes(x = x, y = ease, ymin = easeCi95Lb, ymax = easeCi95Ub, group
   facet_grid(comparison~psMethod)
 ggsave(file.path(plotsAndTablesFolder, "EASE_synthesis_methods.png"), width = 8, height = 8.5, dpi = 300)
 
+# Get exposure counts -----------------------------------------------------------------------------
+folder <- file.path(outputFolder, "fullData")
+ref <- CohortMethod::getFileReference(folder)
+tcs <- readr::read_csv(csvFileName, show_col_types = FALSE)  %>%
+  distinct(targetId, targetName, comparatorId, comparatorName)
+
+# row <- tcs[1, ]
+getExposureCounts <- function(row) {
+  outcomeModelFile <- ref %>%
+    inner_join(row, by = join_by(targetId, comparatorId)) %>%
+    head(1) %>%
+    pull(outcomeModelFile)
+  model <- readRDS(file.path(folder, outcomeModelFile))
+  attritionTable <- CohortMethod::getAttritionTable(model)
+  row <- bind_cols(row, CohortMethod::getAttritionTable(model)[2, c("targetPersons", "comparatorPersons")])
+  return(row)
+}
+exposureCounts <- lapply(split(tcs, seq_len(nrow(tcs))), getExposureCounts)
+exposureCounts <- bind_rows(exposureCounts)
+exposureCounts <- exposureCounts %>%
+  select(targetName, comparatorName, targetPersons, comparatorPersons)
+colnames(exposureCounts) <- c("Target", "Comparator", "Target persons", "Comparator persons")
+readr::write_csv(exposureCounts, file.path(outputFolder, "ExposureCounts.csv"))

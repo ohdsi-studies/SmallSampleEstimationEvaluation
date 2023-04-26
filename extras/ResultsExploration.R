@@ -16,7 +16,7 @@ max(abs(balance$afterMatchingStdDiff), na.rm = TRUE)
 
 
 
-folder <- file.path(outputFolder, "fullData")
+
 results <- CohortMethod::getResultsSummary(folder)
 ref <- CohortMethod::getFileReference(folder)
 row <- ref[ref$targetId == 1, ][1, ]

@@ -62,10 +62,16 @@ computePerformance <- function(outputFolder,
   }
   MethodEvaluation::packageCustomBenchmarkResults(
     estimates = estimates %>% 
-      mutate(targetId = targetId + 100* comparatorId),
+      mutate(targetId = targetId + 100 * comparatorId),
     negativeControls = negativeControls %>% 
-      mutate(targetId = targetId + 100* comparatorId),
-    synthesisSummary = synthesisSummary,
+      mutate(targetId = targetId + 100 * comparatorId),
+    synthesisSummary = synthesisSummary %>% 
+      inner_join(negativeControls %>%
+                   distinct(targetId, comparatorId) %>%
+                   rename(exposureId = targetId),
+                 by = join_by(exposureId),
+                 relationship = "many-to-many") %>%
+      mutate(exposureId = exposureId + 100 * comparatorId),
     analysisRef = analysisRef,
     databaseName = databaseId,
     exportFolder = cmFolder
