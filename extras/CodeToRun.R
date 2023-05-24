@@ -13,7 +13,7 @@ oracleTempSchema <- NULL
 cdmDatabaseSchema <- "cdm_truven_mdcd_v2359"
 cohortDatabaseSchema <- "scratch_mschuemi"
 cohortTable <- "cohort_small_sample_eval"
-outputFolder <- "d:/SmallSampleEstimationEvaluation"
+outputFolder <- "d:/SmallSampleEstimationEvaluation_mdcd"
 databaseId <- "MDCD"
 
 # MDCR
@@ -28,6 +28,19 @@ cohortTable <- "cohort_small_sample_eval_mdcr"
 outputFolder <- "d:/SmallSampleEstimationEvaluation_mdcr"
 databaseId <- "MDCR"
 
+# Optum EHR
+connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "redshift",
+                                                                connectionString = keyring::key_get("redShiftConnectionStringOhdaOptumEhr"),
+                                                                user = keyring::key_get("temp_user"),
+                                                                password = keyring::key_get("temp_password"))
+oracleTempSchema <- NULL
+cdmDatabaseSchema <- "cdm_optum_ehr_v2137"
+cohortDatabaseSchema <- "scratch_mschuemi"
+cohortTable <- "cohort_small_sample_eval_optum_ehr"
+outputFolder <- "d:/SmallSampleEstimationEvaluation_optum_ehr"
+databaseId <- "Optum EHR"
+
+
 # Run analyses ---------------------------------------------------
 execute(connectionDetails,
         cdmDatabaseSchema = cdmDatabaseSchema,
@@ -36,4 +49,4 @@ execute(connectionDetails,
         maxCores = maxCores,
         outputFolder = outputFolder,
         databaseId = databaseId,
-        createCohorts = F) 
+        createCohorts = TRUE) 

@@ -77,13 +77,7 @@ execute <- function(connectionDetails,
     maxCores = maxCores,
     cmFolder = fullDataFolder
   )
-  computePerformance(
-    outputFolder = outputFolder,
-    cmFolder = fullDataFolder,
-    maxCores = maxCores,
-    databaseId = databaseId,
-    outputFileName = file.path(outputFolder, "Metrics_FullData.csv")
-  )
+ 
   
   # Create large sample ------------------------------------------------------
   largeSampleSize <- 20000
@@ -103,6 +97,20 @@ execute <- function(connectionDetails,
     maxCores = maxCores,
     externalPsFolder = fullDataFolder
   )
+  computeMdrr(
+    outputFolder = outputFolder,
+    cmFolder = largeSampleFolder,
+    connectionDetails = connectionDetails, 
+    cdmDatabaseSchema = cdmDatabaseSchema,
+    cohortDatabaseSchema = cohortDatabaseSchema
+  )
+  computePerformance(
+    outputFolder = outputFolder,
+    cmFolder = fullDataFolder,
+    maxCores = maxCores,
+    databaseId = databaseId,
+    outputFileName = file.path(outputFolder, "Metrics_FullData.csv")
+  )
   computePerformance(
     outputFolder = outputFolder,
     cmFolder = largeSampleFolder,
@@ -116,34 +124,34 @@ execute <- function(connectionDetails,
   for (sampleSize in sampleSizes) {
     numberOfSamples <- largeSampleSize / sampleSize
     smallSamplesFolder <- file.path(outputFolder, sprintf("smallSample%d", sampleSize))
-    samplePopulation(
-      sourceCmFolder = largeSampleFolder,
-      sampleFolder = smallSamplesFolder,
-      numberOfSamples = numberOfSamples,
-      seed = 123
-    )
-    smallSampleSubFolders <- file.path(smallSamplesFolder, sprintf("Sample_%d", seq_len(numberOfSamples)))
-    for (smallSampleSubFolder in smallSampleSubFolders) {
-      message("Performing CohortMethod analyses in ", smallSampleSubFolder)
-      runCohortMethod(
-        outputFolder = outputFolder,
-        cmFolder = smallSampleSubFolder,
-        maxCores = maxCores,
-        externalPsFolder = fullDataFolder
-      )
-    }
-    # computePerformance(
-    #   outputFolder = outputFolder,
-    #   cmFolder = smallSampleSubFolders[1],
-    #   maxCores = maxCores,
-    #   databaseId = databaseId,
-    #   outputFileName = file.path(outputFolder, sprintf("Metrics_sample_%d_1.csv", sampleSize))
+    # samplePopulation(
+    #   sourceCmFolder = largeSampleFolder,
+    #   sampleFolder = smallSamplesFolder,
+    #   numberOfSamples = numberOfSamples,
+    #   seed = 123
     # )
-    combineEstimates(
-      parentFolder = smallSamplesFolder,
-      cmFolders = smallSampleSubFolders,
-      maxCores = maxCores
-    )
+    smallSampleSubFolders <- file.path(smallSamplesFolder, sprintf("Sample_%d", seq_len(numberOfSamples)))
+    # for (smallSampleSubFolder in smallSampleSubFolders) {
+    #   message("Performing CohortMethod analyses in ", smallSampleSubFolder)
+    #   runCohortMethod(
+    #     outputFolder = outputFolder,
+    #     cmFolder = smallSampleSubFolder,
+    #     maxCores = maxCores,
+    #     externalPsFolder = fullDataFolder
+    #   )
+    # }
+    # # computePerformance(
+    # #   outputFolder = outputFolder,
+    # #   cmFolder = smallSampleSubFolders[1],
+    # #   maxCores = maxCores,
+    # #   databaseId = databaseId,
+    # #   outputFileName = file.path(outputFolder, sprintf("Metrics_sample_%d_1.csv", sampleSize))
+    # # )
+    # combineEstimates(
+    #   parentFolder = smallSamplesFolder,
+    #   cmFolders = smallSampleSubFolders,
+    #   maxCores = maxCores
+    # )
     computePerformance(
       outputFolder = outputFolder,
       cmFolder = smallSamplesFolder,
