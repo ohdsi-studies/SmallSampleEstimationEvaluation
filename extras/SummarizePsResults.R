@@ -8,7 +8,7 @@ outputFolder <- "d:/SmallSampleEstimationEvaluation_mdcr"
 databaseId <- "MDCR"
 
 outputFolder <- "d:/SmallSampleEstimationEvaluation_optum_ehr"
-databaseId <- "Clinformatics"
+databaseId <- "Optum EHR"
 
 plotsAndTablesFolder <- file.path(outputFolder, "plotsAndTables")
 
@@ -66,7 +66,7 @@ balLargeSample <- lapply(split(ref, seq_len(nrow(ref))), getMaxSdm) %>%
   mutate(sampleSize = 20000)
 easeP <- readr::read_csv(file.path(outputFolder, "easeP.csv"), show_col_types = FALSE)
 
-# Combine tables into one overall metrics table
+# Combine tables into one overall metrics table and save
 combined <- metrics %>%
   filter(analysisId %in% c(1, 2, 3, 4, 5)) %>%
   mutate(psMethod = ifelse(analysisId %in% c(1, 4), "PS 1-on-1 matching", ifelse(analysisId %in% c(3, 5), "PS stratification", "No PS adjustment"))) %>%
@@ -78,6 +78,18 @@ combined <- metrics %>%
   mutate(significant = ifelse(!is.na(p) & p < 0.05, "Significant", "Non-sign."),
          database = databaseId)
 saveRDS(combined, file.path(outputFolder, "CombinedMetrics.rds"))
+
+combinedPs <- psMetrics %>%
+  bind_rows(
+    balLargeSample %>%
+      filter(analysisId %in% c(1,3)) %>%
+      mutate(maxSdmMedian = maxSdm)
+  ) %>%
+  mutate(psMethod = ifelse(analysisId %in% c(1, 4), "PS 1-on-1 matching", ifelse(analysisId %in% c(3, 5), "PS stratification", "No PS adjustment"))) %>%
+  inner_join(tcs, by = join_by("targetId", "comparatorId")) %>%
+  inner_join(x, by = join_by(sampleSize)) %>%
+  mutate(database = databaseId)
+saveRDS(combinedPs, file.path(outputFolder, "CombinedPSMetrics.rds"))
 
 # Plot EASE using local or global propensity model or crude, data pooling ----------------------------------------
 vizData <- metrics %>%
