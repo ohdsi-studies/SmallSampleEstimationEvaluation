@@ -24,3 +24,13 @@ devtools::spell_check()
 unlink("extras/SmallSampleEstimationEvaluation.pdf")
 shell("R CMD Rd2pdf ./ --output=extras/SmallSampleEstimationEvaluation.pdf")
 
+# Create renv lock file ----------------------------------------------------
+OhdsiRTools::createRenvLockFile(
+  rootPackage = "SmallSampleEstimationEvaluation",
+  mode = "description",
+  includeRootPackage = FALSE,
+  additionalRequiredPackages = c("keyring",
+                                 "ggplot2")
+)
+
+

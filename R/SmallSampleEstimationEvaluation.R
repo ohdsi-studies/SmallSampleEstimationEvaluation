@@ -20,5 +20,8 @@
 "_PACKAGE"
 
 #' @importFrom rlang .data
+#' @importFrom stats coef quantile runif
+#' @importFrom utils head read.csv setTxtProgressBar txtProgressBar
 #' @import dplyr
+#' @import DatabaseConnector
 NULL

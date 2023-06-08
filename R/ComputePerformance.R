@@ -16,7 +16,7 @@
 # library(dplyr)
 
 #' @export
-computeMdrr <- function(outputFolder, cmFolder, connectionDetails, cdmDatabaseSchema, cohortDatabaseSchema, outputFileName) {
+computeMdrr <- function(outputFolder, cmFolder, connectionDetails, cdmDatabaseSchema, cohortDatabaseSchema, cohortTable, outputFileName) {
   fileRef <- CohortMethod::getFileReference(cmFolder)
   tcs <- fileRef %>%
     distinct(.data$targetId, .data$comparatorId, .data$cohortMethodDataFile) %>%
@@ -32,7 +32,7 @@ computeMdrr <- function(outputFolder, cmFolder, connectionDetails, cdmDatabaseSc
       collect() %>%
       mutate(
         personId = bit64::as.integer64(.data$personId),
-        cohortEndDate = cohortStartDate + daysToCohortEnd,
+        cohortEndDate = .data$cohortStartDate + .data$daysToCohortEnd,
         cohortDefinitionId = if_else(.data$treatment == 1, tcs$tempTargetId[i], tcs$tempComparatorId[i])
       ) %>%
       select(subjectId = "personId", "cohortDefinitionId", "cohortStartDate", "cohortEndDate")
@@ -156,9 +156,9 @@ computePerformance <- function(outputFolder,
       recodeTargetId(),
     synthesisSummary = synthesisSummary %>% 
       inner_join(negativeControls %>%
-                   distinct(targetId, comparatorId) %>%
-                   rename(exposureId = targetId),
-                 by = join_by(exposureId),
+                   distinct(.data$targetId, .data$comparatorId) %>%
+                   rename(exposureId = .data$targetId),
+                 by = join_by("exposureId"),
                  relationship = "many-to-many")  %>% 
       recodeExposureId(),
     mdrr = mdrr  %>% 
@@ -279,7 +279,7 @@ computeSingleSampleMetrics <- function(sampleFolder, ref) {
 # row = combis[[1]]
 computePsMetricsForAnalysisId <- function(row, sampleFolders) {
   ref <- CohortMethod::getFileReference(sampleFolders[1]) %>%
-    filter(analysisId == row$analysisId, targetId == row$targetId) %>%
+    filter(.data$analysisId == row$analysisId, .data$targetId == row$targetId) %>%
     head(1)
   stats <- lapply(sampleFolders, computeSingleSampleMetrics, ref = ref)
   stats <- bind_rows(stats)
@@ -302,7 +302,7 @@ computePsMetrics <- function(sampleFolders, outputFileName) {
   }
   csvFileName <- system.file("NegativeControls.csv", package = "SmallSampleEstimationEvaluation")
   combis <- negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE)  %>%
-    distinct(targetId, comparatorId) %>%
+    distinct(.data$targetId, .data$comparatorId) %>%
     cross_join(tibble(analysisId = c(1, 3)))
   combis <- split(combis, seq_len(nrow(combis)))
   results <- lapply(combis, computePsMetricsForAnalysisId, sampleFolders = sampleFolders)

@@ -11,7 +11,8 @@ Description: Evaluation of the performance of comparative effect estimation meth
 License: Apache License 2.0
 BugReports: https://github.com/ohdsi-studies/SmallSampleEstimationEvaluation/issues
 Depends:
-  DatabaseConnector
+  DatabaseConnector,
+  R (>= 4.1.0)
 Imports:
   FeatureExtraction,
   Cyclops,
@@ -20,12 +21,13 @@ Imports:
   readr,
   rlang,
   meta,
-  SqlRender,
-  ggplot2,
   ParallelLogger,
-  methods,
   EmpiricalCalibration,
-  CohortGenerator
+  CohortGenerator,
+  Andromeda,
+  CohortMethod,
+  EvidenceSynthesis,
+  bit64
 Suggests:
   testthat,
   DT,
@@ -34,7 +36,7 @@ Suggests:
 Remotes:
   ohdsi/FeatureExtraction,
   ohdsi/MethodEvaluation,
-  ohdsi/EmpiricalCalibration
+  ohdsi/CohortGenerator
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
