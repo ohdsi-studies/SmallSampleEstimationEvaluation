@@ -40,6 +40,18 @@ cohortTable <- "cohort_small_sample_eval_optum_ehr"
 outputFolder <- "d:/SmallSampleEstimationEvaluation_optum_ehr"
 databaseId <- "Optum EHR"
 
+# JMDC
+connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "redshift",
+                                                                connectionString = keyring::key_get("redShiftConnectionStringOhdaJmdc"),
+                                                                user = keyring::key_get("temp_user"),
+                                                                password = keyring::key_get("temp_password"))
+oracleTempSchema <- NULL
+cdmDatabaseSchema <- "cdm_jmdc_v2432"
+cohortDatabaseSchema <- "scratch_mschuemi"
+cohortTable <- "cohort_small_sample_eval_jmdc"
+outputFolder <- "d:/SmallSampleEstimationEvaluation_jmdc"
+databaseId <- "JMDC"
+
 
 # Run analyses ---------------------------------------------------
 execute(connectionDetails,
@@ -49,4 +61,4 @@ execute(connectionDetails,
         maxCores = maxCores,
         outputFolder = outputFolder,
         databaseId = databaseId,
-        createCohorts = TRUE) 
+        createCohorts = F) 
