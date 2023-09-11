@@ -115,7 +115,7 @@ for (database in databases) {
     }
   }
   aucs <- bind_rows(aucs)
-  saveRDS(aucs, file.path(paste0(rootFolderName, database), "plotsAndTables", sprintf("PostAdjAucs_%s.rds", database)))
+  saveRDS(aucs, file.path(paste0(rootFolderName, databases[1]), "plotsAndTables", sprintf("PostAdjAucs_%s.rds", database)))
   # aucs$sampleSize <- as.factor(aucs$sampleSize)
   # ggplot(aucs, aes(x = sampleSize, y = auc, group = sampleSize)) +
   #   # geom_boxplot() +
