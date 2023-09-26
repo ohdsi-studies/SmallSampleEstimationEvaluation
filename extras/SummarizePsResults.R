@@ -14,7 +14,7 @@ plotsAndTablesFolder <- file.path(outputFolder, "plotsAndTables")
 
 # dir.create(plotsAndTablesFolder)
 
-sampleSizes <- c(4000, 2000, 1000, 500, 250)
+sampleSizes <- c(4000, 2000, 1000, 500, 250, 125)
 
 tcs <- read.csv(file.path(outputFolder, "allControls.csv")) %>%
   distinct(targetId, targetName, comparatorId, comparatorName) %>%

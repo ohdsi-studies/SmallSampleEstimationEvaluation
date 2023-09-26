@@ -119,7 +119,8 @@ execute <- function(connectionDetails,
   )
 
   # Take smaller sample sizes ------------------------------------------------------
-  sampleSizes <- c(4000, 2000, 1000, 500, 250)
+  # sampleSizes <- c(4000, 2000, 1000, 500, 250, 125)
+  sampleSizes <- c(125)
   for (sampleSize in sampleSizes) {
     numberOfSamples <- largeSampleSize / sampleSize
     smallSamplesFolder <- file.path(outputFolder, sprintf("smallSample%d", sampleSize))
