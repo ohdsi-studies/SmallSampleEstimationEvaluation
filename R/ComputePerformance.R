@@ -296,6 +296,7 @@ computePsMetricsForAnalysisId <- function(row, sampleFolders) {
   return(result)
 }
 
+#' @export
 computePsMetrics <- function(sampleFolders, outputFileName) {
   if (file.exists(outputFileName)) {
     return()

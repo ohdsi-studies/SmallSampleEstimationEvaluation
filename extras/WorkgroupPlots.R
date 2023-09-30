@@ -18,11 +18,13 @@ psMetrics <- psMetrics %>%
   mutate(comparison = gsub("Lisinporil ", "Lisinopril ", comparison))
 plotsAndTablesFolder <- file.path("d:/SmallSampleEstimationEvaluation_mdcd", "plotsAndTables")
 
-sampleSizes <- c(4000, 2000, 1000, 500, 250)
+sampleSizes <- c(4000, 2000, 1000, 500, 250, 125)
 x <- tibble(
   sampleSize = c(20000, sampleSizes),
   x = seq_len(length(sampleSizes) + 1)
 )
+saveRDS(metrics, file.path(plotsAndTablesFolder, "metrics.rds"))
+saveRDS(psMetrics, file.path(plotsAndTablesFolder, "psMetrics.rds"))
 
 # EASE -----------------------------
 vizData <- metrics %>%

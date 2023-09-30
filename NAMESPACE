@@ -3,6 +3,7 @@
 export(combineEstimates)
 export(computeMdrr)
 export(computePerformance)
+export(computePsMetrics)
 export(createCohorts)
 export(execute)
 export(runCohortMethod)
