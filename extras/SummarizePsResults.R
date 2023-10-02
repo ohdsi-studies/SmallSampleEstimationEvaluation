@@ -82,7 +82,7 @@ saveRDS(combined, file.path(outputFolder, "CombinedMetrics.rds"))
 combinedPs <- psMetrics %>%
   bind_rows(
     balLargeSample %>%
-      filter(analysisId %in% c(1,3)) %>%
+      filter(analysisId %in% c(1, 3, 4, 5)) %>%
       mutate(maxSdmMedian = maxSdm)
   ) %>%
   mutate(psMethod = ifelse(analysisId %in% c(1, 4), "PS 1-on-1 matching", ifelse(analysisId %in% c(3, 5), "PS stratification", "No PS adjustment"))) %>%
@@ -184,10 +184,11 @@ ggsave(file.path(plotsAndTablesFolder, "Coverage_after_calibration_pooled.png"),
 vizData <- psMetrics %>%
   bind_rows(
     balLargeSample %>%
-      filter(analysisId %in% c(1,3)) %>%
+      filter(analysisId %in% c(1, 3, 4, 5)) %>%
       mutate(maxSdmMedian = maxSdm)
   ) %>%
-  mutate(psMethod = ifelse(analysisId == 1, "PS 1-on-1 matching", "PS stratification")) %>%
+  mutate(psMethod = ifelse(analysisId %in% c(1, 4), "PS 1-on-1 matching", "PS stratification"),
+         psModel = ifelse(analysisId %in% c(1, 3), "Local", "Global")) %>%
   inner_join(tcs, by = join_by("targetId", "comparatorId")) %>%
   inner_join(x, by = join_by(sampleSize)) %>%
   select(comparison, x, sampleSize, psMethod, maxSdmMin,  maxSdmP25,  maxSdmMedian,  maxSdmP75,  maxSdmMax)

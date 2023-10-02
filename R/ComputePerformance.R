@@ -257,10 +257,10 @@ computeSingleSampleMetrics <- function(sampleFolder, ref) {
     balance <- readRDS(file.path(sampleFolder, ref$sharedBalanceFile[1]))
     maxSdm <- max(abs(balance$afterMatchingStdDiff), na.rm = TRUE)
   }
-  if (ref$sharedPsFile[1] == "") {
-    covCount <- NA
-    nonZeroCoefCount <- NA
-    auc <- NA
+  if (ref$sharedPsFile[1] == "" || ref$analysisId > 3) {
+    covCount <- 0
+    nonZeroCoefCount <- 0
+    auc <- 0
   } else {
     ps <- readRDS(file.path(sampleFolder, ref$sharedPsFile[1]))
     metaData <- attr(ps, "metaData")
@@ -279,7 +279,7 @@ computeSingleSampleMetrics <- function(sampleFolder, ref) {
 # row = combis[[1]]
 computePsMetricsForAnalysisId <- function(row, sampleFolders) {
   ref <- CohortMethod::getFileReference(sampleFolders[1]) %>%
-    filter(.data$analysisId == row$analysisId, .data$targetId == row$targetId) %>%
+    filter(.data$analysisId == row$analysisId, .data$targetId == row$targetId, .data$comparatorId == row$comparatorId) %>%
     head(1)
   stats <- lapply(sampleFolders, computeSingleSampleMetrics, ref = ref)
   stats <- bind_rows(stats)
@@ -304,7 +304,7 @@ computePsMetrics <- function(sampleFolders, outputFileName) {
   csvFileName <- system.file("NegativeControls.csv", package = "SmallSampleEstimationEvaluation")
   combis <- negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE)  %>%
     distinct(.data$targetId, .data$comparatorId) %>%
-    cross_join(tibble(analysisId = c(1, 3)))
+    cross_join(tibble(analysisId = c(1, 3, 4, 5)))
   combis <- split(combis, seq_len(nrow(combis)))
   results <- lapply(combis, computePsMetricsForAnalysisId, sampleFolders = sampleFolders)
   results <- bind_rows(results)
@@ -312,7 +312,7 @@ computePsMetrics <- function(sampleFolders, outputFileName) {
 }
 
 recodeTargetId <- function(data) {
-   data %>%
+  data %>%
     mutate(targetId = .data$targetId + 100 * .data$comparatorId) %>%
     return()
 }
