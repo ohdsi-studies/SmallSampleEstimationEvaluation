@@ -72,7 +72,7 @@ plot <- ggplot(vizData, aes(x = x, y = ease, ymin = easeCi95Lb, ymax = easeCi95U
         axis.ticks.y = element_line(color = gray(0.8), linewidth = 0.5),
         strip.background = element_blank())
 
-ggsave(file.path(plotsAndTablesFolder, "EASE_crude_all.png"), plot = plot, width = 9, height = 4.6, dpi = 300)
+ggsave(file.path(plotsAndTablesFolder, "EASE_crude_all.png"), plot = plot, width = 9.7, height = 4.5, dpi = 300)
 
 # Precision after calibration --------------------------
 vizData <- metrics %>%
@@ -127,8 +127,8 @@ plot <- ggplot(vizData, aes(x = x, y = maxSdmMedian, group = x, color = label, f
   ) +
   scale_x_continuous("Sample size per site", breaks = x$x, labels = x$sampleSize, minor_breaks = NULL) +
   scale_y_continuous("Maximum absolute standardized difference of mean (SDM)") +
-  scale_color_manual(values=c("#69AED5", "#336B91", "#FCC90C", "#EB6622")) +
-  scale_fill_manual(values=c("#69AED5", "#336B91", "#FCC90C", "#EB6622")) +
+  scale_color_manual(values=c("#69AED5", "#336B91", "#FBC511", "#EB6622")) +
+  scale_fill_manual(values=c("#69AED5", "#336B91", "#FBC511", "#EB6622")) +
   coord_cartesian(ylim = c(0, 1)) +
   labs(color = "Adjustment strategy", fill = "Adjustment strategy") +
   facet_grid(comparison~database) +
@@ -140,4 +140,4 @@ plot <- ggplot(vizData, aes(x = x, y = maxSdmMedian, group = x, color = label, f
         axis.ticks.x = element_blank(),
         axis.ticks.y = element_line(color = gray(0.8), linewidth = 0.5),
         strip.background = element_blank())
-ggsave(file.path(plotsAndTablesFolder, "Balance_all.png"), plot = plot, width = 9, height = 4.5, dpi = 300)
+ggsave(file.path(plotsAndTablesFolder, "Balance_all.png"), plot = plot, width = 9.7, height = 4.5, dpi = 300)
