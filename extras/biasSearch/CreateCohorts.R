@@ -118,9 +118,10 @@ cohortCounts <- cohortCounts |>
     ),
     by = join_by("cohortId")
   )
-dir.create(outputFolder, recursive = TRUE, showWarnings = FALSE)
+if (!dir.exists(outputFolder)) {
+  dir.create(outputFolder, recursive = TRUE)
+}
 write_csv(cohortCounts, file.path(outputFolder, "cohortCounts.csv"))
 
 DatabaseConnector::disconnect(connection)
 
-  

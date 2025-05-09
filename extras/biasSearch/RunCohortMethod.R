@@ -39,7 +39,9 @@ for (i in seq_along(indications)) {
   message("Running CohortMethod for indication: ", indication)
   
   indicationFolder <- file.path(outputFolder, indication)
-  dir.create(indicationFolder, showWarnings = FALSE)
+  if (!dir.exists(indicationFolder)) {
+    dir.create(indicationFolder)
+  }
   
   # Create targetComparatorOutcomesList ----------------------------------------
   exposureSubset <- exposures |>

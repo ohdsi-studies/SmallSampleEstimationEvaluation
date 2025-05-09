@@ -142,6 +142,7 @@ WHERE exposure.cohort_definition_id IN (@exposure_ids)
   
   
   # Create CohortMethodData files ----------------------------------------------
+  message("Creating CohortMethodData files")
   cohortsAndOutcomes <- Andromeda::loadAndromeda(cohortsAndOutcomesFile)
   
   pb <- txtProgressBar(style = 3)
