@@ -47,7 +47,7 @@ for (i in seq_along(indications)) {
   exposureSubset <- exposures |>
     filter(indicationId == indication)
   outcomeSubset <- negativeControls |>
-    filter(indicationId == indication)
+    filter(indicationId == indication) 
   
   comparisons <- cross_join(
     exposureSubset |>
