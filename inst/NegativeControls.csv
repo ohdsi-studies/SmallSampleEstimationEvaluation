@@ -1,341 +1,445 @@
-targetId,targetName,comparatorId,comparatorName,outcomeConceptId,outcomeName,targetConceptIds,comparatorConceptIds
-1,Lisinporil,2,Hydrochlorothiazide,134438,Contact dermatitis,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,141932,Senile hyperkeratosis,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,140648,Onychomycosis due to dermatophyte,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,374375,Impacted cerumen,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,378427,Tear film insufficiency,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,437264,Tobacco dependence syndrome,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,373478,Presbyopia,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,139099,Ingrowing nail,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,36713918,Somatic dysfunction of lumbar region,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,140641,Verruca vulgaris,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4115367,Wrist joint pain,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,194083,Vaginitis and vulvovaginitis,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4213540,Cervical somatic dysfunction,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,444132,Injury of knee,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,81151,Sprain of ankle,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,440329,Herpes zoster without complication,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,73560,Calcaneal spur,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,433577,Hammer toe,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,81378,Chondromalacia of patella,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,72748,Strain of rotator cuff capsule,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,75911,Acquired hallux valgus,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,441788,Human papilloma virus infection,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,136368,Non-toxic multinodular goiter,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,376707,Acute conjunctivitis,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,77965,Acquired trigger finger,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,137951,Acquired keratoderma,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,73241,Anal and rectal polyp,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4209423,Nicotine dependence,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,76786,Derangement of knee,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,78619,Contusion of knee,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,196168,Irregular periods,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4092896,Feces contents abnormal,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,380706,Regular astigmatism,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,195873,Leukorrhea,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4344500,Impingement syndrome of shoulder region,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4170770,Epidermoid cyst,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4103703,Melena,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4088290,Absence of breast,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,40480893,Nonspecific tuberculin test reaction,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4083487,Macular drusen,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,201606,Crohn's disease,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,433527,Endometriosis,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,434165,Abnormal cervical smear,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,140842,Changes in skin texture,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4201390,Colostomy present,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,439790,Psychalgia,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4092879,Absent kidney,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4012570,High risk sexual behavior,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4115402,Difficulty sleeping,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,438130,Opioid abuse,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,434327,Cannabis abuse,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,199192,Abrasion and/or friction burn of trunk without infection,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,44783954,Acid reflux,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,46269889,Complication due to Crohn's disease,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4166231,Genetic predisposition,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4201717,Ileostomy present,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4091513,Passing flatus,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,40481632,Ganglion cyst,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4231770,Hereditary thrombophilia,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,259995,Foreign body in orifice,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,432303,Cocaine abuse,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,46286594,Problem related to lifestyle,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,432593,Kwashiorkor,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4202045,Postviral fatigue syndrome,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,81634,Ptotic breast,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,377572,Noise effects on inner ear,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,436409,Abnormal pupil,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4012934,Homocystinuria,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,4103640,Amputated foot,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,433111,Effects of hunger,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,434203,Late effect of contusion,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,438329,Late effect of motor vehicle accident,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,45757370,Disproportion of reconstructed breast,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,133655,Burn of forearm,1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,443172,"Splinter of face, without major open wound",1308216,974166
-1,Lisinporil,2,Hydrochlorothiazide,440193,Wristdrop,1308216,974166
-4,Sitagliptin,5,Liraglutide,439935,Abnormal posture,1580747,40170911
-4,Sitagliptin,5,Liraglutide,443585,Abrasion and/or friction burn of multiple sites,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4092879,Absent kidney,1580747,40170911
-4,Sitagliptin,5,Liraglutide,45757682,Anomaly of jaw size,1580747,40170911
-4,Sitagliptin,5,Liraglutide,81878,Benign paroxysmal positional vertigo,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4216219,Bizarre personal appearance,1580747,40170911
-4,Sitagliptin,5,Liraglutide,134765,Cachexia,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4201390,Colostomy present,1580747,40170911
-4,Sitagliptin,5,Liraglutide,434675,Complication of gastrostomy,1580747,40170911
-4,Sitagliptin,5,Liraglutide,436077,Developmental delay,1580747,40170911
-4,Sitagliptin,5,Liraglutide,377910,Deviated nasal septum,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4170770,Epidermoid cyst,1580747,40170911
-4,Sitagliptin,5,Liraglutide,437448,Exhaustion due to excessive exertion,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4092896,Feces contents abnormal,1580747,40170911
-4,Sitagliptin,5,Liraglutide,374801,Foreign body in ear,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4096540,Foreskin deficient,1580747,40170911
-4,Sitagliptin,5,Liraglutide,439788,Galactosemia,1580747,40170911
-4,Sitagliptin,5,Liraglutide,40481632,Ganglion cyst,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4168318,Genetic disorder carrier,1580747,40170911
-4,Sitagliptin,5,Liraglutide,374375,Impacted cerumen,1580747,40170911
-4,Sitagliptin,5,Liraglutide,40481897,Inadequate sleep hygiene,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4265896,Jellyfish poisoning,1580747,40170911
-4,Sitagliptin,5,Liraglutide,381021,Lagophthalmos,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4027782,Lipid storage disease,1580747,40170911
-4,Sitagliptin,5,Liraglutide,433997,Lymphangioma,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4051630,Malingering,1580747,40170911
-4,Sitagliptin,5,Liraglutide,258540,Marfan's syndrome,1580747,40170911
-4,Sitagliptin,5,Liraglutide,432798,"Mechanical complication of internal orthopedic device, implant AND/OR graft",1580747,40170911
-4,Sitagliptin,5,Liraglutide,439795,Minimal cognitive impairment,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4209423,Nicotine dependence,1580747,40170911
-4,Sitagliptin,5,Liraglutide,40480893,Nonspecific tuberculin test reaction,1580747,40170911
-4,Sitagliptin,5,Liraglutide,438130,Opioid abuse,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4299094,Opioid intoxication,1580747,40170911
-4,Sitagliptin,5,Liraglutide,437092,Physiological development failure,1580747,40170911
-4,Sitagliptin,5,Liraglutide,433951,Poisoning by tranquilizer,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4019836,Social exclusion,1580747,40170911
-4,Sitagliptin,5,Liraglutide,432436,Symbolic dysfunction,1580747,40170911
-4,Sitagliptin,5,Liraglutide,433244,Tooth loss,1580747,40170911
-4,Sitagliptin,5,Liraglutide,436876,Toxic effect of lead compound,1580747,40170911
-4,Sitagliptin,5,Liraglutide,440612,Toxic effect of tobacco and nicotine,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4201387,Tracheostomy present,1580747,40170911
-4,Sitagliptin,5,Liraglutide,45757285,Unsatisfactory tooth restoration,1580747,40170911
-4,Sitagliptin,5,Liraglutide,436409,Abnormal pupil,1580747,40170911
-4,Sitagliptin,5,Liraglutide,199192,Abrasion and/or friction burn of trunk without infection,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4088290,Absence of breast,1580747,40170911
-4,Sitagliptin,5,Liraglutide,75911,Acquired hallux valgus,1580747,40170911
-4,Sitagliptin,5,Liraglutide,137951,Acquired keratoderma,1580747,40170911
-4,Sitagliptin,5,Liraglutide,73241,Anal and rectal polyp,1580747,40170911
-4,Sitagliptin,5,Liraglutide,133655,Burn of forearm,1580747,40170911
-4,Sitagliptin,5,Liraglutide,73560,Calcaneal spur,1580747,40170911
-4,Sitagliptin,5,Liraglutide,434327,Cannabis abuse,1580747,40170911
-4,Sitagliptin,5,Liraglutide,140842,Changes in skin texture,1580747,40170911
-4,Sitagliptin,5,Liraglutide,81378,Chondromalacia of patella,1580747,40170911
-4,Sitagliptin,5,Liraglutide,432303,Cocaine abuse,1580747,40170911
-4,Sitagliptin,5,Liraglutide,46269889,Complication due to Crohn's disease,1580747,40170911
-4,Sitagliptin,5,Liraglutide,134438,Contact dermatitis,1580747,40170911
-4,Sitagliptin,5,Liraglutide,78619,Contusion of knee,1580747,40170911
-4,Sitagliptin,5,Liraglutide,201606,Crohn's disease,1580747,40170911
-4,Sitagliptin,5,Liraglutide,76786,Derangement of knee,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4115402,Difficulty sleeping,1580747,40170911
-4,Sitagliptin,5,Liraglutide,45757370,Disproportion of reconstructed breast,1580747,40170911
-4,Sitagliptin,5,Liraglutide,433111,Effects of hunger,1580747,40170911
-4,Sitagliptin,5,Liraglutide,433527,Endometriosis,1580747,40170911
-4,Sitagliptin,5,Liraglutide,259995,Foreign body in orifice,1580747,40170911
-4,Sitagliptin,5,Liraglutide,433577,Hammer toe,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4231770,Hereditary thrombophilia,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4012570,High risk sexual behavior,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4012934,Homocystinuria,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4344500,Impingement syndrome of shoulder region,1580747,40170911
-4,Sitagliptin,5,Liraglutide,139099,Ingrowing nail,1580747,40170911
-4,Sitagliptin,5,Liraglutide,444132,Injury of knee,1580747,40170911
-4,Sitagliptin,5,Liraglutide,432593,Kwashiorkor,1580747,40170911
-4,Sitagliptin,5,Liraglutide,434203,Late effect of contusion,1580747,40170911
-4,Sitagliptin,5,Liraglutide,438329,Late effect of motor vehicle accident,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4083487,Macular drusen,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4103703,Melena,1580747,40170911
-4,Sitagliptin,5,Liraglutide,377572,Noise effects on inner ear,1580747,40170911
-4,Sitagliptin,5,Liraglutide,136368,Non-toxic multinodular goiter,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4091513,Passing flatus,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4202045,Postviral fatigue syndrome,1580747,40170911
-4,Sitagliptin,5,Liraglutide,373478,Presbyopia,1580747,40170911
-4,Sitagliptin,5,Liraglutide,439790,Psychalgia,1580747,40170911
-4,Sitagliptin,5,Liraglutide,81634,Ptotic breast,1580747,40170911
-4,Sitagliptin,5,Liraglutide,380706,Regular astigmatism,1580747,40170911
-4,Sitagliptin,5,Liraglutide,141932,Senile hyperkeratosis,1580747,40170911
-4,Sitagliptin,5,Liraglutide,36713918,Somatic dysfunction of lumbar region,1580747,40170911
-4,Sitagliptin,5,Liraglutide,443172,Splinter of face without major open wound,1580747,40170911
-4,Sitagliptin,5,Liraglutide,81151,Sprain of ankle,1580747,40170911
-4,Sitagliptin,5,Liraglutide,72748,Strain of rotator cuff capsule,1580747,40170911
-4,Sitagliptin,5,Liraglutide,378427,Tear film insufficiency,1580747,40170911
-4,Sitagliptin,5,Liraglutide,437264,Tobacco dependence syndrome,1580747,40170911
-4,Sitagliptin,5,Liraglutide,140641,Verruca vulgaris,1580747,40170911
-4,Sitagliptin,5,Liraglutide,4115367,Wrist joint pain,1580747,40170911
-4,Sitagliptin,5,Liraglutide,440193,Wristdrop,1580747,40170911
-1,Lisinporil,3,Metoprolol,134438,Contact dermatitis,1308216,1307046
-1,Lisinporil,3,Metoprolol,141932,Senile hyperkeratosis,1308216,1307046
-1,Lisinporil,3,Metoprolol,140648,Onychomycosis due to dermatophyte,1308216,1307046
-1,Lisinporil,3,Metoprolol,374375,Impacted cerumen,1308216,1307046
-1,Lisinporil,3,Metoprolol,378427,Tear film insufficiency,1308216,1307046
-1,Lisinporil,3,Metoprolol,437264,Tobacco dependence syndrome,1308216,1307046
-1,Lisinporil,3,Metoprolol,373478,Presbyopia,1308216,1307046
-1,Lisinporil,3,Metoprolol,139099,Ingrowing nail,1308216,1307046
-1,Lisinporil,3,Metoprolol,36713918,Somatic dysfunction of lumbar region,1308216,1307046
-1,Lisinporil,3,Metoprolol,140641,Verruca vulgaris,1308216,1307046
-1,Lisinporil,3,Metoprolol,4115367,Wrist joint pain,1308216,1307046
-1,Lisinporil,3,Metoprolol,194083,Vaginitis and vulvovaginitis,1308216,1307046
-1,Lisinporil,3,Metoprolol,4213540,Cervical somatic dysfunction,1308216,1307046
-1,Lisinporil,3,Metoprolol,444132,Injury of knee,1308216,1307046
-1,Lisinporil,3,Metoprolol,81151,Sprain of ankle,1308216,1307046
-1,Lisinporil,3,Metoprolol,440329,Herpes zoster without complication,1308216,1307046
-1,Lisinporil,3,Metoprolol,73560,Calcaneal spur,1308216,1307046
-1,Lisinporil,3,Metoprolol,433577,Hammer toe,1308216,1307046
-1,Lisinporil,3,Metoprolol,81378,Chondromalacia of patella,1308216,1307046
-1,Lisinporil,3,Metoprolol,72748,Strain of rotator cuff capsule,1308216,1307046
-1,Lisinporil,3,Metoprolol,75911,Acquired hallux valgus,1308216,1307046
-1,Lisinporil,3,Metoprolol,441788,Human papilloma virus infection,1308216,1307046
-1,Lisinporil,3,Metoprolol,136368,Non-toxic multinodular goiter,1308216,1307046
-1,Lisinporil,3,Metoprolol,376707,Acute conjunctivitis,1308216,1307046
-1,Lisinporil,3,Metoprolol,77965,Acquired trigger finger,1308216,1307046
-1,Lisinporil,3,Metoprolol,137951,Acquired keratoderma,1308216,1307046
-1,Lisinporil,3,Metoprolol,73241,Anal and rectal polyp,1308216,1307046
-1,Lisinporil,3,Metoprolol,4209423,Nicotine dependence,1308216,1307046
-1,Lisinporil,3,Metoprolol,76786,Derangement of knee,1308216,1307046
-1,Lisinporil,3,Metoprolol,78619,Contusion of knee,1308216,1307046
-1,Lisinporil,3,Metoprolol,196168,Irregular periods,1308216,1307046
-1,Lisinporil,3,Metoprolol,4092896,Feces contents abnormal,1308216,1307046
-1,Lisinporil,3,Metoprolol,380706,Regular astigmatism,1308216,1307046
-1,Lisinporil,3,Metoprolol,195873,Leukorrhea,1308216,1307046
-1,Lisinporil,3,Metoprolol,4344500,Impingement syndrome of shoulder region,1308216,1307046
-1,Lisinporil,3,Metoprolol,4170770,Epidermoid cyst,1308216,1307046
-1,Lisinporil,3,Metoprolol,4103703,Melena,1308216,1307046
-1,Lisinporil,3,Metoprolol,4088290,Absence of breast,1308216,1307046
-1,Lisinporil,3,Metoprolol,40480893,Nonspecific tuberculin test reaction,1308216,1307046
-1,Lisinporil,3,Metoprolol,4083487,Macular drusen,1308216,1307046
-1,Lisinporil,3,Metoprolol,201606,Crohn's disease,1308216,1307046
-1,Lisinporil,3,Metoprolol,433527,Endometriosis,1308216,1307046
-1,Lisinporil,3,Metoprolol,434165,Abnormal cervical smear,1308216,1307046
-1,Lisinporil,3,Metoprolol,140842,Changes in skin texture,1308216,1307046
-1,Lisinporil,3,Metoprolol,4201390,Colostomy present,1308216,1307046
-1,Lisinporil,3,Metoprolol,439790,Psychalgia,1308216,1307046
-1,Lisinporil,3,Metoprolol,4092879,Absent kidney,1308216,1307046
-1,Lisinporil,3,Metoprolol,4012570,High risk sexual behavior,1308216,1307046
-1,Lisinporil,3,Metoprolol,4115402,Difficulty sleeping,1308216,1307046
-1,Lisinporil,3,Metoprolol,438130,Opioid abuse,1308216,1307046
-1,Lisinporil,3,Metoprolol,434327,Cannabis abuse,1308216,1307046
-1,Lisinporil,3,Metoprolol,199192,Abrasion and/or friction burn of trunk without infection,1308216,1307046
-1,Lisinporil,3,Metoprolol,44783954,Acid reflux,1308216,1307046
-1,Lisinporil,3,Metoprolol,46269889,Complication due to Crohn's disease,1308216,1307046
-1,Lisinporil,3,Metoprolol,4166231,Genetic predisposition,1308216,1307046
-1,Lisinporil,3,Metoprolol,4201717,Ileostomy present,1308216,1307046
-1,Lisinporil,3,Metoprolol,4091513,Passing flatus,1308216,1307046
-1,Lisinporil,3,Metoprolol,40481632,Ganglion cyst,1308216,1307046
-1,Lisinporil,3,Metoprolol,4231770,Hereditary thrombophilia,1308216,1307046
-1,Lisinporil,3,Metoprolol,259995,Foreign body in orifice,1308216,1307046
-1,Lisinporil,3,Metoprolol,432303,Cocaine abuse,1308216,1307046
-1,Lisinporil,3,Metoprolol,46286594,Problem related to lifestyle,1308216,1307046
-1,Lisinporil,3,Metoprolol,432593,Kwashiorkor,1308216,1307046
-1,Lisinporil,3,Metoprolol,4202045,Postviral fatigue syndrome,1308216,1307046
-1,Lisinporil,3,Metoprolol,81634,Ptotic breast,1308216,1307046
-1,Lisinporil,3,Metoprolol,377572,Noise effects on inner ear,1308216,1307046
-1,Lisinporil,3,Metoprolol,436409,Abnormal pupil,1308216,1307046
-1,Lisinporil,3,Metoprolol,4012934,Homocystinuria,1308216,1307046
-1,Lisinporil,3,Metoprolol,4103640,Amputated foot,1308216,1307046
-1,Lisinporil,3,Metoprolol,433111,Effects of hunger,1308216,1307046
-1,Lisinporil,3,Metoprolol,434203,Late effect of contusion,1308216,1307046
-1,Lisinporil,3,Metoprolol,438329,Late effect of motor vehicle accident,1308216,1307046
-1,Lisinporil,3,Metoprolol,45757370,Disproportion of reconstructed breast,1308216,1307046
-1,Lisinporil,3,Metoprolol,133655,Burn of forearm,1308216,1307046
-1,Lisinporil,3,Metoprolol,443172,"Splinter of face, without major open wound",1308216,1307046
-1,Lisinporil,3,Metoprolol,440193,Wristdrop,1308216,1307046
-4,Sitagliptin,6,Glimepiride,439935,Abnormal posture,1580747,1597756
-4,Sitagliptin,6,Glimepiride,443585,Abrasion and/or friction burn of multiple sites,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4092879,Absent kidney,1580747,1597756
-4,Sitagliptin,6,Glimepiride,45757682,Anomaly of jaw size,1580747,1597756
-4,Sitagliptin,6,Glimepiride,81878,Benign paroxysmal positional vertigo,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4216219,Bizarre personal appearance,1580747,1597756
-4,Sitagliptin,6,Glimepiride,134765,Cachexia,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4201390,Colostomy present,1580747,1597756
-4,Sitagliptin,6,Glimepiride,434675,Complication of gastrostomy,1580747,1597756
-4,Sitagliptin,6,Glimepiride,436077,Developmental delay,1580747,1597756
-4,Sitagliptin,6,Glimepiride,377910,Deviated nasal septum,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4170770,Epidermoid cyst,1580747,1597756
-4,Sitagliptin,6,Glimepiride,437448,Exhaustion due to excessive exertion,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4092896,Feces contents abnormal,1580747,1597756
-4,Sitagliptin,6,Glimepiride,374801,Foreign body in ear,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4096540,Foreskin deficient,1580747,1597756
-4,Sitagliptin,6,Glimepiride,439788,Galactosemia,1580747,1597756
-4,Sitagliptin,6,Glimepiride,40481632,Ganglion cyst,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4168318,Genetic disorder carrier,1580747,1597756
-4,Sitagliptin,6,Glimepiride,374375,Impacted cerumen,1580747,1597756
-4,Sitagliptin,6,Glimepiride,40481897,Inadequate sleep hygiene,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4265896,Jellyfish poisoning,1580747,1597756
-4,Sitagliptin,6,Glimepiride,381021,Lagophthalmos,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4027782,Lipid storage disease,1580747,1597756
-4,Sitagliptin,6,Glimepiride,433997,Lymphangioma,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4051630,Malingering,1580747,1597756
-4,Sitagliptin,6,Glimepiride,258540,Marfan's syndrome,1580747,1597756
-4,Sitagliptin,6,Glimepiride,432798,"Mechanical complication of internal orthopedic device, implant AND/OR graft",1580747,1597756
-4,Sitagliptin,6,Glimepiride,439795,Minimal cognitive impairment,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4209423,Nicotine dependence,1580747,1597756
-4,Sitagliptin,6,Glimepiride,40480893,Nonspecific tuberculin test reaction,1580747,1597756
-4,Sitagliptin,6,Glimepiride,438130,Opioid abuse,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4299094,Opioid intoxication,1580747,1597756
-4,Sitagliptin,6,Glimepiride,437092,Physiological development failure,1580747,1597756
-4,Sitagliptin,6,Glimepiride,433951,Poisoning by tranquilizer,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4019836,Social exclusion,1580747,1597756
-4,Sitagliptin,6,Glimepiride,432436,Symbolic dysfunction,1580747,1597756
-4,Sitagliptin,6,Glimepiride,433244,Tooth loss,1580747,1597756
-4,Sitagliptin,6,Glimepiride,436876,Toxic effect of lead compound,1580747,1597756
-4,Sitagliptin,6,Glimepiride,440612,Toxic effect of tobacco and nicotine,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4201387,Tracheostomy present,1580747,1597756
-4,Sitagliptin,6,Glimepiride,45757285,Unsatisfactory tooth restoration,1580747,1597756
-4,Sitagliptin,6,Glimepiride,436409,Abnormal pupil,1580747,1597756
-4,Sitagliptin,6,Glimepiride,199192,Abrasion and/or friction burn of trunk without infection,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4088290,Absence of breast,1580747,1597756
-4,Sitagliptin,6,Glimepiride,75911,Acquired hallux valgus,1580747,1597756
-4,Sitagliptin,6,Glimepiride,137951,Acquired keratoderma,1580747,1597756
-4,Sitagliptin,6,Glimepiride,73241,Anal and rectal polyp,1580747,1597756
-4,Sitagliptin,6,Glimepiride,133655,Burn of forearm,1580747,1597756
-4,Sitagliptin,6,Glimepiride,73560,Calcaneal spur,1580747,1597756
-4,Sitagliptin,6,Glimepiride,434327,Cannabis abuse,1580747,1597756
-4,Sitagliptin,6,Glimepiride,140842,Changes in skin texture,1580747,1597756
-4,Sitagliptin,6,Glimepiride,81378,Chondromalacia of patella,1580747,1597756
-4,Sitagliptin,6,Glimepiride,432303,Cocaine abuse,1580747,1597756
-4,Sitagliptin,6,Glimepiride,46269889,Complication due to Crohn's disease,1580747,1597756
-4,Sitagliptin,6,Glimepiride,134438,Contact dermatitis,1580747,1597756
-4,Sitagliptin,6,Glimepiride,78619,Contusion of knee,1580747,1597756
-4,Sitagliptin,6,Glimepiride,201606,Crohn's disease,1580747,1597756
-4,Sitagliptin,6,Glimepiride,76786,Derangement of knee,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4115402,Difficulty sleeping,1580747,1597756
-4,Sitagliptin,6,Glimepiride,45757370,Disproportion of reconstructed breast,1580747,1597756
-4,Sitagliptin,6,Glimepiride,433111,Effects of hunger,1580747,1597756
-4,Sitagliptin,6,Glimepiride,433527,Endometriosis,1580747,1597756
-4,Sitagliptin,6,Glimepiride,259995,Foreign body in orifice,1580747,1597756
-4,Sitagliptin,6,Glimepiride,433577,Hammer toe,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4231770,Hereditary thrombophilia,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4012570,High risk sexual behavior,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4012934,Homocystinuria,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4344500,Impingement syndrome of shoulder region,1580747,1597756
-4,Sitagliptin,6,Glimepiride,139099,Ingrowing nail,1580747,1597756
-4,Sitagliptin,6,Glimepiride,444132,Injury of knee,1580747,1597756
-4,Sitagliptin,6,Glimepiride,432593,Kwashiorkor,1580747,1597756
-4,Sitagliptin,6,Glimepiride,434203,Late effect of contusion,1580747,1597756
-4,Sitagliptin,6,Glimepiride,438329,Late effect of motor vehicle accident,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4083487,Macular drusen,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4103703,Melena,1580747,1597756
-4,Sitagliptin,6,Glimepiride,377572,Noise effects on inner ear,1580747,1597756
-4,Sitagliptin,6,Glimepiride,136368,Non-toxic multinodular goiter,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4091513,Passing flatus,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4202045,Postviral fatigue syndrome,1580747,1597756
-4,Sitagliptin,6,Glimepiride,373478,Presbyopia,1580747,1597756
-4,Sitagliptin,6,Glimepiride,439790,Psychalgia,1580747,1597756
-4,Sitagliptin,6,Glimepiride,81634,Ptotic breast,1580747,1597756
-4,Sitagliptin,6,Glimepiride,380706,Regular astigmatism,1580747,1597756
-4,Sitagliptin,6,Glimepiride,141932,Senile hyperkeratosis,1580747,1597756
-4,Sitagliptin,6,Glimepiride,36713918,Somatic dysfunction of lumbar region,1580747,1597756
-4,Sitagliptin,6,Glimepiride,443172,Splinter of face without major open wound,1580747,1597756
-4,Sitagliptin,6,Glimepiride,81151,Sprain of ankle,1580747,1597756
-4,Sitagliptin,6,Glimepiride,72748,Strain of rotator cuff capsule,1580747,1597756
-4,Sitagliptin,6,Glimepiride,378427,Tear film insufficiency,1580747,1597756
-4,Sitagliptin,6,Glimepiride,437264,Tobacco dependence syndrome,1580747,1597756
-4,Sitagliptin,6,Glimepiride,140641,Verruca vulgaris,1580747,1597756
-4,Sitagliptin,6,Glimepiride,4115367,Wrist joint pain,1580747,1597756
-4,Sitagliptin,6,Glimepiride,440193,Wristdrop,1580747,1597756
+targetId;targetName;comparatorId;comparatorName;outcomeConceptId;outcomeName;targetConceptIds;comparatorConceptIds
+2;Losartan;1;Hydrochlorothiazide;134438;Contact dermatitis;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;141932;Senile hyperkeratosis;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;140648;Onychomycosis due to dermatophyte;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;374375;Impacted cerumen;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;378427;Tear film insufficiency;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;437264;Tobacco dependence syndrome;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;373478;Presbyopia;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;139099;Ingrowing nail;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;36713918;Somatic dysfunction of lumbar region;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;140641;Verruca vulgaris;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4115367;Wrist joint pain;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;194083;Vaginitis and vulvovaginitis;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4213540;Cervical somatic dysfunction;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;444132;Injury of knee;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;81151;Sprain of ankle;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;440329;Herpes zoster without complication;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;73560;Calcaneal spur;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;433577;Hammer toe;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;81378;Chondromalacia of patella;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;72748;Strain of rotator cuff capsule;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;75911;Acquired hallux valgus;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;441788;Human papilloma virus infection;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;136368;Non-toxic multinodular goiter;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;376707;Acute conjunctivitis;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;77965;Acquired trigger finger;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;137951;Acquired keratoderma;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;73241;Anal and rectal polyp;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4209423;Nicotine dependence;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;76786;Derangement of knee;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;78619;Contusion of knee;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;196168;Irregular periods;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4092896;Feces contents abnormal;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;380706;Regular astigmatism;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;195873;Leukorrhea;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4344500;Impingement syndrome of shoulder region;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4170770;Epidermoid cyst;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4103703;Melena;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4088290;Absence of breast;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;40480893;Nonspecific tuberculin test reaction;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4083487;Macular drusen;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;201606;Crohn's disease;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;433527;Endometriosis;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;434165;Abnormal cervical smear;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;140842;Changes in skin texture;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4201390;Colostomy present;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;439790;Psychalgia;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4092879;Absent kidney;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4012570;High risk sexual behavior;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4115402;Difficulty sleeping;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;438130;Opioid abuse;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;434327;Cannabis abuse;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;199192;Abrasion and/or friction burn of trunk without infection;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;44783954;Acid reflux;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;46269889;Complication due to Crohn's disease;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4166231;Genetic predisposition;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4201717;Ileostomy present;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4091513;Passing flatus;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;40481632;Ganglion cyst;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4231770;Hereditary thrombophilia;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;259995;Foreign body in orifice;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;432303;Cocaine abuse;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;46286594;Problem related to lifestyle;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;432593;Kwashiorkor;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4202045;Postviral fatigue syndrome;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;81634;Ptotic breast;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;377572;Noise effects on inner ear;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;436409;Abnormal pupil;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4012934;Homocystinuria;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;4103640;Amputated foot;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;433111;Effects of hunger;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;434203;Late effect of contusion;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;438329;Late effect of motor vehicle accident;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;45757370;Disproportion of reconstructed breast;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;133655;Burn of forearm;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;443172;Splinter of face, without major open wound;1367500;974166
+2;Losartan;1;Hydrochlorothiazide;440193;Wristdrop;1367500;974166
+7;Glimepriride;8;Saxagliptin;439935;Abnormal posture;1597756;40166035
+7;Glimepriride;8;Saxagliptin;443585;Abrasion and/or friction burn of multiple sites;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4092879;Absent kidney;1597756;40166035
+7;Glimepriride;8;Saxagliptin;45757682;Anomaly of jaw size;1597756;40166035
+7;Glimepriride;8;Saxagliptin;81878;Benign paroxysmal positional vertigo;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4216219;Bizarre personal appearance;1597756;40166035
+7;Glimepriride;8;Saxagliptin;134765;Cachexia;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4201390;Colostomy present;1597756;40166035
+7;Glimepriride;8;Saxagliptin;434675;Complication of gastrostomy;1597756;40166035
+7;Glimepriride;8;Saxagliptin;436077;Developmental delay;1597756;40166035
+7;Glimepriride;8;Saxagliptin;377910;Deviated nasal septum;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4170770;Epidermoid cyst;1597756;40166035
+7;Glimepriride;8;Saxagliptin;437448;Exhaustion due to excessive exertion;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4092896;Feces contents abnormal;1597756;40166035
+7;Glimepriride;8;Saxagliptin;374801;Foreign body in ear;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4096540;Foreskin deficient;1597756;40166035
+7;Glimepriride;8;Saxagliptin;439788;Galactosemia;1597756;40166035
+7;Glimepriride;8;Saxagliptin;40481632;Ganglion cyst;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4168318;Genetic disorder carrier;1597756;40166035
+7;Glimepriride;8;Saxagliptin;374375;Impacted cerumen;1597756;40166035
+7;Glimepriride;8;Saxagliptin;40481897;Inadequate sleep hygiene;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4265896;Jellyfish poisoning;1597756;40166035
+7;Glimepriride;8;Saxagliptin;381021;Lagophthalmos;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4027782;Lipid storage disease;1597756;40166035
+7;Glimepriride;8;Saxagliptin;433997;Lymphangioma;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4051630;Malingering;1597756;40166035
+7;Glimepriride;8;Saxagliptin;258540;Marfan's syndrome;1597756;40166035
+7;Glimepriride;8;Saxagliptin;432798;Mechanical complication of internal orthopedic device, implant AND/OR graft;1597756;40166035
+7;Glimepriride;8;Saxagliptin;439795;Minimal cognitive impairment;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4209423;Nicotine dependence;1597756;40166035
+7;Glimepriride;8;Saxagliptin;40480893;Nonspecific tuberculin test reaction;1597756;40166035
+7;Glimepriride;8;Saxagliptin;438130;Opioid abuse;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4299094;Opioid intoxication;1597756;40166035
+7;Glimepriride;8;Saxagliptin;437092;Physiological development failure;1597756;40166035
+7;Glimepriride;8;Saxagliptin;433951;Poisoning by tranquilizer;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4019836;Social exclusion;1597756;40166035
+7;Glimepriride;8;Saxagliptin;432436;Symbolic dysfunction;1597756;40166035
+7;Glimepriride;8;Saxagliptin;433244;Tooth loss;1597756;40166035
+7;Glimepriride;8;Saxagliptin;436876;Toxic effect of lead compound;1597756;40166035
+7;Glimepriride;8;Saxagliptin;440612;Toxic effect of tobacco and nicotine;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4201387;Tracheostomy present;1597756;40166035
+7;Glimepriride;8;Saxagliptin;45757285;Unsatisfactory tooth restoration;1597756;40166035
+7;Glimepriride;8;Saxagliptin;436409;Abnormal pupil;1597756;40166035
+7;Glimepriride;8;Saxagliptin;199192;Abrasion and/or friction burn of trunk without infection;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4088290;Absence of breast;1597756;40166035
+7;Glimepriride;8;Saxagliptin;75911;Acquired hallux valgus;1597756;40166035
+7;Glimepriride;8;Saxagliptin;137951;Acquired keratoderma;1597756;40166035
+7;Glimepriride;8;Saxagliptin;73241;Anal and rectal polyp;1597756;40166035
+7;Glimepriride;8;Saxagliptin;133655;Burn of forearm;1597756;40166035
+7;Glimepriride;8;Saxagliptin;73560;Calcaneal spur;1597756;40166035
+7;Glimepriride;8;Saxagliptin;434327;Cannabis abuse;1597756;40166035
+7;Glimepriride;8;Saxagliptin;140842;Changes in skin texture;1597756;40166035
+7;Glimepriride;8;Saxagliptin;81378;Chondromalacia of patella;1597756;40166035
+7;Glimepriride;8;Saxagliptin;432303;Cocaine abuse;1597756;40166035
+7;Glimepriride;8;Saxagliptin;46269889;Complication due to Crohn's disease;1597756;40166035
+7;Glimepriride;8;Saxagliptin;134438;Contact dermatitis;1597756;40166035
+7;Glimepriride;8;Saxagliptin;78619;Contusion of knee;1597756;40166035
+7;Glimepriride;8;Saxagliptin;201606;Crohn's disease;1597756;40166035
+7;Glimepriride;8;Saxagliptin;76786;Derangement of knee;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4115402;Difficulty sleeping;1597756;40166035
+7;Glimepriride;8;Saxagliptin;45757370;Disproportion of reconstructed breast;1597756;40166035
+7;Glimepriride;8;Saxagliptin;433111;Effects of hunger;1597756;40166035
+7;Glimepriride;8;Saxagliptin;433527;Endometriosis;1597756;40166035
+7;Glimepriride;8;Saxagliptin;259995;Foreign body in orifice;1597756;40166035
+7;Glimepriride;8;Saxagliptin;433577;Hammer toe;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4231770;Hereditary thrombophilia;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4012570;High risk sexual behavior;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4012934;Homocystinuria;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4344500;Impingement syndrome of shoulder region;1597756;40166035
+7;Glimepriride;8;Saxagliptin;139099;Ingrowing nail;1597756;40166035
+7;Glimepriride;8;Saxagliptin;444132;Injury of knee;1597756;40166035
+7;Glimepriride;8;Saxagliptin;432593;Kwashiorkor;1597756;40166035
+7;Glimepriride;8;Saxagliptin;434203;Late effect of contusion;1597756;40166035
+7;Glimepriride;8;Saxagliptin;438329;Late effect of motor vehicle accident;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4083487;Macular drusen;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4103703;Melena;1597756;40166035
+7;Glimepriride;8;Saxagliptin;377572;Noise effects on inner ear;1597756;40166035
+7;Glimepriride;8;Saxagliptin;136368;Non-toxic multinodular goiter;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4091513;Passing flatus;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4202045;Postviral fatigue syndrome;1597756;40166035
+7;Glimepriride;8;Saxagliptin;373478;Presbyopia;1597756;40166035
+7;Glimepriride;8;Saxagliptin;439790;Psychalgia;1597756;40166035
+7;Glimepriride;8;Saxagliptin;81634;Ptotic breast;1597756;40166035
+7;Glimepriride;8;Saxagliptin;380706;Regular astigmatism;1597756;40166035
+7;Glimepriride;8;Saxagliptin;141932;Senile hyperkeratosis;1597756;40166035
+7;Glimepriride;8;Saxagliptin;36713918;Somatic dysfunction of lumbar region;1597756;40166035
+7;Glimepriride;8;Saxagliptin;443172;Splinter of face without major open wound;1597756;40166035
+7;Glimepriride;8;Saxagliptin;81151;Sprain of ankle;1597756;40166035
+7;Glimepriride;8;Saxagliptin;72748;Strain of rotator cuff capsule;1597756;40166035
+7;Glimepriride;8;Saxagliptin;378427;Tear film insufficiency;1597756;40166035
+7;Glimepriride;8;Saxagliptin;437264;Tobacco dependence syndrome;1597756;40166035
+7;Glimepriride;8;Saxagliptin;140641;Verruca vulgaris;1597756;40166035
+7;Glimepriride;8;Saxagliptin;4115367;Wrist joint pain;1597756;40166035
+7;Glimepriride;8;Saxagliptin;440193;Wristdrop;1597756;40166035
+3;Quinapril;4;Propranolol;134438;Contact dermatitis;1331235;1353766
+3;Quinapril;4;Propranolol;141932;Senile hyperkeratosis;1331235;1353766
+3;Quinapril;4;Propranolol;140648;Onychomycosis due to dermatophyte;1331235;1353766
+3;Quinapril;4;Propranolol;374375;Impacted cerumen;1331235;1353766
+3;Quinapril;4;Propranolol;378427;Tear film insufficiency;1331235;1353766
+3;Quinapril;4;Propranolol;437264;Tobacco dependence syndrome;1331235;1353766
+3;Quinapril;4;Propranolol;373478;Presbyopia;1331235;1353766
+3;Quinapril;4;Propranolol;139099;Ingrowing nail;1331235;1353766
+3;Quinapril;4;Propranolol;36713918;Somatic dysfunction of lumbar region;1331235;1353766
+3;Quinapril;4;Propranolol;140641;Verruca vulgaris;1331235;1353766
+3;Quinapril;4;Propranolol;4115367;Wrist joint pain;1331235;1353766
+3;Quinapril;4;Propranolol;194083;Vaginitis and vulvovaginitis;1331235;1353766
+3;Quinapril;4;Propranolol;4213540;Cervical somatic dysfunction;1331235;1353766
+3;Quinapril;4;Propranolol;444132;Injury of knee;1331235;1353766
+3;Quinapril;4;Propranolol;81151;Sprain of ankle;1331235;1353766
+3;Quinapril;4;Propranolol;440329;Herpes zoster without complication;1331235;1353766
+3;Quinapril;4;Propranolol;73560;Calcaneal spur;1331235;1353766
+3;Quinapril;4;Propranolol;433577;Hammer toe;1331235;1353766
+3;Quinapril;4;Propranolol;81378;Chondromalacia of patella;1331235;1353766
+3;Quinapril;4;Propranolol;72748;Strain of rotator cuff capsule;1331235;1353766
+3;Quinapril;4;Propranolol;75911;Acquired hallux valgus;1331235;1353766
+3;Quinapril;4;Propranolol;441788;Human papilloma virus infection;1331235;1353766
+3;Quinapril;4;Propranolol;136368;Non-toxic multinodular goiter;1331235;1353766
+3;Quinapril;4;Propranolol;376707;Acute conjunctivitis;1331235;1353766
+3;Quinapril;4;Propranolol;77965;Acquired trigger finger;1331235;1353766
+3;Quinapril;4;Propranolol;137951;Acquired keratoderma;1331235;1353766
+3;Quinapril;4;Propranolol;73241;Anal and rectal polyp;1331235;1353766
+3;Quinapril;4;Propranolol;4209423;Nicotine dependence;1331235;1353766
+3;Quinapril;4;Propranolol;76786;Derangement of knee;1331235;1353766
+3;Quinapril;4;Propranolol;78619;Contusion of knee;1331235;1353766
+3;Quinapril;4;Propranolol;196168;Irregular periods;1331235;1353766
+3;Quinapril;4;Propranolol;4092896;Feces contents abnormal;1331235;1353766
+3;Quinapril;4;Propranolol;380706;Regular astigmatism;1331235;1353766
+3;Quinapril;4;Propranolol;195873;Leukorrhea;1331235;1353766
+3;Quinapril;4;Propranolol;4344500;Impingement syndrome of shoulder region;1331235;1353766
+3;Quinapril;4;Propranolol;4170770;Epidermoid cyst;1331235;1353766
+3;Quinapril;4;Propranolol;4103703;Melena;1331235;1353766
+3;Quinapril;4;Propranolol;4088290;Absence of breast;1331235;1353766
+3;Quinapril;4;Propranolol;40480893;Nonspecific tuberculin test reaction;1331235;1353766
+3;Quinapril;4;Propranolol;4083487;Macular drusen;1331235;1353766
+3;Quinapril;4;Propranolol;201606;Crohn's disease;1331235;1353766
+3;Quinapril;4;Propranolol;433527;Endometriosis;1331235;1353766
+3;Quinapril;4;Propranolol;434165;Abnormal cervical smear;1331235;1353766
+3;Quinapril;4;Propranolol;140842;Changes in skin texture;1331235;1353766
+3;Quinapril;4;Propranolol;4201390;Colostomy present;1331235;1353766
+3;Quinapril;4;Propranolol;439790;Psychalgia;1331235;1353766
+3;Quinapril;4;Propranolol;4092879;Absent kidney;1331235;1353766
+3;Quinapril;4;Propranolol;4012570;High risk sexual behavior;1331235;1353766
+3;Quinapril;4;Propranolol;4115402;Difficulty sleeping;1331235;1353766
+3;Quinapril;4;Propranolol;438130;Opioid abuse;1331235;1353766
+3;Quinapril;4;Propranolol;434327;Cannabis abuse;1331235;1353766
+3;Quinapril;4;Propranolol;199192;Abrasion and/or friction burn of trunk without infection;1331235;1353766
+3;Quinapril;4;Propranolol;44783954;Acid reflux;1331235;1353766
+3;Quinapril;4;Propranolol;46269889;Complication due to Crohn's disease;1331235;1353766
+3;Quinapril;4;Propranolol;4166231;Genetic predisposition;1331235;1353766
+3;Quinapril;4;Propranolol;4201717;Ileostomy present;1331235;1353766
+3;Quinapril;4;Propranolol;4091513;Passing flatus;1331235;1353766
+3;Quinapril;4;Propranolol;40481632;Ganglion cyst;1331235;1353766
+3;Quinapril;4;Propranolol;4231770;Hereditary thrombophilia;1331235;1353766
+3;Quinapril;4;Propranolol;259995;Foreign body in orifice;1331235;1353766
+3;Quinapril;4;Propranolol;432303;Cocaine abuse;1331235;1353766
+3;Quinapril;4;Propranolol;46286594;Problem related to lifestyle;1331235;1353766
+3;Quinapril;4;Propranolol;432593;Kwashiorkor;1331235;1353766
+3;Quinapril;4;Propranolol;4202045;Postviral fatigue syndrome;1331235;1353766
+3;Quinapril;4;Propranolol;81634;Ptotic breast;1331235;1353766
+3;Quinapril;4;Propranolol;377572;Noise effects on inner ear;1331235;1353766
+3;Quinapril;4;Propranolol;436409;Abnormal pupil;1331235;1353766
+3;Quinapril;4;Propranolol;4012934;Homocystinuria;1331235;1353766
+3;Quinapril;4;Propranolol;4103640;Amputated foot;1331235;1353766
+3;Quinapril;4;Propranolol;433111;Effects of hunger;1331235;1353766
+3;Quinapril;4;Propranolol;434203;Late effect of contusion;1331235;1353766
+3;Quinapril;4;Propranolol;438329;Late effect of motor vehicle accident;1331235;1353766
+3;Quinapril;4;Propranolol;45757370;Disproportion of reconstructed breast;1331235;1353766
+3;Quinapril;4;Propranolol;133655;Burn of forearm;1331235;1353766
+3;Quinapril;4;Propranolol;443172;Splinter of face, without major open wound;1331235;1353766
+3;Quinapril;4;Propranolol;440193;Wristdrop;1331235;1353766
+5;Sitagliptin;6;Dapagliflozin;439935;Abnormal posture;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;443585;Abrasion and/or friction burn of multiple sites;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4092879;Absent kidney;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;45757682;Anomaly of jaw size;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;81878;Benign paroxysmal positional vertigo;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4216219;Bizarre personal appearance;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;134765;Cachexia;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4201390;Colostomy present;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;434675;Complication of gastrostomy;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;436077;Developmental delay;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;377910;Deviated nasal septum;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4170770;Epidermoid cyst;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;437448;Exhaustion due to excessive exertion;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4092896;Feces contents abnormal;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;374801;Foreign body in ear;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4096540;Foreskin deficient;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;439788;Galactosemia;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;40481632;Ganglion cyst;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4168318;Genetic disorder carrier;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;374375;Impacted cerumen;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;40481897;Inadequate sleep hygiene;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4265896;Jellyfish poisoning;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;381021;Lagophthalmos;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4027782;Lipid storage disease;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;433997;Lymphangioma;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4051630;Malingering;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;258540;Marfan's syndrome;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;432798;Mechanical complication of internal orthopedic device, implant AND/OR graft;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;439795;Minimal cognitive impairment;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4209423;Nicotine dependence;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;40480893;Nonspecific tuberculin test reaction;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;438130;Opioid abuse;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4299094;Opioid intoxication;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;437092;Physiological development failure;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;433951;Poisoning by tranquilizer;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4019836;Social exclusion;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;432436;Symbolic dysfunction;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;433244;Tooth loss;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;436876;Toxic effect of lead compound;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;440612;Toxic effect of tobacco and nicotine;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4201387;Tracheostomy present;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;45757285;Unsatisfactory tooth restoration;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;436409;Abnormal pupil;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;199192;Abrasion and/or friction burn of trunk without infection;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4088290;Absence of breast;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;75911;Acquired hallux valgus;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;137951;Acquired keratoderma;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;73241;Anal and rectal polyp;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;133655;Burn of forearm;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;73560;Calcaneal spur;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;434327;Cannabis abuse;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;140842;Changes in skin texture;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;81378;Chondromalacia of patella;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;432303;Cocaine abuse;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;46269889;Complication due to Crohn's disease;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;134438;Contact dermatitis;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;78619;Contusion of knee;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;201606;Crohn's disease;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;76786;Derangement of knee;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4115402;Difficulty sleeping;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;45757370;Disproportion of reconstructed breast;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;433111;Effects of hunger;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;433527;Endometriosis;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;259995;Foreign body in orifice;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;433577;Hammer toe;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4231770;Hereditary thrombophilia;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4012570;High risk sexual behavior;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4012934;Homocystinuria;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4344500;Impingement syndrome of shoulder region;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;139099;Ingrowing nail;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;444132;Injury of knee;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;432593;Kwashiorkor;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;434203;Late effect of contusion;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;438329;Late effect of motor vehicle accident;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4083487;Macular drusen;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4103703;Melena;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;377572;Noise effects on inner ear;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;136368;Non-toxic multinodular goiter;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4091513;Passing flatus;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4202045;Postviral fatigue syndrome;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;373478;Presbyopia;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;439790;Psychalgia;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;81634;Ptotic breast;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;380706;Regular astigmatism;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;141932;Senile hyperkeratosis;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;36713918;Somatic dysfunction of lumbar region;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;443172;Splinter of face without major open wound;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;81151;Sprain of ankle;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;72748;Strain of rotator cuff capsule;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;378427;Tear film insufficiency;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;437264;Tobacco dependence syndrome;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;140641;Verruca vulgaris;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;4115367;Wrist joint pain;1580747;44785829
+5;Sitagliptin;6;Dapagliflozin;440193;Wristdrop;1580747;44785829
+9;Nortriptyline;10;Fluoxetine;73008;Enthesopathy;721724;755695
+9;Nortriptyline;10;Fluoxetine;74855;Genital herpes simplex;721724;755695
+9;Nortriptyline;10;Fluoxetine;75354;Osteochondropathy;721724;755695
+9;Nortriptyline;10;Fluoxetine;75576;Irritable bowel syndrome;721724;755695
+9;Nortriptyline;10;Fluoxetine;77650;Aseptic necrosis of bone;721724;755695
+9;Nortriptyline;10;Fluoxetine;81893;Ulcerative colitis;721724;755695
+9;Nortriptyline;10;Fluoxetine;134461;Tietze's disease;721724;755695
+9;Nortriptyline;10;Fluoxetine;139099;Ingrowing nail;721724;755695
+9;Nortriptyline;10;Fluoxetine;140480;Impetigo;721724;755695
+9;Nortriptyline;10;Fluoxetine;141932;Seborrheic keratosis;721724;755695
+9;Nortriptyline;10;Fluoxetine;192606;Paraplegia;721724;755695
+9;Nortriptyline;10;Fluoxetine;196236;Septic shock;721724;755695
+9;Nortriptyline;10;Fluoxetine;196456;Gallstone;721724;755695
+9;Nortriptyline;10;Fluoxetine;200775;Endometrial hyperplasia;721724;755695
+9;Nortriptyline;10;Fluoxetine;201606;Crohn's disease;721724;755695
+9;Nortriptyline;10;Fluoxetine;253954;Pulmonary tuberculosis;721724;755695
+9;Nortriptyline;10;Fluoxetine;254443;Sjogren's syndrome;721724;755695
+9;Nortriptyline;10;Fluoxetine;260134;Croup;721724;755695
+9;Nortriptyline;10;Fluoxetine;373478;Presbyopia;721724;755695
+9;Nortriptyline;10;Fluoxetine;374923;Bell's palsy;721724;755695
+9;Nortriptyline;10;Fluoxetine;378424;Astigmatism;721724;755695
+9;Nortriptyline;10;Fluoxetine;380038;Viral conjunctivitis;721724;755695
+9;Nortriptyline;10;Fluoxetine;380688;Hypoglycemic coma;721724;755695
+9;Nortriptyline;10;Fluoxetine;381581;Chalazion;721724;755695
+9;Nortriptyline;10;Fluoxetine;432595;Amyloidosis;721724;755695
+9;Nortriptyline;10;Fluoxetine;434926;Iridocyclitis;721724;755695
+9;Nortriptyline;10;Fluoxetine;436634;Acariasis;721724;755695
+9;Nortriptyline;10;Fluoxetine;437082;Ankylosing spondylitis;721724;755695
+9;Nortriptyline;10;Fluoxetine;438531;Chondromalacia;721724;755695
+9;Nortriptyline;10;Fluoxetine;438688;Sarcoidosis;721724;755695
+9;Nortriptyline;10;Fluoxetine;440638;Lyme disease;721724;755695
+9;Nortriptyline;10;Fluoxetine;441589;Endocarditis;721724;755695
+9;Nortriptyline;10;Fluoxetine;441788;Human papilloma virus infection;721724;755695
+9;Nortriptyline;10;Fluoxetine;441818;Hemangioma;721724;755695
+9;Nortriptyline;10;Fluoxetine;443285;Lesion of cervix;721724;755695
+9;Nortriptyline;10;Fluoxetine;443767;Diabetic oculopathy;721724;755695
+9;Nortriptyline;10;Fluoxetine;4030042;Toxic goiter;721724;755695
+9;Nortriptyline;10;Fluoxetine;4038835;Hodgkin's disease;721724;755695
+9;Nortriptyline;10;Fluoxetine;4050747;Fracture of upper limb;721724;755695
+9;Nortriptyline;10;Fluoxetine;4087647;Rectal mass;721724;755695
+9;Nortriptyline;10;Fluoxetine;4110709;Benign epithelial neoplasm of skin;721724;755695
+9;Nortriptyline;10;Fluoxetine;4112731;Polyp of intestine;721724;755695
+9;Nortriptyline;10;Fluoxetine;4134455;Mononeuropathy;721724;755695
+9;Nortriptyline;10;Fluoxetine;4156115;Malignant neoplasm of endocrine gland;721724;755695
+9;Nortriptyline;10;Fluoxetine;4169984;Scar;721724;755695
+9;Nortriptyline;10;Fluoxetine;4215978;Onychomycosis;721724;755695
+9;Nortriptyline;10;Fluoxetine;4234533;Tonsillitis;721724;755695
+9;Nortriptyline;10;Fluoxetine;4248870;Visceroptosis;721724;755695
+9;Nortriptyline;10;Fluoxetine;4249170;Epicondylitis;721724;755695
+9;Nortriptyline;10;Fluoxetine;4254542;Hypopituitarism;721724;755695
+9;Nortriptyline;10;Fluoxetine;4291005;Viral hepatitis;721724;755695
+9;Nortriptyline;10;Fluoxetine;4345472;Epstein-Barr virus disease;721724;755695
+11;Amitriptyline;12;Venlafaxine;73008;Enthesopathy;710062;743670
+11;Amitriptyline;12;Venlafaxine;74855;Genital herpes simplex;710062;743670
+11;Amitriptyline;12;Venlafaxine;75354;Osteochondropathy;710062;743670
+11;Amitriptyline;12;Venlafaxine;75576;Irritable bowel syndrome;710062;743670
+11;Amitriptyline;12;Venlafaxine;77650;Aseptic necrosis of bone;710062;743670
+11;Amitriptyline;12;Venlafaxine;81893;Ulcerative colitis;710062;743670
+11;Amitriptyline;12;Venlafaxine;134461;Tietze's disease;710062;743670
+11;Amitriptyline;12;Venlafaxine;139099;Ingrowing nail;710062;743670
+11;Amitriptyline;12;Venlafaxine;140480;Impetigo;710062;743670
+11;Amitriptyline;12;Venlafaxine;141932;Seborrheic keratosis;710062;743670
+11;Amitriptyline;12;Venlafaxine;192606;Paraplegia;710062;743670
+11;Amitriptyline;12;Venlafaxine;196236;Septic shock;710062;743670
+11;Amitriptyline;12;Venlafaxine;196456;Gallstone;710062;743670
+11;Amitriptyline;12;Venlafaxine;200775;Endometrial hyperplasia;710062;743670
+11;Amitriptyline;12;Venlafaxine;201606;Crohn's disease;710062;743670
+11;Amitriptyline;12;Venlafaxine;253954;Pulmonary tuberculosis;710062;743670
+11;Amitriptyline;12;Venlafaxine;254443;Sjogren's syndrome;710062;743670
+11;Amitriptyline;12;Venlafaxine;260134;Croup;710062;743670
+11;Amitriptyline;12;Venlafaxine;373478;Presbyopia;710062;743670
+11;Amitriptyline;12;Venlafaxine;374923;Bell's palsy;710062;743670
+11;Amitriptyline;12;Venlafaxine;378424;Astigmatism;710062;743670
+11;Amitriptyline;12;Venlafaxine;380038;Viral conjunctivitis;710062;743670
+11;Amitriptyline;12;Venlafaxine;380688;Hypoglycemic coma;710062;743670
+11;Amitriptyline;12;Venlafaxine;381581;Chalazion;710062;743670
+11;Amitriptyline;12;Venlafaxine;432595;Amyloidosis;710062;743670
+11;Amitriptyline;12;Venlafaxine;434926;Iridocyclitis;710062;743670
+11;Amitriptyline;12;Venlafaxine;436634;Acariasis;710062;743670
+11;Amitriptyline;12;Venlafaxine;437082;Ankylosing spondylitis;710062;743670
+11;Amitriptyline;12;Venlafaxine;438531;Chondromalacia;710062;743670
+11;Amitriptyline;12;Venlafaxine;438688;Sarcoidosis;710062;743670
+11;Amitriptyline;12;Venlafaxine;440638;Lyme disease;710062;743670
+11;Amitriptyline;12;Venlafaxine;441589;Endocarditis;710062;743670
+11;Amitriptyline;12;Venlafaxine;441788;Human papilloma virus infection;710062;743670
+11;Amitriptyline;12;Venlafaxine;441818;Hemangioma;710062;743670
+11;Amitriptyline;12;Venlafaxine;443285;Lesion of cervix;710062;743670
+11;Amitriptyline;12;Venlafaxine;443767;Diabetic oculopathy;710062;743670
+11;Amitriptyline;12;Venlafaxine;4030042;Toxic goiter;710062;743670
+11;Amitriptyline;12;Venlafaxine;4038835;Hodgkin's disease;710062;743670
+11;Amitriptyline;12;Venlafaxine;4050747;Fracture of upper limb;710062;743670
+11;Amitriptyline;12;Venlafaxine;4087647;Rectal mass;710062;743670
+11;Amitriptyline;12;Venlafaxine;4110709;Benign epithelial neoplasm of skin;710062;743670
+11;Amitriptyline;12;Venlafaxine;4112731;Polyp of intestine;710062;743670
+11;Amitriptyline;12;Venlafaxine;4134455;Mononeuropathy;710062;743670
+11;Amitriptyline;12;Venlafaxine;4156115;Malignant neoplasm of endocrine gland;710062;743670
+11;Amitriptyline;12;Venlafaxine;4169984;Scar;710062;743670
+11;Amitriptyline;12;Venlafaxine;4215978;Onychomycosis;710062;743670
+11;Amitriptyline;12;Venlafaxine;4234533;Tonsillitis;710062;743670
+11;Amitriptyline;12;Venlafaxine;4248870;Visceroptosis;710062;743670
+11;Amitriptyline;12;Venlafaxine;4249170;Epicondylitis;710062;743670
+11;Amitriptyline;12;Venlafaxine;4254542;Hypopituitarism;710062;743670
+11;Amitriptyline;12;Venlafaxine;4291005;Viral hepatitis;710062;743670
+11;Amitriptyline;12;Venlafaxine;4345472;Epstein-Barr virus disease;710062;743670
