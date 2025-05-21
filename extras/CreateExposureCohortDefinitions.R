@@ -175,15 +175,13 @@ saxagliptinNewUsers <- cohort(
 
 # Concept sets
 
-#Depression, including: severe major depression, severe depression, recurrent major depression
-#recurrent depression, moderate major depression, moderate depression, mild major depression, mild depression
-#major depression single episode
-depression <- cs(
-  descendants(42872722, 4149321, 4282316, 4098302, 4307111, 4151170, 4336957, 4149320, 4282096), 
-  name = "Depression"
+#Depression
+mdd <- cs(
+  descendants(4191716, 4212469, 4175329, 440383, 40546087), 
+  descendants(exclude(377527, 379784, 433440, 435520, 436665, 438727, 442306, 443864, 4224940, 4239471, 36684319, 40481798)),
+  name = "Major depressive disorder"
 )
-
-depression <- getConceptSetDetails(depression, connection, cdmDatabaseSchema)
+mdd <- getConceptSetDetails(mdd, connection, cdmDatabaseSchema)
 nortriptyline <- cs(
   descendants(721724),
   name = "Nortriptyline"
@@ -213,7 +211,7 @@ nortriptylineNewUsers <- cohort(
   ),
   attrition = attrition(
     "prior depression" = withAll(
-      atLeast(1, condition(depression), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, condition(mdd), duringInterval(eventStarts(-Inf, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(nortriptyline, persistenceWindow = 30, surveillanceWindow = 0))
@@ -225,7 +223,7 @@ fluoxetineNewUsers <- cohort(
   ),
   attrition = attrition(
     "prior depression" = withAll(
-      atLeast(1, condition(depression), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, condition(mdd), duringInterval(eventStarts(-Inf, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(fluoxetine, persistenceWindow = 30, surveillanceWindow = 0))
@@ -237,7 +235,7 @@ amitriptylineNewUsers <- cohort(
   ),
   attrition = attrition(
     "prior depression" = withAll(
-      atLeast(1, condition(depression), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, condition(mdd), duringInterval(eventStarts(-Inf, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(amitriptyline, persistenceWindow = 30, surveillanceWindow = 0))
@@ -249,7 +247,7 @@ venlafaxineNewUsers <- cohort(
   ),
   attrition = attrition(
     "prior depression" = withAll(
-      atLeast(1, condition(depression), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, condition(mdd), duringInterval(eventStarts(-Inf, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(venlafaxine, persistenceWindow = 30, surveillanceWindow = 0))
@@ -344,7 +342,7 @@ nortriptyline
 fluoxetine
 amitriptyline
 venlafaxine
-depression
+mdd
 
 
 # ncs <- readRDS(system.file("ohdsiDevelopmentNegativeControls.rds", package = "MethodEvaluation"))
