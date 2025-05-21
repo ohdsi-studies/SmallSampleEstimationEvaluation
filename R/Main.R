@@ -123,34 +123,34 @@ execute <- function(connectionDetails,
   for (sampleSize in sampleSizes) {
     numberOfSamples <- largeSampleSize / sampleSize
     smallSamplesFolder <- file.path(outputFolder, sprintf("smallSample%d", sampleSize))
-    # samplePopulation(
-    #   sourceCmFolder = largeSampleFolder,
-    #   sampleFolder = smallSamplesFolder,
-    #   numberOfSamples = numberOfSamples,
-    #   seed = 123
-    # )
+    samplePopulation(
+      sourceCmFolder = largeSampleFolder,
+      sampleFolder = smallSamplesFolder,
+      numberOfSamples = numberOfSamples,
+      seed = 123
+    )
     smallSampleSubFolders <- file.path(smallSamplesFolder, sprintf("Sample_%d", seq_len(numberOfSamples)))
-    # for (smallSampleSubFolder in smallSampleSubFolders) {
-    #   message("Performing CohortMethod analyses in ", smallSampleSubFolder)
-    #   runCohortMethod(
-    #     outputFolder = outputFolder,
-    #     cmFolder = smallSampleSubFolder,
-    #     maxCores = maxCores,
-    #     externalPsFolder = fullDataFolder
-    #   )
-    # }
-    # combineEstimates(
-    #   parentFolder = smallSamplesFolder,
-    #   cmFolders = smallSampleSubFolders,
-    #   maxCores = maxCores
-    # )
-    # computePerformance(
-    #   outputFolder = outputFolder,
-    #   cmFolder = smallSamplesFolder,
-    #   maxCores = maxCores,
-    #   databaseId = databaseId,
-    #   outputFileName = file.path(outputFolder, sprintf("Metrics_sample_%d.csv", sampleSize))
-    # )
+    for (smallSampleSubFolder in smallSampleSubFolders) {
+      message("Performing CohortMethod analyses in ", smallSampleSubFolder)
+      runCohortMethod(
+        outputFolder = outputFolder,
+        cmFolder = smallSampleSubFolder,
+        maxCores = maxCores,
+        externalPsFolder = fullDataFolder
+      )
+    }
+    combineEstimates(
+      parentFolder = smallSamplesFolder,
+      cmFolders = smallSampleSubFolders,
+      maxCores = maxCores
+    )
+    computePerformance(
+      outputFolder = outputFolder,
+      cmFolder = smallSamplesFolder,
+      maxCores = maxCores,
+      databaseId = databaseId,
+      outputFileName = file.path(outputFolder, sprintf("Metrics_sample_%d.csv", sampleSize))
+    )
     computePsMetrics(
       sampleFolders = smallSampleSubFolders,
       outputFileName = file.path(outputFolder, sprintf("PsMetrics_sample_%d.csv", sampleSize))
