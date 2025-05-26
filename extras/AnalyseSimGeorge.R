@@ -1,10 +1,10 @@
 library(dplyr)
 library(ggplot2)
 library(readr)
-data <- read_csv("c:/temp/SmallSampleCovariateBalanceSingleStudy.csv") %>%
+data <- read_csv("c:/temp/SmallSampleCovariateBalanceSingleStudy.csv") |>
   select(-1)
 
-data <- data %>%
+data <- data |>
   filter(treatmentOnOutcome == 0)
 
 ggplot(data, aes(x = NsampleSize, y = proportionValid)) +

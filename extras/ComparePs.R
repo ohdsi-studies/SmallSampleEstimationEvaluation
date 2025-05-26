@@ -9,53 +9,53 @@ databases <- c("MDCD", "MDCR", "Optum_EHR")
 sampleSizes <- c(4000, 2000, 1000, 500, 250)
 
 
-tcs <- read.csv(file.path(paste0(rootFolderName, databases[1]), "allControls.csv")) %>%
-  distinct(targetId, targetName, comparatorId, comparatorName) %>%
+tcs <- read.csv(file.path(paste0(rootFolderName, databases[1]), "allControls.csv")) |>
+  distinct(targetId, targetName, comparatorId, comparatorName) |>
   mutate(comparison = sprintf("%s vs %s", targetName, comparatorName))
 
 for (database in databases) {
   dbFolder <- paste0(rootFolderName, database)
   cmFolder <- file.path(dbFolder, "largeSample")
-  ref <- CohortMethod::getFileReference(cmFolder) %>%
-    filter(analysisId == 4) %>%
+  ref <- CohortMethod::getFileReference(cmFolder) |>
+    filter(analysisId == 4) |>
     distinct(targetId, comparatorId, cohortMethodDataFile, sharedPsFile)
   samplePs <- list()
   for (i in seq_len(nrow(ref))) {
     cmData <- CohortMethod::loadCohortMethodData(file.path(cmFolder, ref$cohortMethodDataFile[i]))
-    rowIds <- cmData$cohorts %>%
+    rowIds <- cmData$cohorts |>
       pull("rowId")
-    globalPs <- readRDS(file.path(cmFolder, ref$sharedPsFile[i])) %>%
-      filter(rowId %in% rowIds) %>%
-      select("rowId", "treatment", "propensityScore") %>%
+    globalPs <- readRDS(file.path(cmFolder, ref$sharedPsFile[i])) |>
+      filter(rowId %in% rowIds) |>
+      select("rowId", "treatment", "propensityScore") |>
       mutate(targetId = ref$targetId[i],
              comparatorId = ref$comparatorId[i])
     # Recompute preference score so it uses the treatment ratio in the sample:
     globalPs <- CohortMethod:::computePreferenceScore(globalPs)
-    globalPs <- globalPs %>%
+    globalPs <- globalPs |>
       rename(globalPs = "propensityScore", globalPref = "preferenceScore")
     for (sampleSize in sampleSizes) {
       sampleRootFolder <- file.path(dbFolder, sprintf("smallSample%d", sampleSize))
       localPs <- list()
       for (sampleFolder in list.dirs(sampleRootFolder, full.names = TRUE, recursive = FALSE)) {
-        sharedPsFile <- CohortMethod::getFileReference(sampleFolder) %>%
-          filter(analysisId == 1 & targetId == ref$targetId[i] & comparatorId == ref$comparatorId[i]) %>%
-          head(1) %>%
+        sharedPsFile <- CohortMethod::getFileReference(sampleFolder) |>
+          filter(analysisId == 1 & targetId == ref$targetId[i] & comparatorId == ref$comparatorId[i]) |>
+          head(1) |>
           pull(sharedPsFile)
-        localPs[[length(localPs) + 1]] <- readRDS(file.path(sampleFolder, sharedPsFile)) %>%
+        localPs[[length(localPs) + 1]] <- readRDS(file.path(sampleFolder, sharedPsFile)) |>
           select("rowId", "propensityScore")
       }
       localPs <- bind_rows(localPs)
       localPs <- CohortMethod:::computePreferenceScore(localPs, globalPs)
-      localPs <- localPs %>%
+      localPs <- localPs |>
         rename(localPs = "propensityScore", localPref = "preferenceScore")
-      samplePs[[length(samplePs) + 1]] <- globalPs %>%
-        mutate(sampleSize = !!sampleSize) %>%
+      samplePs[[length(samplePs) + 1]] <- globalPs |>
+        mutate(sampleSize = !!sampleSize) |>
         left_join(localPs, by = join_by("rowId"))
     }
   }
-  samplePs <- bind_rows(samplePs) %>%
+  samplePs <- bind_rows(samplePs) |>
     inner_join(tcs, by = join_by(targetId, comparatorId))
-  samplePs <- samplePs %>%
+  samplePs <- samplePs |>
     mutate(treatmentLabel = if_else(.data$treatment == 1, "Target", "Comparator"),
            sampleSizeLabel = sprintf("Sample size = %s", .data$sampleSize)) 
   samplePs$treatmentLabel <- factor(samplePs$treatmentLabel, levels = c("Target", "Comparator"))

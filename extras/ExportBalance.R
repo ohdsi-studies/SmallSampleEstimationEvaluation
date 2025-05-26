@@ -13,12 +13,12 @@ sampleSize <- 500
 i <- 1
 cmFolder <- file.path(outputFolder, sprintf("smallSample%d", sampleSize), sprintf("Sample_%d", i))
 ref <- CohortMethod::getFileReference(cmFolder)
-refRow <- ref %>%
+refRow <- ref |>
   filter(
     targetId == 1,
     comparatorId == 2,
     analysisId == 1
-  ) %>%
+  ) |>
   head(1) 
 balance <- readRDS(file.path(cmFolder, refRow$sharedBalanceFile))
 model <- readRDS(file.path(cmFolder, refRow$outcomeModelFile))

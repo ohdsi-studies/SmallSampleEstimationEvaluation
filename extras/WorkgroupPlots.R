@@ -7,14 +7,14 @@ metrics <- bind_rows(
   readRDS(file.path("d:/SmallSampleEstimationEvaluation_mdcr", "CombinedMetrics.rds")),
   readRDS(file.path("d:/SmallSampleEstimationEvaluation_optum_ehr", "CombinedMetrics.rds"))
 )
-metrics <- metrics %>%
+metrics <- metrics |>
   mutate(comparison = gsub("Lisinporil ", "Lisinopril ", comparison))
 psMetrics <- bind_rows(
   readRDS(file.path("d:/SmallSampleEstimationEvaluation_mdcd", "CombinedPSMetrics.rds")),
   readRDS(file.path("d:/SmallSampleEstimationEvaluation_mdcr", "CombinedPsMetrics.rds")),
   readRDS(file.path("d:/SmallSampleEstimationEvaluation_optum_ehr", "CombinedPsMetrics.rds"))
 )
-psMetrics <- psMetrics %>%
+psMetrics <- psMetrics |>
   mutate(comparison = gsub("Lisinporil ", "Lisinopril ", comparison))
 plotsAndTablesFolder <- file.path("d:/SmallSampleEstimationEvaluation_mdcd", "plotsAndTables")
 
@@ -27,13 +27,13 @@ saveRDS(metrics, file.path(plotsAndTablesFolder, "metrics.rds"))
 saveRDS(psMetrics, file.path(plotsAndTablesFolder, "psMetrics.rds"))
 
 # EASE -----------------------------
-vizData <- metrics %>%
-  filter(calibrated == FALSE) %>%
+vizData <- metrics |>
+  filter(calibrated == FALSE) |>
   mutate(x = case_when(psMethod == "PS stratification" ~ x + 0.3, 
                        psMethod == "No PS adjustment" ~ x - 0.3,
-                       .default = x - 0.1)) %>%
+                       .default = x - 0.1)) |>
   mutate(adjustment = sprintf("%s using %s model", psMethod, tolower(psModel)),
-         comparison = gsub("vs ", "vs\n", comparison)) %>%
+         comparison = gsub("vs ", "vs\n", comparison)) |>
   select(comparison, x, ease, easeCi95Lb, easeCi95Ub, adjustment, psMethod, psModel, adjustment, database)
 
 ggplot(vizData, aes(x = x, y = ease, ymin = easeCi95Lb, ymax = easeCi95Ub, group = adjustment, color = psModel)) +
@@ -52,13 +52,13 @@ ggplot(vizData, aes(x = x, y = ease, ymin = easeCi95Lb, ymax = easeCi95Ub, group
 ggsave(file.path(plotsAndTablesFolder, "EASE_crude_all.png"), width = 14, height = 7, dpi = 300)
 
 # Precision after calibration --------------------------
-vizData <- metrics %>%
-  filter(calibrated == TRUE) %>%
+vizData <- metrics |>
+  filter(calibrated == TRUE) |>
   mutate(x = case_when(psMethod == "PS stratification" ~ x + 0.3, 
                        psMethod == "No PS adjustment" ~ x - 0.3,
-                       .default = x - 0.1)) %>%
+                       .default = x - 0.1)) |>
   mutate(adjustment = sprintf("%s using %s model", psMethod, tolower(psModel)),
-         comparison = gsub("vs ", "vs\n", comparison)) %>%
+         comparison = gsub("vs ", "vs\n", comparison)) |>
   select(comparison, x, meanP, adjustment, psMethod, psModel, adjustment, database)
 
 ggplot(vizData, aes(x = x, y = meanP, group = adjustment, color = psModel)) +
@@ -80,24 +80,24 @@ metricsLargeSample <- bind_rows(
   readr::read_csv(file.path("d:/SmallSampleEstimationEvaluation_mdcr", "Metrics_LargeSample.csv")),
   readr::read_csv(file.path("d:/SmallSampleEstimationEvaluation_optum_ehr", "Metrics_LargeSample.csv"))
 )
-vizData <- metricsLargeSample %>%
-  filter(calibrated == FALSE & analysisId == 2) %>%
-  mutate(group = case_when(ease < 0.1 ~ "L", ease < 0.25 ~ "M", .default = "H")) %>%
-  mutate(label = sprintf("%0.2f (%0.2f-%0.2f) %s", ease, easeCi95Lb, easeCi95Ub, group)) %>%
-  inner_join(metrics %>%
+vizData <- metricsLargeSample |>
+  filter(calibrated == FALSE & analysisId == 2) |>
+  mutate(group = case_when(ease < 0.1 ~ "L", ease < 0.25 ~ "M", .default = "H")) |>
+  mutate(label = sprintf("%0.2f (%0.2f-%0.2f) %s", ease, easeCi95Lb, easeCi95Ub, group)) |>
+  inner_join(metrics |>
                distinct(targetId, comparatorId, comparison),
-             by = join_by(targetId, comparatorId)) %>%
-  select(comparison, database, label) %>%
+             by = join_by(targetId, comparatorId)) |>
+  select(comparison, database, label) |>
   arrange(database, comparison)
 vizData <- tidyr::pivot_wider(vizData, names_from = "database", values_from = "label")
 readr::write_excel_csv(vizData, file.path("d:/SmallSampleEstimationEvaluation_mdcd", "crude_ease.csv"))
 
 # Balance -----------------------------
-vizData <- psMetrics %>%
-  # filter(analysisId == 1) %>%
-  mutate(comparison = gsub("vs ", "vs\n", comparison)) %>%
+vizData <- psMetrics |>
+  # filter(analysisId == 1) |>
+  mutate(comparison = gsub("vs ", "vs\n", comparison)) |>
   mutate(x = case_when(psMethod == "PS stratification" ~ x + 0.2, 
-                       .default = x - 0.2)) %>%
+                       .default = x - 0.2)) |>
   select(comparison, x, maxSdmMin, maxSdmP25, maxSdmMedian, maxSdmP75, maxSdmMax, psMethod, database)
 
 ggplot(vizData, aes(x = x, y = maxSdmMedian, group = x, color = psMethod)) +

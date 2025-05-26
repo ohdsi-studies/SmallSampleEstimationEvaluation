@@ -28,11 +28,11 @@ samplePopulation <- function(sourceCmFolder,
 
   subsetCmData <- function(cmData, sampleRowIds, outputFileName) {
     sampleCmData <- Andromeda::andromeda()
-    sampleCmData$cohorts <- cmData$cohorts %>%
+    sampleCmData$cohorts <- cmData$cohorts |>
       filter(.data$rowId %in% sampleRowIds)
-    sampleCmData$covariates <- cmData$covariates %>%
+    sampleCmData$covariates <- cmData$covariates |>
       filter(.data$rowId %in% sampleRowIds)
-    sampleCmData$outcomes <- cmData$outcomes %>%
+    sampleCmData$outcomes <- cmData$outcomes |>
       filter(.data$rowId %in% sampleRowIds)
     sampleCmData$covariateRef <- cmData$covariateRef
     sampleCmData$analysisRef <- cmData$analysisRef
@@ -58,7 +58,7 @@ samplePopulation <- function(sourceCmFolder,
     cmDataFiles <- list.files(sourceCmFolder, "CmData")
     for (cmDataFile in cmDataFiles) {
       cmData <- CohortMethod::loadCohortMethodData(file.path(sourceCmFolder, cmDataFile))
-      rowIds <- cmData$cohorts %>%
+      rowIds <- cmData$cohorts |>
         pull(.data$rowId)
       # TODO: need to handle case when original is smaller than requested sample size
       sampleRowIds <- sample(rowIds, sampleSize, replace = FALSE)
@@ -72,7 +72,7 @@ samplePopulation <- function(sourceCmFolder,
     cmDataFiles <- list.files(sourceCmFolder, "CmData")
     for (cmDataFile in cmDataFiles) {
       cmData <- CohortMethod::loadCohortMethodData(file.path(sourceCmFolder, cmDataFile))
-      rowIds <- cmData$cohorts %>%
+      rowIds <- cmData$cohorts |>
         pull(.data$rowId)
 
       # TODO: need to handle case when original is smaller than requested sample size

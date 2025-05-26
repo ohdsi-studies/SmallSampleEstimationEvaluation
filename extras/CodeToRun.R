@@ -1,56 +1,40 @@
 library(SmallSampleEstimationEvaluation)
 
-options(andromedaTempFolder = "d:/andromedaTemp")
+options(andromedaTempFolder = "e:/andromedaTemp")
 
 maxCores <- parallel::detectCores()
 
-# MDCD
-connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "redshift",
-                                                                connectionString = keyring::key_get("redShiftConnectionStringOhdaMdcd"),
-                                                                user = keyring::key_get("redShiftUserName"),
-                                                                password = keyring::key_get("redShiftPassword"))
-oracleTempSchema <- NULL
-cdmDatabaseSchema <- "cdm_truven_mdcd_v2359"
-cohortDatabaseSchema <- "scratch_mschuemi"
-cohortTable <- "cohort_small_sample_eval"
-outputFolder <- "d:/SmallSampleEstimationEvaluation_mdcd"
-databaseId <- "MDCD"
+# CCAE
+connectionDetails <- createConnectionDetails(
+  dbms = "spark",
+  connectionString = keyring::key_get("databricksConnectionString"),
+  user = "token",
+  password = keyring::key_get("databricksToken")
+)
+options(sqlRenderTempEmulationSchema = "scratch.scratch_mschuemi")
+cdmDatabaseSchema <- "merative_ccae.cdm_merative_ccae_v3467"
 
-# MDCR
-connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "redshift",
-                                                                connectionString = keyring::key_get("redShiftConnectionStringOhdaMdcr"),
-                                                                user = keyring::key_get("redShiftUserName"),
-                                                                password = keyring::key_get("redShiftPassword"))
 oracleTempSchema <- NULL
-cdmDatabaseSchema <- "cdm_truven_mdcr_v2322"
-cohortDatabaseSchema <- "scratch_mschuemi"
-cohortTable <- "cohort_small_sample_eval_mdcr"
-outputFolder <- "d:/SmallSampleEstimationEvaluation_mdcr"
-databaseId <- "MDCR"
+cohortDatabaseSchema <- "scratch.scratch_mschuemi"
+cohortTable <- "cohort_small_sample_eval_ccae"
+outputFolder <- "e:/SmallSampleEstimationEvaluation_ccae"
+databaseId <- "CCAE"
 
 # Optum EHR
-connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "redshift",
-                                                                connectionString = keyring::key_get("redShiftConnectionStringOhdaOptumEhr"),
-                                                                user = keyring::key_get("temp_user"),
-                                                                password = keyring::key_get("temp_password"))
-oracleTempSchema <- NULL
-cdmDatabaseSchema <- "cdm_optum_ehr_v2137"
-cohortDatabaseSchema <- "scratch_mschuemi"
-cohortTable <- "cohort_small_sample_eval_optum_ehr"
-outputFolder <- "d:/SmallSampleEstimationEvaluation_optum_ehr"
-databaseId <- "Optum EHR"
+connectionDetails <- createConnectionDetails(
+  dbms = "spark",
+  connectionString = keyring::key_get("databricksConnectionString"),
+  user = "token",
+  password = keyring::key_get("databricksToken")
+)
+options(sqlRenderTempEmulationSchema = "scratch.scratch_mschuemi")
+cdmDatabaseSchema <- "optum_ehr.cdm_optum_ehr_v3471"
 
-# JMDC
-connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "redshift",
-                                                                connectionString = keyring::key_get("redShiftConnectionStringOhdaJmdc"),
-                                                                user = keyring::key_get("temp_user"),
-                                                                password = keyring::key_get("temp_password"))
 oracleTempSchema <- NULL
-cdmDatabaseSchema <- "cdm_jmdc_v2432"
-cohortDatabaseSchema <- "scratch_mschuemi"
-cohortTable <- "cohort_small_sample_eval_jmdc"
-outputFolder <- "d:/SmallSampleEstimationEvaluation_jmdc"
-databaseId <- "JMDC"
+cohortDatabaseSchema <- "scratch.scratch_mschuemi"
+cohortTable <- "cohort_small_sample_eval_optum_ehr"
+outputFolder <- "e:/SmallSampleEstimationEvaluation_optum_ehr"
+databaseId <- "Optum EHR"
 
 
 # Run analyses ---------------------------------------------------
@@ -61,4 +45,4 @@ execute(connectionDetails,
         maxCores = maxCores,
         outputFolder = outputFolder,
         databaseId = databaseId,
-        createCohorts = F) 
+        createCohorts = TRUE) 

@@ -9,16 +9,16 @@ metrics <- bind_rows(
   readRDS(file.path("d:/SmallSampleEstimationEvaluation_mdcr", "CombinedMetrics.rds")),
   readRDS(file.path("d:/SmallSampleEstimationEvaluation_optum_ehr", "CombinedMetrics.rds"))
 )
-metrics <- metrics %>%
-  mutate(comparison = gsub("Lisinporil ", "Lisinopril ", comparison)) %>%
+metrics <- metrics |>
+  mutate(comparison = gsub("Lisinporil ", "Lisinopril ", comparison)) |>
   mutate(comparison = gsub("Hydrochlorothiazide", "HCTZ", comparison))
 psMetrics <- bind_rows(
   readRDS(file.path("d:/SmallSampleEstimationEvaluation_mdcd", "CombinedPSMetrics.rds")),
   readRDS(file.path("d:/SmallSampleEstimationEvaluation_mdcr", "CombinedPsMetrics.rds")),
   readRDS(file.path("d:/SmallSampleEstimationEvaluation_optum_ehr", "CombinedPsMetrics.rds"))
 )
-psMetrics <- psMetrics %>%
-  mutate(comparison = gsub("Lisinporil ", "Lisinopril ", comparison)) %>%
+psMetrics <- psMetrics |>
+  mutate(comparison = gsub("Lisinporil ", "Lisinopril ", comparison)) |>
   mutate(comparison = gsub("Hydrochlorothiazide", "HCTZ", comparison))
 saveRDS(metrics, file.path(plotsAndTablesFolder, "metrics.rds"))
 saveRDS(psMetrics, file.path(plotsAndTablesFolder, "psMetrics.rds"))
@@ -33,16 +33,16 @@ x <- tibble(
 )
 
 # EASE -----------------------------
-vizData <- metrics %>%
-  filter(calibrated == FALSE) %>%
-  mutate(x = round(x)) %>%
+vizData <- metrics |>
+  filter(calibrated == FALSE) |>
+  mutate(x = round(x)) |>
   mutate(x = case_when(psModel == "Local" & psMethod == "PS stratification" ~ x - 0.32,
                        psModel == "Local" & psMethod == "PS 1-on-1 matching" ~ x - 0.16,
                        psModel == "Global" & psMethod == "PS stratification" ~ x,
                        psModel == "Global" & psMethod == "PS 1-on-1 matching" ~ x + 0.16,
-                       psModel == "None" ~ x + 0.32)) %>%
+                       psModel == "None" ~ x + 0.32)) |>
   mutate(adjustment = sprintf("%s using %s model", psMethod, tolower(psModel)),
-         comparison = gsub("vs ", "vs\n", comparison)) %>%
+         comparison = gsub("vs ", "vs\n", comparison)) |>
   select(comparison, x, ease, easeCi95Lb, easeCi95Ub, adjustment, psMethod, psModel, adjustment, database)
 vizData$psMethod <- factor(vizData$psMethod, levels = rev(c("No PS adjustment",
                                                             "PS 1-on-1 matching",
@@ -75,13 +75,13 @@ plot <- ggplot(vizData, aes(x = x, y = ease, ymin = easeCi95Lb, ymax = easeCi95U
 ggsave(file.path(plotsAndTablesFolder, "EASE_crude_all.png"), plot = plot, width = 9.7, height = 4.5, dpi = 300)
 
 # Precision after calibration --------------------------
-vizData <- metrics %>%
-  filter(calibrated == TRUE) %>%
+vizData <- metrics |>
+  filter(calibrated == TRUE) |>
   mutate(x = case_when(psMethod == "PS stratification" ~ x + 0.3, 
                        psMethod == "No PS adjustment" ~ x - 0.3,
-                       .default = x - 0.1)) %>%
+                       .default = x - 0.1)) |>
   mutate(adjustment = sprintf("%s using %s model", psMethod, tolower(psModel)),
-         comparison = gsub("vs ", "vs\n", comparison)) %>%
+         comparison = gsub("vs ", "vs\n", comparison)) |>
   select(comparison, x, meanP, adjustment, psMethod, psModel, adjustment, database)
 
 ggplot(vizData, aes(x = x, y = meanP, group = adjustment, color = psModel)) +
@@ -99,18 +99,18 @@ ggsave(file.path(plotsAndTablesFolder, "Precision_afer_calibration_crude_all.png
 
 
 # Balance -----------------------------
-vizData <- psMetrics %>%
+vizData <- psMetrics |>
   mutate(label = case_when(
     analysisId == 3 ~ "Stratification, local model",
     analysisId == 1 ~ "Matching, local model",
     analysisId == 5 ~ "Stratification, global model",
-    analysisId == 4 ~ "Matching, global model")) %>%
+    analysisId == 4 ~ "Matching, global model")) |>
   mutate(x = case_when(
     analysisId == 3 ~ x - 0.34,
     analysisId == 1 ~ x - 0.12,
     analysisId == 5 ~ x + 0.12,
-    analysisId == 4 ~ x + 0.34)) %>%
-  mutate(comparison = gsub("vs ", "vs\n", comparison)) %>%
+    analysisId == 4 ~ x + 0.34)) |>
+  mutate(comparison = gsub("vs ", "vs\n", comparison)) |>
   select(comparison, x, maxSdmMin, maxSdmP25, maxSdmMedian, maxSdmP75, maxSdmMax, label, database)
 vizData$label <- factor(vizData$label, levels = c("Stratification, local model",
                                                   "Matching, local model",

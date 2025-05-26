@@ -43,9 +43,10 @@ createCohorts <- function(connectionDetails,
   )
   # Generate negative control outcome cohorts ---------------------------------
   csvFileName <- system.file("NegativeControls.csv", package = "SmallSampleEstimationEvaluation")
-  negativeControlOutcomeCohortSet <- readr::read_csv(csvFileName, show_col_types = FALSE) %>%
-    mutate(cohortId = .data$outcomeConceptId) %>%
-    select("cohortId", cohortName = "outcomeName", "outcomeConceptId")
+  negativeControlOutcomeCohortSet <- readr::read_csv(csvFileName, show_col_types = FALSE) |>
+    mutate(cohortId = .data$outcomeConceptId) |>
+    select("cohortId", cohortName = "outcomeName", "outcomeConceptId") |>
+    filter(!duplicated(cohortId))
   CohortGenerator::generateNegativeControlOutcomeCohorts(
     connection = connection, 
     cohortDatabaseSchema = cohortDatabaseSchema,
@@ -58,8 +59,8 @@ createCohorts <- function(connectionDetails,
   
   # Generate synthetic positive controls --------------------------------------  
   csvFileName <- system.file("NegativeControls.csv", package = "SmallSampleEstimationEvaluation")
-  exposureOutcomePairs <- readr::read_csv(csvFileName, show_col_types = FALSE) %>%
-    select(exposureId = "targetId", outcomeId = "outcomeConceptId") %>%
+  exposureOutcomePairs <- readr::read_csv(csvFileName, show_col_types = FALSE) |>
+    select(exposureId = "targetId", outcomeId = "outcomeConceptId") |>
     distinct()
   prior <- Cyclops::createPrior("laplace", exclude = 0, useCrossValidation = TRUE)
   control <- Cyclops::createControl(
@@ -123,14 +124,14 @@ createCohorts <- function(connectionDetails,
   injectionSummaryFile <- file.path(injectionFolder, "injectionSummary.rds")
   saveRDS(result, injectionSummaryFile)
   
-  negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE) %>%
+  negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE) |>
     rename(outcomeId = "outcomeConceptId")
-  injectedSignals <- readRDS(injectionSummaryFile) %>%
-    rename(targetId = "exposureId") %>%
-    inner_join(negativeControls, by = join_by("targetId", "outcomeId")) %>%
-    filter(.data$trueEffectSize != 0) %>%
-    mutate(outcomeName = sprintf("%s, RR=%0.1f", .data$outcomeName, .data$targetEffectSize)) %>%
-    rename(oldOutcomeId = "outcomeId") %>%
+  injectedSignals <- readRDS(injectionSummaryFile) |>
+    rename(targetId = "exposureId") |>
+    inner_join(negativeControls, by = join_by("targetId", "outcomeId")) |>
+    filter(.data$trueEffectSize != 0) |>
+    mutate(outcomeName = sprintf("%s, RR=%0.1f", .data$outcomeName, .data$targetEffectSize)) |>
+    rename(oldOutcomeId = "outcomeId") |>
     rename(outcomeId = "newOutcomeId")
   negativeControls$targetEffectSize <- 1
   negativeControls$trueEffectSize <- 1

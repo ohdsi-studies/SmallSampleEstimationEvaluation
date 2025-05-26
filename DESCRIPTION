@@ -1,10 +1,11 @@
 Package: SmallSampleEstimationEvaluation
 Type: Package
 Title: Package for Evaluation of Estimation Methods
-Version: 0.0.1
-Date: 2023-03-16
+Version: 1.0.0
+Date: 2025-05-26
 Authors@R: c(
-  person("Martijn", "Schuemie", , "schuemie@ohdsi.org", role = c("aut", "cre"))
+  person("Martijn", "Schuemie", , "schuemie@ohdsi.org", role = c("aut", "cre")),
+  person("Fleur", "Vereijken", , , role = c("aut"))
   )
 Maintainer: Martijn Schuemie <schuemie@ohdsi.org>
 Description: Evaluation of the performance of comparative effect estimation methods when sample size (number of subjects in the target and comparator) is small.
@@ -34,9 +35,8 @@ Suggests:
   shiny,
   knitr
 Remotes:
-  ohdsi/FeatureExtraction,
   ohdsi/MethodEvaluation,
-  ohdsi/CohortGenerator
+  ohdsi/CohortMethod@new_balance
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8

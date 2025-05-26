@@ -5,23 +5,23 @@ outputFolder <- "d:/SmallSampleEstimationEvaluation"
 
 plotsAndTablesFolder <- file.path(outputFolder, "plotsAndTables")
 
-tcs <- read.csv(file.path(outputFolder, "allControls.csv")) %>%
-  distinct(targetId, targetName, comparatorId, comparatorName) %>%
+tcs <- read.csv(file.path(outputFolder, "allControls.csv")) |>
+  distinct(targetId, targetName, comparatorId, comparatorName) |>
   mutate(comparison = sprintf("%s vs %s", targetName, comparatorName))
-estimates <- readRDS(file.path(outputFolder, "largeSample", "resultsSummary.rds")) %>%
-  select(analysisId, targetId, comparatorId, outcomeId, logRr, seLogRr) %>%
+estimates <- readRDS(file.path(outputFolder, "largeSample", "resultsSummary.rds")) |>
+  select(analysisId, targetId, comparatorId, outcomeId, logRr, seLogRr) |>
   mutate(sampleSize = 20000)
 sampleSizes <- c(4000, 2000, 1000, 500, 250)
 for (sampleSize in sampleSizes) {
-  temp <- readRDS(file.path(outputFolder, sprintf("smallSample%d", sampleSize), "resultsSummary.rds")) %>%
-    select(analysisId, targetId, comparatorId, outcomeId, logRr, seLogRr) %>%
+  temp <- readRDS(file.path(outputFolder, sprintf("smallSample%d", sampleSize), "resultsSummary.rds")) |>
+    select(analysisId, targetId, comparatorId, outcomeId, logRr, seLogRr) |>
     mutate(sampleSize = !!sampleSize)
   estimates <- bind_rows(estimates, temp)  
 }
 allControls <- readr::read_csv(file.path(outputFolder, "allControls.csv"), show_col_types = FALSE)
-estimates <- estimates  %>%
+estimates <- estimates  |>
   inner_join(
-    allControls %>%
+    allControls |>
       select(targetId, comparatorId, outcomeId, targetEffectSize), 
     by = join_by(targetId, comparatorId, outcomeId)
   )
@@ -40,13 +40,13 @@ plotShift <- function(fromAnalysisIds,
     label = labels
   )
   if (from20K) {
-    vizData <- estimates %>%
-      filter(sampleSize == 20000 & targetEffectSize == 1 & analysisId %in% fromAnalysisIds & targetId == !!targetId & comparatorId == !!comparatorId) %>%
-      select(analysisId, targetId, comparatorId, outcomeId, startLogRr = logRr, startSeLogRr = seLogRr) %>%
+    vizData <- estimates |>
+      filter(sampleSize == 20000 & targetEffectSize == 1 & analysisId %in% fromAnalysisIds & targetId == !!targetId & comparatorId == !!comparatorId) |>
+      select(analysisId, targetId, comparatorId, outcomeId, startLogRr = logRr, startSeLogRr = seLogRr) |>
       inner_join(
-        estimates %>%
-          filter(sampleSize != 20000 & targetEffectSize == 1 & analysisId %in% toAnalysisIds) %>%
-          rename(toAnalysisId = analysisId) %>%
+        estimates |>
+          filter(sampleSize != 20000 & targetEffectSize == 1 & analysisId %in% toAnalysisIds) |>
+          rename(toAnalysisId = analysisId) |>
           inner_join(
             mapping,
             by = join_by(toAnalysisId)
@@ -55,13 +55,13 @@ plotShift <- function(fromAnalysisIds,
         multiple = "all"
       ) 
   } else {
-    vizData <- estimates %>%
-      filter(sampleSize != 20000 & targetEffectSize == 1 & analysisId %in% fromAnalysisIds & targetId == !!targetId & comparatorId == !!comparatorId) %>%
-      select(analysisId, targetId, comparatorId, outcomeId, sampleSize, startLogRr = logRr, startSeLogRr = seLogRr) %>%
+    vizData <- estimates |>
+      filter(sampleSize != 20000 & targetEffectSize == 1 & analysisId %in% fromAnalysisIds & targetId == !!targetId & comparatorId == !!comparatorId) |>
+      select(analysisId, targetId, comparatorId, outcomeId, sampleSize, startLogRr = logRr, startSeLogRr = seLogRr) |>
       inner_join(
-        estimates %>%
-          filter(sampleSize != 20000 & targetEffectSize == 1 & analysisId %in% toAnalysisIds) %>%
-          rename(toAnalysisId = analysisId) %>%
+        estimates |>
+          filter(sampleSize != 20000 & targetEffectSize == 1 & analysisId %in% toAnalysisIds) |>
+          rename(toAnalysisId = analysisId) |>
           inner_join(
             mapping,
             by = join_by(toAnalysisId)
@@ -126,7 +126,7 @@ plotShift(
 )
 
 plotEstimates <- function(analysisId, targetId, comparatorId, title, fileName) {
-  vizData <- estimates %>%
+  vizData <- estimates |>
     filter(sampleSize != 20000 & analysisId == !!analysisId & targetId == !!targetId & comparatorId == !!comparatorId)
   
   d <- tibble(

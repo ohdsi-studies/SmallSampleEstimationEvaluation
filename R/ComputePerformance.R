@@ -18,23 +18,23 @@
 #' @export
 computeMdrr <- function(outputFolder, cmFolder, connectionDetails, cdmDatabaseSchema, cohortDatabaseSchema, cohortTable, outputFileName) {
   fileRef <- CohortMethod::getFileReference(cmFolder)
-  tcs <- fileRef %>%
-    distinct(.data$targetId, .data$comparatorId, .data$cohortMethodDataFile) %>%
-    mutate(tempTargetId = row_number()) %>%
+  tcs <- fileRef |>
+    distinct(.data$targetId, .data$comparatorId, .data$cohortMethodDataFile) |>
+    mutate(tempTargetId = row_number()) |>
     mutate(tempComparatorId = .data$tempTargetId * 100)
   # MDRR function assumes cohorts exist in database. We sampled cohorts, so must upload them
   # (temporarily) to compute MDRR:
   cohorts <- list()
   for (i in seq_len(nrow(tcs))) {
     cmData <- CohortMethod::loadCohortMethodData(file.path(cmFolder, tcs$cohortMethodDataFile[i]))
-    cohort <- cmData$cohorts %>%
-      select("personId", "treatment", "cohortStartDate", "daysToCohortEnd") %>%
-      collect() %>%
+    cohort <- cmData$cohorts |>
+      select("personId", "treatment", "cohortStartDate", "daysToCohortEnd") |>
+      collect() |>
       mutate(
         personId = bit64::as.integer64(.data$personId),
         cohortEndDate = .data$cohortStartDate + .data$daysToCohortEnd,
         cohortDefinitionId = if_else(.data$treatment == 1, tcs$tempTargetId[i], tcs$tempComparatorId[i])
-      ) %>%
+      ) |>
       select(subjectId = "personId", "cohortDefinitionId", "cohortStartDate", "cohortEndDate")
     cohorts[[i]] <- cohort
   }
@@ -51,22 +51,22 @@ computeMdrr <- function(outputFolder, cmFolder, connectionDetails, cdmDatabaseSc
   )
   DatabaseConnector::disconnect(connection)
   csvFileName <- system.file("NegativeControls.csv", package = "SmallSampleEstimationEvaluation")
-  negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE)  %>%
+  negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE)  |>
     select("targetId", "comparatorId", outcomeId = "outcomeConceptId")
-  ncs <- negativeControls %>%
+  ncs <- negativeControls |>
     inner_join(tcs, by = join_by("targetId", "comparatorId"))
   synthesisSummary <- readRDS(file.path(outputFolder, "SignalInjection", "injectionSummary.rds"))
-  pcs <- synthesisSummary %>%
-    select(targetId = "exposureId", outcomeId = "newOutcomeId") %>%
+  pcs <- synthesisSummary |>
+    select(targetId = "exposureId", outcomeId = "newOutcomeId") |>
     inner_join(tcs, by = join_by("targetId"), relationship = "many-to-many")
   exposureOutcomePairs <- bind_rows(
-    pcs %>%
+    pcs |>
       select(exposureId = "tempTargetId", "outcomeId"),
-    pcs %>%
+    pcs |>
       select(exposureId = "tempComparatorId", "outcomeId"),
-    ncs %>%
+    ncs |>
       select(exposureId = "tempTargetId", "outcomeId"),
-    ncs %>%
+    ncs |>
       select(exposureId = "tempComparatorId", "outcomeId")
   )
   mdrr <- MethodEvaluation::computeMdrr(
@@ -88,15 +88,15 @@ computeMdrr <- function(outputFolder, cmFolder, connectionDetails, cdmDatabaseSc
   )
   DatabaseConnector::disconnect(connection)
   mdrr <- inner_join(
-    mdrr %>%
-      as_tibble() %>%
-      select(tempTargetId = "exposureId", "outcomeId", "mdrr") %>%
-      inner_join(tcs, by = join_by("tempTargetId")) %>%
+    mdrr |>
+      as_tibble() |>
+      select(tempTargetId = "exposureId", "outcomeId", "mdrr") |>
+      inner_join(tcs, by = join_by("tempTargetId")) |>
       select("targetId", "comparatorId", "outcomeId", mdrrTarget = "mdrr"),
-    mdrr %>%
-      as_tibble() %>%
-      select(tempComparatorId = "exposureId", "outcomeId", "mdrr") %>%
-      inner_join(tcs, by = join_by("tempComparatorId")) %>%
+    mdrr |>
+      as_tibble() |>
+      select(tempComparatorId = "exposureId", "outcomeId", "mdrr") |>
+      inner_join(tcs, by = join_by("tempComparatorId")) |>
       select("targetId", "comparatorId", "outcomeId", mdrrComparator = "mdrr"),
     by = join_by("targetId", "comparatorId", "outcomeId")
   )
@@ -113,8 +113,8 @@ computePerformance <- function(outputFolder,
     return()
   }
   csvFileName <- system.file("NegativeControls.csv", package = "SmallSampleEstimationEvaluation")
-  negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE)  %>%
-    select("targetId", "comparatorId", outcomeId = "outcomeConceptId") %>%
+  negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE)  |>
+    select("targetId", "comparatorId", outcomeId = "outcomeConceptId") |>
     mutate(type = "Outcome control")
   synthesisSummary <- readRDS(file.path(outputFolder, "SignalInjection", "injectionSummary.rds"))
   estimates <- CohortMethod::getResultsSummary(cmFolder)
@@ -133,7 +133,7 @@ computePerformance <- function(outputFolder,
     firstExposureOnly = TRUE
   )
   if (max(estimates$analysisId) > 100) {
-    analysisRefRandomFx <- analysisRef %>%
+    analysisRefRandomFx <- analysisRef |>
       mutate(
         analysisId = .data$analysisId + 100,
         description = paste0(.data$description, ", RFX")
@@ -141,8 +141,8 @@ computePerformance <- function(outputFolder,
     analysisRef <- bind_rows(analysisRef, analysisRefRandomFx)
   }
   if (max(estimates$analysisId) > 200) {
-    analysisTraditional <- analysisRef %>%
-      filter(.data$analysisId < 100) %>%
+    analysisTraditional <- analysisRef |>
+      filter(.data$analysisId < 100) |>
       mutate(
         analysisId = .data$analysisId + 200,
         description = paste0(.data$description, ", Traditional")
@@ -150,28 +150,28 @@ computePerformance <- function(outputFolder,
     analysisRef <- bind_rows(analysisRef, analysisTraditional)
   }
   MethodEvaluation::packageCustomBenchmarkResults(
-    estimates = estimates %>% 
+    estimates = estimates |> 
       recodeTargetId(),
-    negativeControls = negativeControls %>% 
+    negativeControls = negativeControls |> 
       recodeTargetId(),
-    synthesisSummary = synthesisSummary %>% 
-      inner_join(negativeControls %>%
-                   distinct(.data$targetId, .data$comparatorId) %>%
+    synthesisSummary = synthesisSummary |> 
+      inner_join(negativeControls |>
+                   distinct(.data$targetId, .data$comparatorId) |>
                    rename(exposureId = .data$targetId),
                  by = join_by("exposureId"),
-                 relationship = "many-to-many")  %>% 
+                 relationship = "many-to-many")  |> 
       recodeExposureId(),
-    mdrr = mdrr  %>% 
-      rename(exposureId = "targetId") %>%
+    mdrr = mdrr  |> 
+      rename(exposureId = "targetId") |>
       recodeExposureId(),
     analysisRef = analysisRef,
     databaseName = databaseId,
     exportFolder = cmFolder
   )
   metrics <- tibble()
-  tcs <- negativeControls %>%
-    distinct(.data$targetId, .data$comparatorId) %>%
-    mutate(exposureId = .data$targetId) %>%
+  tcs <- negativeControls |>
+    distinct(.data$targetId, .data$comparatorId) |>
+    mutate(exposureId = .data$targetId) |>
     recodeExposureId()
   for (i in seq_len(nrow(tcs))) {
     tc <- tcs[i, ]
@@ -198,22 +198,22 @@ computePerformance <- function(outputFolder,
     metricsCalibrated$comparatorId <- tc$comparatorId
     metrics <- bind_rows(metrics, metricsCalibrated)
   }
-  subsets <- estimates %>%
-    inner_join(negativeControls, by = join_by("targetId", "comparatorId", "outcomeId")) %>%
-    inner_join(analysisRef %>%
+  subsets <- estimates |>
+    inner_join(negativeControls, by = join_by("targetId", "comparatorId", "outcomeId")) |>
+    inner_join(analysisRef |>
                  select("analysisId", "description"),
                by = "analysisId"
-    )%>%
-    group_by(.data$analysisId, .data$targetId, .data$comparatorId) %>%
+    )|>
+    group_by(.data$analysisId, .data$targetId, .data$comparatorId) |>
     group_split()
   message("Computing EASE")
   cluster <- ParallelLogger::makeCluster(maxCores)
   on.exit(ParallelLogger::stopCluster(cluster))
   ParallelLogger::clusterRequire(cluster, "dplyr")
-  ease <- ParallelLogger::clusterApply(cluster, subsets, generatePlotsAndComputeEase, folder = cmFolder) %>%
-    bind_rows() %>%
+  ease <- ParallelLogger::clusterApply(cluster, subsets, generatePlotsAndComputeEase, folder = cmFolder) |>
+    bind_rows() |>
     mutate(calibrated = FALSE)
-  metrics <- metrics %>%
+  metrics <- metrics |>
     left_join(ease, by = join_by("analysisId", "targetId", "comparatorId", "calibrated"))
   readr::write_csv(metrics, outputFileName)
 }
@@ -237,9 +237,9 @@ generatePlotsAndComputeEase <- function(ncs, folder = NULL) {
     )
   }
   easeResult <- EmpiricalCalibration::computeExpectedAbsoluteSystematicError(null)
-  easeResult <- ncs %>%
-    head(1) %>%
-    select("targetId", "comparatorId", "analysisId") %>%
+  easeResult <- ncs |>
+    head(1) |>
+    select("targetId", "comparatorId", "analysisId") |>
     mutate(
       ease = easeResult$ease,
       easeCi95Lb = easeResult$ciLb,
@@ -268,18 +268,19 @@ computeSingleSampleMetrics <- function(sampleFolder, ref) {
     nonZeroCoefCount <- sum(metaData$psModelCoef != 0)
     auc <- CohortMethod::computePsAuc(ps)
   }
-  tibble(
+  row <- tibble(
     maxSdm = maxSdm,
     covCount = covCount,
     nonZeroCoefCount = nonZeroCoefCount,
     auc = auc
-  ) %>% return()
+  ) 
+  return(row)
 }
 
 # row = combis[[1]]
 computePsMetricsForAnalysisId <- function(row, sampleFolders) {
-  ref <- CohortMethod::getFileReference(sampleFolders[1]) %>%
-    filter(.data$analysisId == row$analysisId, .data$targetId == row$targetId, .data$comparatorId == row$comparatorId) %>%
+  ref <- CohortMethod::getFileReference(sampleFolders[1]) |>
+    filter(.data$analysisId == row$analysisId, .data$targetId == row$targetId, .data$comparatorId == row$comparatorId) |>
     head(1)
   stats <- lapply(sampleFolders, computeSingleSampleMetrics, ref = ref)
   stats <- bind_rows(stats)
@@ -289,7 +290,7 @@ computePsMetricsForAnalysisId <- function(row, sampleFolders) {
     names(temp) <- paste0(column, c("Min", "P25", "Median", "P75", "Max"))
     result <- c(result, temp)
   }
-  result <- as_tibble(t(result)) %>% 
+  result <- as_tibble(t(result)) |> 
     mutate(analysisId = row$analysisId,
            targetId = row$targetId,
            comparatorId = row$comparatorId)
@@ -302,8 +303,8 @@ computePsMetrics <- function(sampleFolders, outputFileName) {
     return()
   }
   csvFileName <- system.file("NegativeControls.csv", package = "SmallSampleEstimationEvaluation")
-  combis <- negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE)  %>%
-    distinct(.data$targetId, .data$comparatorId) %>%
+  combis <- negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE)  |>
+    distinct(.data$targetId, .data$comparatorId) |>
     cross_join(tibble(analysisId = c(1, 3, 4, 5)))
   combis <- split(combis, seq_len(nrow(combis)))
   results <- lapply(combis, computePsMetricsForAnalysisId, sampleFolders = sampleFolders)
@@ -312,13 +313,13 @@ computePsMetrics <- function(sampleFolders, outputFileName) {
 }
 
 recodeTargetId <- function(data) {
-  data %>%
-    mutate(targetId = .data$targetId + 100 * .data$comparatorId) %>%
-    return()
+  data <- data |>
+    mutate(targetId = .data$targetId + 100 * .data$comparatorId)
+  return(data)
 }
 
 recodeExposureId <- function(data) {
-  data %>%
-    mutate(exposureId = .data$exposureId + 100 * .data$comparatorId) %>%
-    return()
+  data <- data |>
+    mutate(exposureId = .data$exposureId + 100 * .data$comparatorId)
+  return(data)
 }

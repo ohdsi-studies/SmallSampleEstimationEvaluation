@@ -6,7 +6,7 @@ outputFolders <- paste0("d:/SmallSampleEstimationEvaluation_",
                         tolower(gsub(" ", "_", databaseIds)))
 sampleSizes <- c(4000, 2000, 1000, 500, 250)
 targetFolder <- "d:/SmallSampleBalance"
-covariates <- tibble(covariateId = 1) %>%
+covariates <- tibble(covariateId = 1) |>
   filter(covariateId != 1)
 covariateColumns <- c("covariateName","analysisId", "conceptId", "domainId", "isBinary")
 
@@ -46,7 +46,7 @@ for (i in seq_along(databaseIds)) {
       }
       
       # Also store effect size estimates:
-      estimates <- CohortMethod::getResultsSummary(sourceSampleFolder) %>%
+      estimates <- CohortMethod::getResultsSummary(sourceSampleFolder) |>
         select("targetId", "comparatorId", "outcomeId", "analysisId", "logRr", "seLogRr", "p")
       targetEstimatesFile <- file.path(targetSampleFolder, sprintf("Estimates.rds"))
       saveRDS(estimates, targetEstimatesFile)
@@ -65,8 +65,8 @@ for (i in seq_along(databaseIds)) {
       }
     }
   }
-  positiveControls <- readr::read_csv(file.path(outputFolders[i], "allControls.csv"), show_col_types = FALSE) %>%
-    filter(targetEffectSize > 1) %>%
+  positiveControls <- readr::read_csv(file.path(outputFolders[i], "allControls.csv"), show_col_types = FALSE) |>
+    filter(targetEffectSize > 1) |>
     select("targetId", "comparatorId", "outcomeId", "outcomeName", "targetEffectSize", "trueEffectSizeFirstExposure")
   readr::write_csv(positiveControls, file.path(targetFolder, 
                                                gsub(" ", "_", databaseIds[i]),
@@ -75,14 +75,14 @@ for (i in seq_along(databaseIds)) {
 readr::write_csv(covariates, file.path(targetFolder, "covariateRef.csv"))
 csvFileName <- system.file("NegativeControls.csv", package = "SmallSampleEstimationEvaluation")
 negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE) 
-targets <- negativeControls %>%
+targets <- negativeControls |>
   distinct(targetId, targetName)
 readr::write_csv(targets,  file.path(targetFolder, "targetRef.csv"))
-comparators <- negativeControls %>%
+comparators <- negativeControls |>
   distinct(comparatorId, comparatorName)
 readr::write_csv(comparators,  file.path(targetFolder, "comparatorRef.csv"))
-outcomes <- negativeControls %>%
-  distinct(outcomeConceptId, outcomeName) %>%
+outcomes <- negativeControls |>
+  distinct(outcomeConceptId, outcomeName) |>
   rename(outcomeId = "outcomeConceptId")
 readr::write_csv(outcomes,  file.path(targetFolder, "negativeControlOutcomeRef.csv"))
 analyses <- tibble(analysisId = c(1, 2, 3, 4, 5),
@@ -113,7 +113,7 @@ computeMetaAnalysis <- function(targetId,
   profiles <- lapply(fileNames, readRDS)
   if (type == "fixed") {
     # Faster, and in this case correct because the effect is fixed:
-    maEstimate <- EvidenceSynthesis::computeFixedEffectMetaAnalysis(profiles) %>%
+    maEstimate <- EvidenceSynthesis::computeFixedEffectMetaAnalysis(profiles) |>
       transmute(rr = rr,
                 ci95Lb = lb,
                 ci95Ub = ub)
@@ -121,7 +121,7 @@ computeMetaAnalysis <- function(targetId,
   } else {
     # Slower, but what we would do in the real world. May have less power because
     # it doesn't assume fixed effect:
-    maEstimate <- EvidenceSynthesis::computeBayesianMetaAnalysis(profiles) %>%
+    maEstimate <- EvidenceSynthesis::computeBayesianMetaAnalysis(profiles) |>
       transmute(rr = exp(mu),
                 ci95Lb = exp(mu95Lb),
                 ci95Ub = exp(mu95Ub))

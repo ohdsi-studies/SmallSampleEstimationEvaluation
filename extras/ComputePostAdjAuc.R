@@ -9,18 +9,18 @@ databases <- c("MDCD", "MDCR", "Optum_EHR")
 sampleSizes <- c(4000, 2000, 1000, 500, 250)
 # sampleSizes <- c(4000, 1000,  250)
 
-tcs <- read.csv(file.path(paste0(rootFolderName, databases[1]), "allControls.csv")) %>%
-  distinct(targetId, targetName, comparatorId, comparatorName) %>%
+tcs <- read.csv(file.path(paste0(rootFolderName, databases[1]), "allControls.csv")) |>
+  distinct(targetId, targetName, comparatorId, comparatorName) |>
   mutate(comparison = sprintf("%s vs %s", targetName, comparatorName))
 
 computeAuc <- function(ps, cohortMethodData) {
-  population <- CohortMethod::matchOnPs(ps, maxRatio = 1) %>%
+  population <- CohortMethod::matchOnPs(ps, maxRatio = 1) |>
     select("rowId", "treatment")
   if (sum(population$treatment) < 10) {
     return(tibble(auc = NA, aucLb95ci = NA, aucUb95ci = NA))
   } 
   filteredCovariateData <- Andromeda::andromeda(
-    covariates = cohortMethodData$covariates %>%
+    covariates = cohortMethodData$covariates |>
       filter(.data$rowId %in% local(population$rowId)),
     covariateRef = cohortMethodData$covariateRef,
     analysisRef = cohortMethodData$analysisRef
@@ -64,9 +64,9 @@ for (database in databases) {
   
   dbFolder <- paste0(rootFolderName, database)
   cmFolder <- file.path(dbFolder, "largeSample")
-  ref <- CohortMethod::getFileReference(cmFolder) %>%
-    filter(analysisId == 4) %>%
-    distinct(targetId, comparatorId, cohortMethodDataFile, sharedPsFile) %>%
+  ref <- CohortMethod::getFileReference(cmFolder) |>
+    filter(analysisId == 4) |>
+    distinct(targetId, comparatorId, cohortMethodDataFile, sharedPsFile) |>
     inner_join(tcs, by = join_by(targetId, comparatorId))
   # i <- 1
   for (i in seq_len(nrow(ref))) {
@@ -79,33 +79,33 @@ for (database in databases) {
       sampleRootFolder <- file.path(dbFolder, sprintf("smallSample%d", sampleSize))
       # sampleFolder = list.dirs(sampleRootFolder, full.names = TRUE, recursive = FALSE)[1]
       for (sampleFolder in list.dirs(sampleRootFolder, full.names = TRUE, recursive = FALSE)) {
-        localRef <- CohortMethod::getFileReference(sampleFolder) %>%
-          filter(targetId == refRow$targetId & comparatorId == refRow$comparatorId) %>%
+        localRef <- CohortMethod::getFileReference(sampleFolder) |>
+          filter(targetId == refRow$targetId & comparatorId == refRow$comparatorId) |>
           distinct(analysisId, cohortMethodDataFile, sharedPsFile) 
-        cohortMethodDataFile <- localRef %>%
-          filter(analysisId == 1) %>%
+        cohortMethodDataFile <- localRef |>
+          filter(analysisId == 1) |>
           pull(cohortMethodDataFile)
         cohortMethodData <- CohortMethod::loadCohortMethodData(file.path(sampleFolder, cohortMethodDataFile))
         
         # Local PS
-        sharedPsFile <- localRef %>%
-          filter(analysisId == 1) %>%
+        sharedPsFile <- localRef |>
+          filter(analysisId == 1) |>
           pull(sharedPsFile)
         ps <- readRDS(file.path(sampleFolder, sharedPsFile)) 
         aucLocal <- computeAuc(ps, cohortMethodData)
         
         # Global PS
-        sharedPsFile <- localRef %>%
-          filter(analysisId == 4) %>%
+        sharedPsFile <- localRef |>
+          filter(analysisId == 4) |>
           pull(sharedPsFile)
         ps <- readRDS(file.path(sampleFolder, sharedPsFile)) 
-        ps <- ps %>%
+        ps <- ps |>
           filter(rowId %in% pull(cohortMethodData$cohorts, rowId))
         aucGlobal <- computeAuc(ps, cohortMethodData)
         
-        row <- refRow %>%
-          select("targetId", "comparatorId", "comparison") %>%
-          cross_join(bind_rows(aucLocal, aucGlobal)) %>%
+        row <- refRow |>
+          select("targetId", "comparatorId", "comparison") |>
+          cross_join(bind_rows(aucLocal, aucGlobal)) |>
           mutate(analysisId = c(1, 3),
                  database = !!database,
                  sampleSize = !!sampleSize)
