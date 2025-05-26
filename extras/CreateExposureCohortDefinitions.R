@@ -2,13 +2,14 @@ library(Capr)
 library(dplyr)
 library(DatabaseConnector)
 library(CirceR)
-connectionDetails <- DatabaseConnector::createConnectionDetails(
-  dbms = "redshift",
-  connectionString = keyring::key_get("redShiftConnectionStringOhdaMdcd"),
-  user = keyring::key_get("redShiftUserName"),
-  password = keyring::key_get("redShiftPassword")
+connectionDetails <- createConnectionDetails(
+  dbms = "spark",
+  connectionString = keyring::key_get("databricksConnectionString"),
+  user = "token",
+  password = keyring::key_get("databricksToken")
 )
-cdmDatabaseSchema <- "cdm_truven_mdcd_v2359"
+options(sqlRenderTempEmulationSchema = "scratch.scratch_mschuemi")
+cdmDatabaseSchema <- "merative_ccae.cdm_merative_ccae_v3467"
 connection <- connect(connectionDetails)
 
 #hydrochlorothiazide, losartan, quinapril, propranolol -----------------------
@@ -43,48 +44,48 @@ propranolol <- getConceptSetDetails(propranolol, connection, cdmDatabaseSchema)
 # Cohorts
 hydrochlorothiazideNewUsers <- cohort(
   entry = entry(
-    drug(hydrochlorothiazide, firstOccurrence()),
+    drugExposure(hydrochlorothiazide, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
     "prior hypertensive disorder" = withAll(
-      atLeast(1, condition(hypertensiveDisorder), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, conditionOccurrence(hypertensiveDisorder), duringInterval(eventStarts(-365, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(hydrochlorothiazide, persistenceWindow = 30, surveillanceWindow = 0))
 )
 losartanNewUsers <- cohort(
   entry = entry(
-    drug(losartan, firstOccurrence()),
+    drugExposure(losartan, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
     "prior hypertensive disorder" = withAll(
-      atLeast(1, condition(hypertensiveDisorder), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, conditionOccurrence(hypertensiveDisorder), duringInterval(eventStarts(-365, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(losartan, persistenceWindow = 30, surveillanceWindow = 0))
 )
 quinaprilNewUsers <- cohort(
   entry = entry(
-    drug(quinapril, firstOccurrence()),
+    drugExposure(quinapril, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
     "prior hypertensive disorder" = withAll(
-      atLeast(1, condition(hypertensiveDisorder), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, conditionOccurrence(hypertensiveDisorder), duringInterval(eventStarts(-365, 0)))
     )
   ),
     exit = exit(endStrategy = drugExit(quinapril, persistenceWindow = 30, surveillanceWindow = 0))
 )
 propranololNewUsers <- cohort(
   entry = entry(
-    drug(propranolol, firstOccurrence()),
+    drugExposure(propranolol, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
     "prior hypertensive disorder" = withAll(
-      atLeast(1, condition(hypertensiveDisorder), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, conditionOccurrence(hypertensiveDisorder), duringInterval(eventStarts(-365, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(propranolol, persistenceWindow = 30, surveillanceWindow = 0))
@@ -124,48 +125,48 @@ saxagliptin <- getConceptSetDetails(saxagliptin, connection, cdmDatabaseSchema)
 # Cohorts
 sitagliptinNewUsers <- cohort(
   entry = entry(
-    drug(sitagliptin, firstOccurrence()),
+    drugExposure(sitagliptin, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
     "prior T2DM" = withAll(
-      atLeast(1, condition(t2dm), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, conditionOccurrence(t2dm), duringInterval(eventStarts(-365, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(sitagliptin, persistenceWindow = 30, surveillanceWindow = 0))
 )
 dapagliflozinNewUsers <- cohort(
   entry = entry(
-    drug(dapagliflozin, firstOccurrence()),
+    drugExposure(dapagliflozin, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
     "prior T2DM" = withAll(
-      atLeast(1, condition(t2dm), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, conditionOccurrence(t2dm), duringInterval(eventStarts(-365, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(dapagliflozin, persistenceWindow = 30, surveillanceWindow = 0))
 )
 glimepirideNewUsers <- cohort(
   entry = entry(
-    drug(glimepiride, firstOccurrence()),
+    drugExposure(glimepiride, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
     "prior T2DM" = withAll(
-      atLeast(1, condition(t2dm), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, conditionOccurrence(t2dm), duringInterval(eventStarts(-365, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(glimepiride, persistenceWindow = 30, surveillanceWindow = 0))
 )
 saxagliptinNewUsers <- cohort(
   entry = entry(
-    drug(saxagliptin, firstOccurrence()),
+    drugExposure(saxagliptin, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
     "prior T2DM" = withAll(
-      atLeast(1, condition(t2dm), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, conditionOccurrence(t2dm), duringInterval(eventStarts(-365, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(saxagliptin, persistenceWindow = 30, surveillanceWindow = 0))
@@ -206,48 +207,48 @@ venlafaxine <- getConceptSetDetails(venlafaxine, connection, cdmDatabaseSchema)
 # Cohorts
 nortriptylineNewUsers <- cohort(
   entry = entry(
-    drug(nortriptyline, firstOccurrence()),
+    drugExposure(nortriptyline, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
     "prior depression" = withAll(
-      atLeast(1, condition(mdd), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, conditionOccurrence(mdd), duringInterval(eventStarts(-365, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(nortriptyline, persistenceWindow = 30, surveillanceWindow = 0))
 )
 fluoxetineNewUsers <- cohort(
   entry = entry(
-    drug(fluoxetine, firstOccurrence()),
+    drugExposure(fluoxetine, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
     "prior depression" = withAll(
-      atLeast(1, condition(mdd), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, conditionOccurrence(mdd), duringInterval(eventStarts(-365, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(fluoxetine, persistenceWindow = 30, surveillanceWindow = 0))
 )
 amitriptylineNewUsers <- cohort(
   entry = entry(
-    drug(amitriptyline, firstOccurrence()),
+    drugExposure(amitriptyline, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
     "prior depression" = withAll(
-      atLeast(1, condition(mdd), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, conditionOccurrence(mdd), duringInterval(eventStarts(-365, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(amitriptyline, persistenceWindow = 30, surveillanceWindow = 0))
 )
 venlafaxineNewUsers <- cohort(
   entry = entry(
-    drug(venlafaxine, firstOccurrence()),
+    drugExposure(venlafaxine, firstOccurrence()),
     observationWindow = continuousObservation(priorDays = 365)
   ),
   attrition = attrition(
     "prior depression" = withAll(
-      atLeast(1, condition(mdd), duringInterval(eventStarts(-Inf, 0)))
+      atLeast(1, conditionOccurrence(mdd), duringInterval(eventStarts(-365, 0)))
     )
   ),
   exit = exit(endStrategy = drugExit(venlafaxine, persistenceWindow = 30, surveillanceWindow = 0))
