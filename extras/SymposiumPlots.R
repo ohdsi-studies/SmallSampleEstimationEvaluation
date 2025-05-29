@@ -24,8 +24,8 @@ saveRDS(psMetrics, file.path(plotsAndTablesFolder, "psMetrics.rds"))
 # metrics <- readRDS(file.path(plotsAndTablesFolder, "metrics.rds"))
 # psMetrics <- readRDS(file.path(plotsAndTablesFolder, "psMetrics.rds"))
 
-sampleSizes <- c(4000)
-# sampleSizes <- c(4000, 2000, 1000, 500, 250, 125)
+# sampleSizes <- c(4000)
+sampleSizes <- c(4000, 2000, 1000, 500, 250)
 x <- tibble(
   sampleSize = c(20000, sampleSizes),
   x = seq_len(length(sampleSizes) + 1)
