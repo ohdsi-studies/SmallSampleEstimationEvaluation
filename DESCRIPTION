@@ -1,8 +1,8 @@
 Package: SmallSampleEstimationEvaluation
 Type: Package
 Title: Package for Evaluation of Estimation Methods
-Version: 1.0.0
-Date: 2025-05-26
+Version: 1.0.1
+Date: 2025-05-29
 Authors@R: c(
   person("Martijn", "Schuemie", , "schuemie@ohdsi.org", role = c("aut", "cre")),
   person("Fleur", "Vereijken", , , role = c("aut"))

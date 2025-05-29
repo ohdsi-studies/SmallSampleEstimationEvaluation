@@ -45,4 +45,4 @@ execute(connectionDetails,
         maxCores = maxCores,
         outputFolder = outputFolder,
         databaseId = databaseId,
-        createCohorts = TRUE) 
+        createCohorts = FALSE) 

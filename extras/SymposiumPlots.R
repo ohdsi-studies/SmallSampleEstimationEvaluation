@@ -3,19 +3,17 @@ library(dplyr)
 library(ggplot2)
 
 # plotsAndTablesFolder <- "C:/Users/mschuemi/OneDrive - JNJ/home/Research/SmallCountConfounderAdjustment"
-plotsAndTablesFolder <- file.path("d:/SmallSampleEstimationEvaluation_mdcd", "plotsAndTables")
+plotsAndTablesFolder <- file.path("e:/SmallSampleEstimationEvaluation_ccae", "plotsAndTables")
 metrics <- bind_rows(
-  readRDS(file.path("d:/SmallSampleEstimationEvaluation_mdcd", "CombinedMetrics.rds")),
-  readRDS(file.path("d:/SmallSampleEstimationEvaluation_mdcr", "CombinedMetrics.rds")),
-  readRDS(file.path("d:/SmallSampleEstimationEvaluation_optum_ehr", "CombinedMetrics.rds"))
+  readRDS(file.path("e:/SmallSampleEstimationEvaluation_ccae", "CombinedMetrics.rds"))
+  # readRDS(file.path("e:/SmallSampleEstimationEvaluation_optum_ehr", "CombinedMetrics.rds"))
 )
 metrics <- metrics |>
   mutate(comparison = gsub("Lisinporil ", "Lisinopril ", comparison)) |>
   mutate(comparison = gsub("Hydrochlorothiazide", "HCTZ", comparison))
 psMetrics <- bind_rows(
-  readRDS(file.path("d:/SmallSampleEstimationEvaluation_mdcd", "CombinedPSMetrics.rds")),
-  readRDS(file.path("d:/SmallSampleEstimationEvaluation_mdcr", "CombinedPsMetrics.rds")),
-  readRDS(file.path("d:/SmallSampleEstimationEvaluation_optum_ehr", "CombinedPsMetrics.rds"))
+  readRDS(file.path("e:/SmallSampleEstimationEvaluation_ccae", "CombinedPSMetrics.rds"))
+  # readRDS(file.path("e:/SmallSampleEstimationEvaluation_optum_ehr", "CombinedPsMetrics.rds"))
 )
 psMetrics <- psMetrics |>
   mutate(comparison = gsub("Lisinporil ", "Lisinopril ", comparison)) |>
@@ -26,7 +24,8 @@ saveRDS(psMetrics, file.path(plotsAndTablesFolder, "psMetrics.rds"))
 # metrics <- readRDS(file.path(plotsAndTablesFolder, "metrics.rds"))
 # psMetrics <- readRDS(file.path(plotsAndTablesFolder, "psMetrics.rds"))
 
-sampleSizes <- c(4000, 2000, 1000, 500, 250, 125)
+sampleSizes <- c(4000)
+# sampleSizes <- c(4000, 2000, 1000, 500, 250, 125)
 x <- tibble(
   sampleSize = c(20000, sampleSizes),
   x = seq_len(length(sampleSizes) + 1)
@@ -60,7 +59,7 @@ plot <- ggplot(vizData, aes(x = x, y = ease, ymin = easeCi95Lb, ymax = easeCi95U
   scale_color_manual(values = c("#69AED5", "#336B91", "#EB6622")) +
   scale_x_continuous("Sample size per site", breaks = x$x, labels = x$sampleSize, minor_breaks = NULL) +
   scale_y_continuous("Expected Absolute Systematic Error (EASE) with 95% CI") +
-  coord_cartesian(ylim = c(0, 0.5)) +
+  coord_cartesian(ylim = c(0, 0.75)) +
   labs(color = "PS model", shape = "Adjustment strategy") +
   facet_grid(comparison~database) +
   theme(legend.position = "top",
@@ -72,7 +71,7 @@ plot <- ggplot(vizData, aes(x = x, y = ease, ymin = easeCi95Lb, ymax = easeCi95U
         axis.ticks.y = element_line(color = gray(0.8), linewidth = 0.5),
         strip.background = element_blank())
 
-ggsave(file.path(plotsAndTablesFolder, "EASE_crude_all.png"), plot = plot, width = 9.7, height = 4.5, dpi = 300)
+ggsave(file.path(plotsAndTablesFolder, "EASE_crude_all.png"), plot = plot, width = 9.7, height = 7, dpi = 300)
 
 # Precision after calibration --------------------------
 vizData <- metrics |>
@@ -140,4 +139,57 @@ plot <- ggplot(vizData, aes(x = x, y = maxSdmMedian, group = x, color = label, f
         axis.ticks.x = element_blank(),
         axis.ticks.y = element_line(color = gray(0.8), linewidth = 0.5),
         strip.background = element_blank())
-ggsave(file.path(plotsAndTablesFolder, "Balance_all.png"), plot = plot, width = 9.7, height = 4.5, dpi = 300)
+ggsave(file.path(plotsAndTablesFolder, "Balance_all.png"), plot = plot, width = 9.7, height = 7, dpi = 300)
+
+# New balance -----------------------------
+# Adding 1 to avoid infinite values on log scale:
+vizData <- psMetrics |>
+  mutate(label = case_when(
+    analysisId == 3 ~ "Stratification, local model",
+    analysisId == 1 ~ "Matching, local model",
+    analysisId == 5 ~ "Stratification, global model",
+    analysisId == 4 ~ "Matching, global model")) |>
+  mutate(x = case_when(
+    analysisId == 3 ~ x - 0.34,
+    analysisId == 1 ~ x - 0.12,
+    analysisId == 5 ~ x + 0.12,
+    analysisId == 4 ~ x + 0.34)) |>
+  mutate(comparison = gsub("vs ", "vs\n", comparison)) |>
+  select(comparison, x, significantUnbalancedMin, significantUnbalancedP25, significantUnbalancedMedian, significantUnbalancedP75, significantUnbalancedMax, label, database) |>
+  mutate(
+    significantUnbalancedMin = significantUnbalancedMin + 1,
+    significantUnbalancedP25 = significantUnbalancedP25 + 1,
+    significantUnbalancedMedian = significantUnbalancedMedian + 1,
+    significantUnbalancedP75 = significantUnbalancedP75 + 1,
+    significantUnbalancedMax = significantUnbalancedMax + 1,
+  )
+vizData$label <- factor(vizData$label, levels = c("Stratification, local model",
+                                                  "Matching, local model",
+                                                  "Stratification, global model",
+                                                  "Matching, global model"))
+yBreaks <- c(0, 10, 100, 1000)
+plot <- ggplot(vizData, aes(x = x, y = significantUnbalancedMedian, group = x, color = label, fill = label)) +
+  geom_vline(xintercept = x$x + 0.5, color = gray(0.8), linewidth = 0.5) +
+  geom_boxplot(
+    aes(ymin = significantUnbalancedMin, lower = significantUnbalancedP25, middle = significantUnbalancedMedian, upper = significantUnbalancedP75, ymax = significantUnbalancedMax),
+    stat = "identity",
+    alpha = 0.3,
+    linewidth = 0.5
+  ) +
+  scale_x_continuous("Sample size per site", breaks = x$x, labels = x$sampleSize, minor_breaks = NULL) +
+  scale_y_log10("Number of covariates signficantly unbalanced", breaks = yBreaks + 1, labels = yBreaks ) +
+  scale_color_manual(values=c("#69AED5", "#336B91", "#FBC511", "#EB6622")) +
+  scale_fill_manual(values=c("#69AED5", "#336B91", "#FBC511", "#EB6622")) +
+  coord_cartesian(ylim = c(1, 1000)) +
+  labs(color = "Adjustment strategy", fill = "Adjustment strategy") +
+  facet_grid(comparison~database) +
+  theme(legend.position = "top",
+        legend.direction = "horizontal",
+        panel.background = element_blank(),
+        panel.grid.major.y = element_line(color = gray(0.8), linewidth = 0.5),
+        panel.grid.major.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_line(color = gray(0.8), linewidth = 0.5),
+        strip.background = element_blank())
+plot
+ggsave(file.path(plotsAndTablesFolder, "NewBalance_all.png"), plot = plot, width = 9.7, height = 7, dpi = 300)

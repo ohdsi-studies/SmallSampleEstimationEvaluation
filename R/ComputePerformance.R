@@ -256,6 +256,10 @@ computeSingleSampleMetrics <- function(sampleFolder, ref) {
   } else {
     balance <- readRDS(file.path(sampleFolder, ref$sharedBalanceFile[1]))
     maxSdm <- max(abs(balance$afterMatchingStdDiff), na.rm = TRUE)
+    balanceP <- CohortMethod:::computeBalanceP(balance$afterMatchingStdDiff, balance$afterMatchingSdmVariance, 0.1)
+    alpha <- 0.05
+    balanced <- balanceP > (alpha / nrow(balance))
+    significantUnbalanced <- sum(!balanced, na.rm = TRUE)
   }
   if (ref$sharedPsFile[1] == "" || ref$analysisId > 3) {
     covCount <- 0
@@ -270,6 +274,7 @@ computeSingleSampleMetrics <- function(sampleFolder, ref) {
   }
   row <- tibble(
     maxSdm = maxSdm,
+    significantUnbalanced = significantUnbalanced,
     covCount = covCount,
     nonZeroCoefCount = nonZeroCoefCount,
     auc = auc

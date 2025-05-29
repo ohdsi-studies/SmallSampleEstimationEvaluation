@@ -77,7 +77,8 @@ runCohortMethod <- function(connectionDetails = NULL,
       noiseLevel = "quiet",
       tolerance = 2e-07,
       cvRepetitions = 10,
-      minCVData = 10
+      minCVData = 10,
+      maxIterations = 3000
     )
   )
   matchOnPsArgs <- CohortMethod::createMatchOnPsArgs(maxRatio = 1)

@@ -1,7 +1,12 @@
 library(dplyr)
 
-outputFolder <- "d:/SmallSampleEstimationEvaluation"
-sampleSizes <- c(4000, 2000, 1000, 500, 250)
+# Pick one:
+outputFolder <- "e:/SmallSampleEstimationEvaluation_ccae"
+outputFolder <- "e:/SmallSampleEstimationEvaluation_optum_ehr"
+
+
+sampleSizes <- c(4000)
+# sampleSizes <- c(4000, 2000, 1000, 500, 250)
 
 csvFileName <- system.file("NegativeControls.csv", package = "SmallSampleEstimationEvaluation")
 negativeControls <- readr::read_csv(csvFileName, show_col_types = FALSE)  |>
