@@ -137,7 +137,8 @@ execute <- function(connectionDetails,
         outputFolder = outputFolder,
         cmFolder = smallSampleSubFolder,
         maxCores = maxCores,
-        externalPsFolder = fullDataFolder
+        externalPsFolder = fullDataFolder,
+        small = TRUE
       )
     }
     combineEstimates(

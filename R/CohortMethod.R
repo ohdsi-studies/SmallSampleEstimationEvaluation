@@ -22,7 +22,8 @@ runCohortMethod <- function(connectionDetails = NULL,
                             maxCores = 1,
                             outputFolder,
                             cmFolder,
-                            externalPsFolder = NULL) {
+                            externalPsFolder = NULL,
+                            small = FALSE) {
   # Create list of target-comparator-outcomes ---------------------------------
   allControls <- read.csv(file.path(outputFolder, "allControls.csv")) 
   allControls <- split(allControls, paste(allControls$targetId, allControls$comparatorId))
@@ -170,7 +171,7 @@ runCohortMethod <- function(connectionDetails = NULL,
     computeSharedBalanceThreads = min(3, maxCores),
     computeBalanceThreads = min(5, maxCores),
     prefilterCovariatesThreads = min(3, maxCores),
-    fitOutcomeModelThreads = max(1, floor(maxCores / 4)),
+    fitOutcomeModelThreads = if (small) {max(1, floor(maxCores / 2))} else {max(1, floor(maxCores / 4))},
     outcomeCvThreads = min(4, maxCores),
     calibrationThreads = min(4, maxCores)
     )

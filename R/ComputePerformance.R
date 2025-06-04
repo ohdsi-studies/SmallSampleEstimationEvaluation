@@ -17,6 +17,10 @@
 
 #' @export
 computeMdrr <- function(outputFolder, cmFolder, connectionDetails, cdmDatabaseSchema, cohortDatabaseSchema, cohortTable, outputFileName) {
+  fileName <- file.path(outputFolder, "Mdrr_LargeSample.csv")
+  if (file.exists(fileName)) {
+    return()
+  }
   fileRef <- CohortMethod::getFileReference(cmFolder)
   tcs <- fileRef |>
     distinct(.data$targetId, .data$comparatorId, .data$cohortMethodDataFile) |>
@@ -100,7 +104,7 @@ computeMdrr <- function(outputFolder, cmFolder, connectionDetails, cdmDatabaseSc
       select("targetId", "comparatorId", "outcomeId", mdrrComparator = "mdrr"),
     by = join_by("targetId", "comparatorId", "outcomeId")
   )
-  readr::write_csv(mdrr, file.path(outputFolder, "Mdrr_LargeSample.csv"))
+  readr::write_csv(mdrr, fileName)
 }
 
 #' @export
