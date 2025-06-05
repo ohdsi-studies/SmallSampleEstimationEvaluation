@@ -19,7 +19,7 @@ indications <- exposures |>
 
 for (i in seq_along(indications)) {
   indication <- indications[i]
-  message("Running CohortMethod for indication: ", indication)
+  message("Computing bias for indication: ", indication)
   
   indicationFolder <- file.path(outputFolder, indication)
 
@@ -81,3 +81,21 @@ for (i in seq_along(indications)) {
   rows <- bind_rows(rows)
   write_csv(rows, sprintf("extras/biasSearch/bias_%s.csv", indication))
 }
+
+# Generate some nice plots showing distributions ---------------------------------------------------
+library(ggplot2)
+
+ease <- list()
+for (i in seq_along(indications)) {
+  indication <- indications[i]
+  ease[[i]] <- read_csv(sprintf("extras/biasSearch/bias_%s.csv", indication), show_col_types = FALSE) |>
+    mutate(indication = indication)
+}
+ease <- bind_rows(ease)
+
+ggplot(ease, aes(x = indication, y = ease)) +
+  geom_hline(yintercept = 0.25, linetype = "dashed") +
+  geom_boxplot(fill = "#69AED5", alpha = 0.8) +
+  scale_y_continuous("Expected Absolute Systematic Error (EASE)") +
+  theme(axis.title.x = element_blank())
+ggsave("extras/biasSearch/bias_boxplot.png", width = 4.5, height = 4.5, dpi = 300)
