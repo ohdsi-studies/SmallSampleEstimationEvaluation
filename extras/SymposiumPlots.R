@@ -68,9 +68,12 @@ generate_all_plots <- function(baseFolder) {
   # Precision after calibration --------------------------
   vizData <- metrics |>
     filter(calibrated == TRUE) |>
-    mutate(x = case_when(psMethod == "PS stratification" ~ x + 0.3, 
-                         psMethod == "No PS adjustment" ~ x - 0.3,
-                         .default = x - 0.1)) |>
+    mutate(x = round(x)) |>
+    mutate(x = case_when(psModel == "Local" & psMethod == "PS stratification" ~ x - 0.32,
+                         psModel == "Local" & psMethod == "PS 1-on-1 matching" ~ x - 0.16,
+                         psModel == "Global" & psMethod == "PS stratification" ~ x,
+                         psModel == "Global" & psMethod == "PS 1-on-1 matching" ~ x + 0.16,
+                         psModel == "None" ~ x + 0.32)) |>
     mutate(adjustment = sprintf("%s using %s model", psMethod, tolower(psModel)),
            comparison = gsub("vs ", "vs\n", comparison)) |>
     select(comparison, x, meanP, adjustment, psMethod, psModel, adjustment, database)
@@ -80,19 +83,18 @@ generate_all_plots <- function(baseFolder) {
   vizData$psModel <- factor(vizData$psModel, levels = c("Local",
                                                         "Global",
                                                         "None"))
-  vizData <- vizData |>
-    mutate(x = round(x) + (x-round(x)) * 0.95)
   
-  ggplot(vizData, aes(x = x, y = meanP, group = adjustment, fill = psModel, pattern = psMethod)) +
+  plot <- ggplot(vizData, aes(x = x, y = meanP, group = adjustment, fill = psModel, pattern = psMethod)) +
     geom_vline(xintercept = 0.5 + 2:5, color = "white") +
     geom_bar_pattern(stat = "identity",
-                     width = 0.2 * 0.95,
+                     width = 0.16,
                      color = "black", 
                      pattern_fill = "black",
                      pattern_angle = 45,
                      pattern_density = 0.025,
                      pattern_spacing = 0.1,
-                     pattern_key_scale_factor = 0.25) +
+                     pattern_key_scale_factor = 0.25,
+                     alpha = 0.8) +
     scale_x_continuous("Sample size per site", breaks = x$x, labels = x$sampleSize, minor_breaks = NULL) +
     scale_y_continuous("Geometric mean precision after empirical calibration") +
     scale_fill_manual(values = c("#69AED5", "#336B91", "#EB6622")) +
@@ -110,7 +112,7 @@ generate_all_plots <- function(baseFolder) {
           axis.ticks.y = element_line(color = gray(0.8), linewidth = 0.5),
           strip.background = element_blank())
   
-  ggsave(file.path(plotsAndTablesFolder, "Precision_afer_calibration_crude_all.png"), width = 9.7, height = 7, dpi = 300)
+  ggsave(file.path(plotsAndTablesFolder, "Precision_afer_calibration_crude_all.png"), plot = plot, width = 9.7, height = 7, dpi = 300)
   
   # Balance -----------------------------
   vizData <- psMetrics |>
