@@ -479,9 +479,13 @@
 		},
 		"Andromeda" : {
 			"Package" : "Andromeda",
-			"Version" : "1.0.0",
-			"Source" : "Repository",
-			"Repository" : "CRAN"
+			"Version" : "1.0.1",
+			"Source" : "GitHub",
+			"RemoteType" : "github",
+			"RemoteHost" : "api.github.com",
+			"RemoteRepo" : "Andromeda",
+			"RemoteUsername" : "ohdsi",
+			"RemoteRef" : "8b0cd30a16c56050d71d7cfa3b9a590a24b4cc67"
 		},
 		"CompQuadForm" : {
 			"Package" : "CompQuadForm",
@@ -533,19 +537,13 @@
 		},
 		"ParallelLogger" : {
 			"Package" : "ParallelLogger",
-			"Version" : "3.4.2",
+			"Version" : "3.5.0",
 			"Source" : "GitHub",
 			"RemoteType" : "github",
 			"RemoteHost" : "api.github.com",
 			"RemoteRepo" : "ParallelLogger",
 			"RemoteUsername" : "ohdsi",
-			"RemoteRef" : "9a692e307c41c15086a4f405ad620758f75f887a"
-		},
-		"ParallelLogger" : {
-			"Package" : "ParallelLogger",
-			"Version" : "3.4.2",
-			"Source" : "Repository",
-			"Repository" : "CRAN"
+			"RemoteRef" : "3f15d8bc3d8e85c5107aef231689af14bfe0c6d1"
 		},
 		"plyr" : {
 			"Package" : "plyr",
@@ -610,8 +608,12 @@
 		"FeatureExtraction" : {
 			"Package" : "FeatureExtraction",
 			"Version" : "3.10.0",
-			"Source" : "Repository",
-			"Repository" : "CRAN"
+			"Source" : "GitHub",
+			"RemoteType" : "github",
+			"RemoteHost" : "api.github.com",
+			"RemoteRepo" : "FeatureExtraction",
+			"RemoteUsername" : "ohdsi",
+			"RemoteRef" : "fc817de3815b81a247b53907880c9bd6c8e0660c"
 		},
 		"ggdist" : {
 			"Package" : "ggdist",
@@ -729,7 +731,7 @@
 			"RemoteHost" : "api.github.com",
 			"RemoteRepo" : "CohortMethod",
 			"RemoteUsername" : "ohdsi",
-			"RemoteRef" : "62dbca5c96674b511e2d42ddbfc80deef5b6577c"
+			"RemoteRef" : "ed2ff61518ab9b06628d1a6d76a73624b4e5d1f6"
 		},
 		"MethodEvaluation" : {
 			"Package" : "MethodEvaluation",
