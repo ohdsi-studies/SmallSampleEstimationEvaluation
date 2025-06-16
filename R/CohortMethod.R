@@ -56,7 +56,8 @@ runCohortMethod <- function(connectionDetails = NULL,
   getDbCmDataArgs <- CohortMethod::createGetDbCohortMethodDataArgs(
     # washoutPeriod = 365,
     # firstExposureOnly = TRUE,
-    removeDuplicateSubjects = "remove all",
+    restrictToCommonPeriod = TRUE,
+    removeDuplicateSubjects = "keep first",
     maxCohortSize = 1e6,
     covariateSettings = covariateSettings
   )
