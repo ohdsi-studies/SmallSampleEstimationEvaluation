@@ -17,7 +17,7 @@ cdmDatabaseSchema <- "merative_ccae.cdm_merative_ccae_v3467"
 oracleTempSchema <- NULL
 cohortDatabaseSchema <- "scratch.scratch_mschuemi"
 cohortTable <- "cohort_small_sample_eval_ccae"
-outputFolder <- "e:/SmallSampleEstimationEvaluation_ccae"
+outputFolder <- "e:/SmallSampleEstimationEvaluation_ccae_new_settings"
 databaseId <- "CCAE"
 
 # Optum EHR
@@ -45,4 +45,4 @@ execute(connectionDetails,
         maxCores = maxCores,
         outputFolder = outputFolder,
         databaseId = databaseId,
-        createCohorts = FALSE) 
+        createCohorts = TRUE) 

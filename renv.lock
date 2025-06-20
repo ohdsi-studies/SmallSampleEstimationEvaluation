@@ -323,7 +323,7 @@
 		},
 		"duckdb" : {
 			"Package" : "duckdb",
-			"Version" : "1.2.2",
+			"Version" : "1.3.0",
 			"Source" : "Repository",
 			"Repository" : "CRAN"
 		},
@@ -731,7 +731,7 @@
 			"RemoteHost" : "api.github.com",
 			"RemoteRepo" : "CohortMethod",
 			"RemoteUsername" : "ohdsi",
-			"RemoteRef" : "ed2ff61518ab9b06628d1a6d76a73624b4e5d1f6"
+			"RemoteRef" : "45a0157651c4e8dddddb0dfb69e856b12b9889ea"
 		},
 		"MethodEvaluation" : {
 			"Package" : "MethodEvaluation",

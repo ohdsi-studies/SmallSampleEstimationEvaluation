@@ -7,10 +7,10 @@ connectionDetails <- createConnectionDetails(
   user = "token",
   password = keyring::key_get("databricksToken")
 )
-cdmDatabaseSchema <- "merative_ccae.cdm_merative_ccae_v3326"
+cdmDatabaseSchema <- "merative_ccae.cdm_merative_ccae_v3467"
 cohortDatabaseSchema <- "scratch.scratch_mschuemi"
-cohortTable  <- "bias_search"
+cohortTable  <- "bias_search_3467"
 options(sqlRenderTempEmulationSchema = "scratch.scratch_mschuemi")
-outputFolder <- "e:/BiasSearch"
+outputFolder <- "e:/BiasSearch_3467"
 
 maxCores <- parallel::detectCores()

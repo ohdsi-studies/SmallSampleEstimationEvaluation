@@ -14,7 +14,7 @@ ExploreResults <- function(baseFolder, databaseId) {
   generate_all_plots(baseFolder)
 }
 
-ExploreResults(baseFolder = "e:/SmallSampleEstimationEvaluation_ccae", 
+ExploreResults(baseFolder = "e:/SmallSampleEstimationEvaluation_ccae_new_settings", 
                databaseId = "CCAE")
 ExploreResults(baseFolder = "e:/SmallSampleEstimationEvaluation_optum_ehr",
                databaseId = "Optum_EHR")

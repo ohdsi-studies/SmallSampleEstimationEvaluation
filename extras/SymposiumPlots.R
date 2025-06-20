@@ -2,6 +2,7 @@ library(ggpattern)
 
 generate_all_plots <- function(baseFolder) {
   plotsAndTablesFolder <- file.path(baseFolder, "plotsAndTables")
+  dir.create(plotsAndTablesFolder)
   metrics <- bind_rows(readRDS(file.path(baseFolder, "CombinedMetrics.rds")))
   
   metrics <- metrics |>
