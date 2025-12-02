@@ -731,7 +731,7 @@
 			"RemoteHost" : "api.github.com",
 			"RemoteRepo" : "CohortMethod",
 			"RemoteUsername" : "ohdsi",
-			"RemoteRef" : "45a0157651c4e8dddddb0dfb69e856b12b9889ea"
+			"RemoteRef" : "019c68d3f5f5094c69855c629fa199fe244d09dd"
 		},
 		"MethodEvaluation" : {
 			"Package" : "MethodEvaluation",
