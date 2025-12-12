@@ -63,7 +63,7 @@ generate_all_plots <- function(baseFolder) {
           axis.ticks.y = element_line(color = gray(0.8), linewidth = 0.5),
           strip.background = element_blank())
   
-  ggsave(file.path(plotsAndTablesFolder, "EASE_crude_all.png"), plot = plot, width = 9.7, height = 7, dpi = 300)
+  ggsave(file.path(plotsAndTablesFolder, "EASE_crude_all.png"), plot = plot, width = 5, height = 7.5, dpi = 400)
   
   
   # Precision after calibration --------------------------
@@ -113,7 +113,7 @@ generate_all_plots <- function(baseFolder) {
           axis.ticks.y = element_line(color = gray(0.8), linewidth = 0.5),
           strip.background = element_blank())
   
-  ggsave(file.path(plotsAndTablesFolder, "Precision_afer_calibration_crude_all.png"), plot = plot, width = 9.7, height = 7, dpi = 300)
+  ggsave(file.path(plotsAndTablesFolder, "Precision_afer_calibration_crude_all.png"), plot = plot, width = 5, height = 7.5, dpi = 400)
   
   # Balance -----------------------------
   vizData <- psMetrics |>
@@ -157,7 +157,7 @@ generate_all_plots <- function(baseFolder) {
           axis.ticks.x = element_blank(),
           axis.ticks.y = element_line(color = gray(0.8), linewidth = 0.5),
           strip.background = element_blank())
-  ggsave(file.path(plotsAndTablesFolder, "Balance_all.png"), plot = plot, width = 9.7, height = 7, dpi = 300)
+  ggsave(file.path(plotsAndTablesFolder, "Balance_all.png"), plot = plot, width = 5, height = 7.5, dpi = 400)
   
   # New balance -----------------------------
   # Adding 1 to avoid infinite values on log scale:
@@ -210,5 +210,5 @@ generate_all_plots <- function(baseFolder) {
           axis.ticks.y = element_line(color = gray(0.8), linewidth = 0.5),
           strip.background = element_blank())
   plot
-  ggsave(file.path(plotsAndTablesFolder, "NewBalance_all.png"), plot = plot, width = 9.7, height = 7, dpi = 300)
+  ggsave(file.path(plotsAndTablesFolder, "NewBalance_all.png"), plot = plot, width = 5, height = 7.5, dpi = 400)
 }
