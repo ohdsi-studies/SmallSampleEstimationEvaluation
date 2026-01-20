@@ -1,6 +1,6 @@
 # Code to extract balance data to share
 library(dplyr)
-library(meta)
+library(metafor)
 library(ParallelLogger)
 
 baseFolder <- "E:/SmallSampleEstimationEvaluation_ccae"
@@ -17,19 +17,35 @@ doMetaAnalysis <- function(group) {
   if (nrow(group) == 0) {
     return(NULL)
   }
-  metaBefore <- meta::metagen(group$beforeMatchingStdDiff,
-                              sqrt(group$beforeMatchingSdmVariance),
-                              control=list(iter.max=1000))
-  metaAfter <- meta::metagen(group$afterMatchingStdDiff,
-                              sqrt(group$afterMatchingSdmVariance),
-                              control=list(iter.max=1000))
+  
+  metaBefore <- tryCatch(
+    {
+      metafor::rma(yi = group$beforeMatchingStdDiff,
+                   vi = group$beforeMatchingSdmVariance,
+                   control = list(iter.max = 3000))
+    }, error = function(e) {
+      warning(e$message)
+      return(list(beta = NA, se = NA))
+    }
+  )
+  metaAfter <- tryCatch(
+    {
+      metafor::rma(yi = group$afterMatchingStdDiff,
+                   vi = group$afterMatchingSdmVariance,
+                   control = list(iter.max = 3000))
+    }, error = function(e) {
+      warning(e$message)
+      return(list(beta = NA, se = NA))
+    }
+  )
+  
   row <- tibble(
     covariateId = group$covariateId[1],
     covariateName = group$covariateName[1],
-    beforeMatchingStdDiff = metaBefore$TE.random,
-    beforeMatchingSdmVariance = metaBefore$seTE.random,
-    afterMatchingStdDiff = metaAfter$TE.random,
-    afterMatchingSdmVariance = metaAfter$seTE.random
+    beforeMatchingStdDiff = metaBefore$beta,
+    beforeMatchingSdmVariance =metaBefore$se ^ 2,
+    afterMatchingStdDiff = metaAfter$beta,
+    afterMatchingSdmVariance = metaAfter$se ^ 2
   )
   return(row)
 }
