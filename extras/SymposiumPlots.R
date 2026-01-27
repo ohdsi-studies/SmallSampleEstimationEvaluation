@@ -211,4 +211,113 @@ generate_all_plots <- function(baseFolder) {
           strip.background = element_blank())
   plot
   ggsave(file.path(plotsAndTablesFolder, "NewBalance_all.png"), plot = plot, width = 5, height = 7.5, dpi = 400)
+
+  # New balance meta analysis -----------------------------
+  balanceMetaFolder <- file.path(baseFolder, "BalanceMetaAnalysis")
+
+  metaFiles <- list.files(
+    balanceMetaFolder,
+    pattern = "^Balance_s.*\\.rds$",
+    full.names = TRUE
+  )
+
+  psMetricsMeta <- purrr::map_dfr(metaFiles, function(f) {
+
+    info <- stringr::str_match(
+      basename(f),
+      "Balance_s(\\d+)_a(\\d+)_t(\\d+)_c(\\d+)"
+    )
+
+    balance <- readRDS(f)
+
+    tibble(
+      sampleSize   = as.integer(info[2]),
+      analysisId   = as.integer(info[3]),
+      targetId     = as.integer(info[4]),
+      comparatorId = as.integer(info[5]),
+      significantUnbalanced =
+        sum(!balance$afterMatchingBalanced, na.rm = TRUE)
+    )
+  })
+
+  comparisonLookup <- psMetrics |>
+    distinct(targetId, comparatorId, comparison, database)
+
+  vizData <- psMetricsMeta |>
+    left_join(comparisonLookup,
+              by = c("targetId", "comparatorId")) |>
+    left_join(x, by = "sampleSize") |>
+    mutate(
+      comparison = gsub("vs ", "vs\n", comparison),
+      label = case_when(
+        analysisId == 3 ~ "Stratification, local model",
+        analysisId == 1 ~ "Matching, local model",
+        analysisId == 5 ~ "Stratification, global model",
+        analysisId == 4 ~ "Matching, global model"
+      ),
+      x = case_when(
+        analysisId == 3 ~ x - 0.34,
+        analysisId == 1 ~ x - 0.12,
+        analysisId == 5 ~ x + 0.12,
+        analysisId == 4 ~ x + 0.34
+      )
+    )
+
+  vizData$label <- factor(
+    vizData$label,
+    levels = c(
+      "Stratification, local model",
+      "Matching, local model",
+      "Stratification, global model",
+      "Matching, global model"
+    )
+  )
+
+  plot <- ggplot(
+    vizData,
+    aes(
+      x = x,
+      y = significantUnbalanced,
+      color = label
+    )
+  ) +
+    geom_vline(
+      xintercept = x$x + 0.5,
+      color = gray(0.8),
+      linewidth = 0.5
+    ) +
+    geom_hline(yintercept = 0, linewidth = 0.5) +
+    geom_point(size = 2, alpha = 0.9) +
+    scale_x_continuous(
+      "Sample size per site",
+      breaks = x$x,
+      labels = x$sampleSize,
+      minor_breaks = NULL
+    ) +
+    scale_y_continuous(
+      "Number of covariates significantly unbalanced (meta-analysis)"
+    ) +
+    scale_color_manual(
+      values = c("#69AED5", "#336B91", "#FBC511", "#EB6622")
+    ) +
+    labs(color = "Adjustment strategy") +
+    facet_grid(comparison ~ database) +
+    theme(
+      legend.position = "top",
+      legend.direction = "horizontal",
+      panel.background = element_blank(),
+      panel.grid.major.y = element_line(color = gray(0.8), linewidth = 0.5),
+      panel.grid.major.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.ticks.y = element_line(color = gray(0.8), linewidth = 0.5),
+      strip.background = element_blank()
+    )
+
+  ggsave(
+    file.path(plotsAndTablesFolder, "NewBalance_MetaAnalysis_points.png"),
+    plot = plot,
+    width = 5,
+    height = 7.5,
+    dpi = 400
+  )
 }
